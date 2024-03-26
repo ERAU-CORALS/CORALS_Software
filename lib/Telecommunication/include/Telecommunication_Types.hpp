@@ -96,7 +96,8 @@ enum class Keyword {
     KW_TARGET_NUM,
     // Other Values
     KEYWORD_COUNT,
-    NO_KEYWORD
+    NO_KEYWORD,
+    ALL_KEYWORDS = Keyword::KEYWORD_COUNT,
 };
 
 enum class ParameterDomain {
