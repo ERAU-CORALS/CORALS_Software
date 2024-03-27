@@ -18,6 +18,7 @@
 #include "Telecommunication_Types.hpp"
 
 namespace Telecommunication {
+inline namespace Literals {
 
 CString RECEIVER = "CORALS";
 const StringSize RECEIVER_LENGTH = strlen(RECEIVER);
@@ -138,6 +139,7 @@ const KeywordParameter_t KeywordParameters[(int)Keyword::KEYWORD_COUNT] = {
     {ParameterDomain::ANY,   ParameterType::INTEGER, 0, NULL}
 };
 
+} // end namespace Literals
 } // end namespace Telecommunication
 
 #endif // __TELECOMMAND_LITERALS_HPP__
