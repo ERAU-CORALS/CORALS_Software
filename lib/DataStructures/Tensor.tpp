@@ -28,6 +28,14 @@ struct TensorSize_t {
 template<typename T>
 class Tensor {
     template<typename U>
+    friend Tensor<U> add(const Tensor<U> &tensor1, const Tensor<U> &tensor2);
+    template<typename U>
+    friend Tensor<U> subtract(const Tensor<U> &tensor1, const Tensor<U> &tensor2);
+    template<typename U>
+    friend Tensor<U> multiply(const Tensor<U> &tensor1, const Tensor<U> &tensor2);
+    template<typename U>
+    friend Tensor<U> transpose(const Tensor<U> &tensor);
+    template<typename U>
     friend Tensor<U> hcat(const Tensor<U> &left, const Tensor<U> &right);
     template<typename U>
     friend Tensor<U> vcat(const Tensor<U> &top, const Tensor<U> &bottom);

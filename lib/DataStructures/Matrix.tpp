@@ -31,9 +31,7 @@ class Matrix : public Tensor<T> {
         Matrix(Matrix<T> &matrix) : Tensor<T>(matrix) {}
         ~Matrix() {}
 
-        void operator=(const Matrix<T> &matrix) {
-            Tensor<T>::operator=(matrix);
-        }
+        void operator=(const Matrix<T> &matrix) : Matrix<T>(matrix) {}
 
         T determinant() {
             assert(isSquare());

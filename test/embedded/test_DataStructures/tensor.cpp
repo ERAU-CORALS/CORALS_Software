@@ -1,8 +1,8 @@
 /**
  ********************************************************************************
- * @file    constructor.cpp
+ * @file    tensor.cpp
  * @author  Logan Ruddick (Logan@Ruddicks.net)
- * @brief   Unit Test of Tensor Constructor
+ * @brief   Unit Tests of Tensor Class
  * @version 1.0
  * @date    2024-03-18
  ********************************************************************************
