@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <Tensor.tpp>
+
 #include <CORALS.hpp>
 
 void setup() {

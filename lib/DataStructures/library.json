@@ -10,7 +10,8 @@
     "platforms": "*",
     "headers": [
         "List.tpp",
-        "Queue.tpp"
+        "Queue.tpp",
+        "Tensor.tpp"
     ],
     "build": {
         "includeDir": "."
