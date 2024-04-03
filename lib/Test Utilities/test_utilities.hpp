@@ -204,14 +204,6 @@ void __Verify_String(const char *file,
                      test_results_t *results,
                      verification_type_t type);
 
-void __Verify_Float(const char *file,
-                    int line,
-                    const char *valueName,
-                    float expected,
-                    float actual,
-                    test_results_t *results,
-                    verification_type_t type,
-                    float delta);
 void __Verify_Double(const char *file,
                      int line,
                      const char *valueName,
@@ -264,7 +256,6 @@ void PrintLine();
 #define Verify_Char(valueName, expected, actual, type) __Verify_Char (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type)
 #define Verify_Ptr(valueName, expected, actual, type) __Verify_Ptr (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type)
 #define Verify_String(valueName, expected, actual, type) __Verify_String (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type)
-#define Verify_Float(valueName, expected, actual, type) __Verify_Float (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type, 0)
 #define Verify_Double(valueName, expected, actual, type) __Verify_Double (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type, 0)
 
 #define Verify_Int_Within(valueName, expected, actual, delta) __Verify_Int (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
@@ -282,7 +273,6 @@ void PrintLine();
 #define Verify_UInt32_Within(valueName, expected, actual, delta) __Verify_UInt32 (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
 #define Verify_UInt64_Within(valueName, expected, actual, delta) __Verify_UInt64 (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
 #define Verify_Size_t_Within(valueName, expected, actual, delta) __Verify_Size_t (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
-#define Verify_Float_Within(valueName, expected, actual, delta) __Verify_Float (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
 #define Verify_Double_Within(valueName, expected, actual, delta) __Verify_Double (__FILE__, __LINE__, valueName, expected, actual, &__test_results, WITHIN_MARGIN, delta)
 
 #define Verify_Memory(valueName, expected, actual, size) __Verify_Memory (__FILE__, __LINE__, valueName, expected, actual, size, &__test_results)
