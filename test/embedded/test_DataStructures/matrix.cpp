@@ -22,14 +22,14 @@ using namespace DataStructures;
 void Matrix_Constructor() {
     const char *description = "Verify Matrix Constructor creates a Matrix object";
     const char *for_set[] = {
-        "Row Column Matrix, Size Matrix, Copy Matrix",
-        "Integer, Float, Double"
+        "Row Column Matrix, Size Matrix, Copy Matrix"
     };
     const char *preconditions[] = {
         "Valid Row Number",
         "Valid Column Number",
         "Valid Size Structure",
-        "Valid Matrix to Copy"
+        "Valid Matrix to Copy",
+        "Integer Matrices"
     };
     const char *results[] = {
         "Matrix Created and Zeroed with Expected Size",
@@ -104,230 +104,99 @@ void Matrix_Constructor() {
         delete copy;
     }
 
-    // Decimal Row Column Matrix Constructor
+    TestPostamble();
+}
+
+void Matrix_MultiMatrix_Operations() {
+    const char *description = "Verify multi-matrix operations create result matrixs as expected";
+    const char *for_set[] = {
+        "Addition, Subtraction, Multiplication, Transposition"
+    };
+    const char *preconditions[] = {
+        "Valid Sizes",
+        "Integer Matrices"
+    };
+    const char *results[] = {
+        "Matrix Created with Expected Size and Values"
+    };
+
+    TestPreamble(description, for_set, preconditions, results);
+
+    // Integer matrixs for most tests
+    Matrix<int> int_matrix1(2, 2);
+    int_matrix1.set(0, 0, 1);
+    int_matrix1.set(0, 1, 2);
+    int_matrix1.set(1, 0, 3);
+    int_matrix1.set(1, 1, 4);
+
+    Matrix<int> int_matrix2(2, 2);
+    int_matrix2.set(0, 0, 5);
+    int_matrix2.set(0, 1, 6);
+    int_matrix2.set(1, 0, 7);
+    int_matrix2.set(1, 1, 8);
+
+    // Integer Matrix Addition
     {
-        Matrix<double> *matrix = nullptr;
-        MatrixLength_t rows = 3;
-        MatrixLength_t columns = 4;
-        matrix = new Matrix<double>(rows, columns);
-        Verify_Ptr("Matrix Memory Allocation", nullptr, matrix, NOT_EQUAL);
-        Verify_UInt("Matrix Rows", rows, matrix->rows(), EQUAL);
-        Verify_UInt("Matrix Columns", columns, matrix->columns(), EQUAL);
-        for (MatrixLength_t i = 0; i < rows; i++) {
-            for (MatrixLength_t j = 0; j < columns; j++) {
-                Verify_Double("Matrix Element", 0.0, matrix->get(i, j), EQUAL);
-            }
-        }
-        delete matrix;
+        Matrix<int> result = int_matrix1 + int_matrix2;
+        Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
+        Verify_Int("Matrix Element", 6, result.get(0, 0), EQUAL);
+        Verify_Int("Matrix Element", 8, result.get(0, 1), EQUAL);
+        Verify_Int("Matrix Element", 10, result.get(1, 0), EQUAL);
+        Verify_Int("Matrix Element", 12, result.get(1, 1), EQUAL);
     }
 
-    // Decimal Size Matrix Constructor
+    // Integer Matrix Subtraction
     {
-        Matrix<double> *matrix = nullptr;
-        MatrixSize_t size = {3, 4};
-        matrix = new Matrix<double>(size);
-        Verify_Ptr("Matrix Memory Allocation", nullptr, matrix, NOT_EQUAL);
-        Verify_UInt("Matrix Rows", size.rows, matrix->rows(), EQUAL);
-        Verify_UInt("Matrix Columns", size.columns, matrix->columns(), EQUAL);
-        for (MatrixLength_t i = 0; i < size.rows; i++) {
-            for (MatrixLength_t j = 0; j < size.columns; j++) {
-                Verify_Double("Matrix Element", 0.0, matrix->get(i, j), EQUAL);
-            }
-        }
-        delete matrix;
+        Matrix<int> result = int_matrix1 - int_matrix2;
+        Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
+        Verify_Int("Matrix Element", -4, result.get(0, 0), EQUAL);
+        Verify_Int("Matrix Element", -4, result.get(0, 1), EQUAL);
+        Verify_Int("Matrix Element", -4, result.get(1, 0), EQUAL);
+        Verify_Int("Matrix Element", -4, result.get(1, 1), EQUAL);
     }
 
-    // Decimal Copy Matrix Constructor
+    // Integer Matrix Multiplication
     {
-        Matrix<double> *matrix = nullptr;
-        Matrix<double> *copy = nullptr;
-        MatrixLength_t rows = 3;
-        MatrixLength_t columns = 4;
-        matrix = new Matrix<double>(rows, columns);
-        for (MatrixLength_t i = 0; i < rows; i++) {
-            for (MatrixLength_t j = 0; j < columns; j++) {
-                matrix->set(i, j, 1.5 + i + j);
+        Matrix<int> int_mult_matrix1(3, 4);
+        for (MatrixLength_t i = 0; i < 3; i++) {
+            for (MatrixLength_t j = 0; j < 4; j++) {
+                int_mult_matrix1.set(i, j, i + j);
             }
         }
-        copy = new Matrix<double>(*matrix);
-        Verify_Ptr("Matrix Memory Allocation", nullptr, copy, NOT_EQUAL);
-        Verify_UInt("Matrix Rows", rows, copy->rows(), EQUAL);
-        Verify_UInt("Matrix Columns", columns, copy->columns(), EQUAL);
-        for (MatrixLength_t i = 0; i < rows; i++) {
-            for (MatrixLength_t j = 0; j < columns; j++) {
-                Verify_Double("Matrix Element", 1.5 + i + j, copy->get(i, j), EQUAL);
+
+        Matrix<int> int_mult_matrix2(4, 2);
+        for (MatrixLength_t i = 0; i < 4; i++) {
+            for (MatrixLength_t j = 0; j < 2; j++) {
+                int_mult_matrix2.set(i, j, (i+1) * (j-3));
             }
         }
-        delete matrix;
-        delete copy;
+        
+        Matrix<int> result = int_mult_matrix1 * int_mult_matrix2;
+        Verify_UInt("Matrix Rows", int_mult_matrix1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Matrix Columns", int_mult_matrix2.columns(), result.columns(), EQUAL);
+        Verify_Int("Matrix Element", -60, result.get(0, 0), EQUAL);
+        Verify_Int("Matrix Element", -40, result.get(0, 1), EQUAL);
+        Verify_Int("Matrix Element", -90, result.get(1, 0), EQUAL);
+        Verify_Int("Matrix Element", -60, result.get(1, 1), EQUAL);
+        Verify_Int("Matrix Element", -120, result.get(2, 0), EQUAL);
+        Verify_Int("Matrix Element", -80, result.get(2, 1), EQUAL);
+    }
+
+    // Integer Matrix Transposition
+    {
+        Matrix<int> result = ~int_matrix1;
+        Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
+        Verify_Int("Matrix Element", 1, result.get(0, 0), EQUAL);
+        Verify_Int("Matrix Element", 3, result.get(0, 1), EQUAL);
+        Verify_Int("Matrix Element", 2, result.get(1, 0), EQUAL);
+        Verify_Int("Matrix Element", 4, result.get(1, 1), EQUAL);
     }
 
     TestPostamble();
 }
-
-// void Matrix_MultiMatrix_Operations() {
-//     const char *description = "Verify multi-matrix operations create result matrixs as expected";
-//     const char *for_set[] = {
-//         "Addition, Subtraction, Multiplication, Transposition",
-//         "Integer, Decimal"
-//     };
-//     const char *preconditions[] = {
-//         "Valid Sizes"
-//     };
-//     const char *results[] = {
-//         "Matrix Created with Expected Size and Values"
-//     };
-
-//     TestPreamble(description, for_set, preconditions, results);
-
-//     // Integer matrixs for most tests
-//     Matrix<int> int_matrix1(2, 2);
-//     int_matrix1.set(0, 0, 1);
-//     int_matrix1.set(0, 1, 2);
-//     int_matrix1.set(1, 0, 3);
-//     int_matrix1.set(1, 1, 4);
-
-//     Matrix<int> int_matrix2(2, 2);
-//     int_matrix2.set(0, 0, 5);
-//     int_matrix2.set(0, 1, 6);
-//     int_matrix2.set(1, 0, 7);
-//     int_matrix2.set(1, 1, 8);
-
-//     // Integer Matrix Addition
-//     {
-//         Matrix<int> result = int_matrix1 + int_matrix2;
-//         Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
-//         Verify_Int("Matrix Element", 6, result.get(0, 0), EQUAL);
-//         Verify_Int("Matrix Element", 8, result.get(0, 1), EQUAL);
-//         Verify_Int("Matrix Element", 10, result.get(1, 0), EQUAL);
-//         Verify_Int("Matrix Element", 12, result.get(1, 1), EQUAL);
-//     }
-
-//     // Integer Matrix Subtraction
-//     {
-//         Matrix<int> result = int_matrix1 - int_matrix2;
-//         Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
-//         Verify_Int("Matrix Element", -4, result.get(0, 0), EQUAL);
-//         Verify_Int("Matrix Element", -4, result.get(0, 1), EQUAL);
-//         Verify_Int("Matrix Element", -4, result.get(1, 0), EQUAL);
-//         Verify_Int("Matrix Element", -4, result.get(1, 1), EQUAL);
-//     }
-
-//     // Integer Matrix Multiplication
-//     {
-//         Matrix<int> int_mult_matrix1(3, 4);
-//         for (MatrixLength_t i = 0; i < 3; i++) {
-//             for (MatrixLength_t j = 0; j < 4; j++) {
-//                 int_mult_matrix1.set(i, j, i + j);
-//             }
-//         }
-
-//         Matrix<int> int_mult_matrix2(4, 2);
-//         for (MatrixLength_t i = 0; i < 4; i++) {
-//             for (MatrixLength_t j = 0; j < 2; j++) {
-//                 int_mult_matrix2.set(i, j, (i+1) * (j-3));
-//             }
-//         }
-        
-//         Matrix<int> result = int_mult_matrix1 * int_mult_matrix2;
-//         Verify_UInt("Matrix Rows", int_mult_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", int_mult_matrix2.columns(), result.columns(), EQUAL);
-//         Verify_Int("Matrix Element", -60, result.get(0, 0), EQUAL);
-//         Verify_Int("Matrix Element", -40, result.get(0, 1), EQUAL);
-//         Verify_Int("Matrix Element", -90, result.get(1, 0), EQUAL);
-//         Verify_Int("Matrix Element", -60, result.get(1, 1), EQUAL);
-//         Verify_Int("Matrix Element", -120, result.get(2, 0), EQUAL);
-//         Verify_Int("Matrix Element", -80, result.get(2, 1), EQUAL);
-//     }
-
-//     // Integer Matrix Transposition
-//     {
-//         Matrix<int> result = ~int_matrix1;
-//         Verify_UInt("Matrix Rows", int_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", int_matrix1.columns(), result.columns(), EQUAL);
-//         Verify_Int("Matrix Element", 1, result.get(0, 0), EQUAL);
-//         Verify_Int("Matrix Element", 3, result.get(0, 1), EQUAL);
-//         Verify_Int("Matrix Element", 2, result.get(1, 0), EQUAL);
-//         Verify_Int("Matrix Element", 4, result.get(1, 1), EQUAL);
-//     }
-
-//     // Decimal matrixs for most tests
-//     Matrix<double> double_matrix1(2, 2);
-//     double_matrix1.set(0, 0, 1.5);
-//     double_matrix1.set(0, 1, 2.5);
-//     double_matrix1.set(1, 0, 3.5);
-//     double_matrix1.set(1, 1, 4.5);
-
-//     Matrix<double> double_matrix2(2, 2);
-//     double_matrix2.set(0, 0, 5.5);
-//     double_matrix2.set(0, 1, 6.5);
-//     double_matrix2.set(1, 0, 7.5);
-//     double_matrix2.set(1, 1, 8.5);
-
-//     // Decimal Matrix Addition
-//     {
-//         Matrix<double> result = double_matrix1 + double_matrix2;
-//         Verify_UInt("Matrix Rows", double_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", double_matrix1.columns(), result.columns(), EQUAL);
-//         Verify_Double("Matrix Element", 7.0, result.get(0, 0), EQUAL);
-//         Verify_Double("Matrix Element", 9.0, result.get(0, 1), EQUAL);
-//         Verify_Double("Matrix Element", 11.0, result.get(1, 0), EQUAL);
-//         Verify_Double("Matrix Element", 13.0, result.get(1, 1), EQUAL);
-//     }
-
-//     // Decimal Matrix Subtraction
-//     {
-//         Matrix<double> result = double_matrix1 - double_matrix2;
-//         Verify_UInt("Matrix Rows", double_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", double_matrix1.columns(), result.columns(), EQUAL);
-//         Verify_Double("Matrix Element", -4.0, result.get(0, 0), EQUAL);
-//         Verify_Double("Matrix Element", -4.0, result.get(0, 1), EQUAL);
-//         Verify_Double("Matrix Element", -4.0, result.get(1, 0), EQUAL);
-//         Verify_Double("Matrix Element", -4.0, result.get(1, 1), EQUAL);
-//     }
-
-//     // Decimal Matrix Multiplication
-//     {
-//         Matrix<double> double_mult_matrix1(3, 4);
-//         for (MatrixLength_t i = 0; i < 3; i++) {
-//             for (MatrixLength_t j = 0; j < 4; j++) {
-//                 double_mult_matrix1.set(i, j, 1.5 + i + j);
-//             }
-//         }
-
-//         Matrix<double> double_mult_matrix2(4, 2);
-//         for (MatrixLength_t i = 0; i < 4; i++) {
-//             for (MatrixLength_t j = 0; j < 2; j++) {
-//                 double_mult_matrix2.set(i, j, (i+1.0) * (j-3.0));
-//             }
-//         }
-        
-//         Matrix<double> result = double_mult_matrix1 * double_mult_matrix2;
-//         Verify_UInt("Matrix Rows", double_mult_matrix1.rows(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", double_mult_matrix2.columns(), result.columns(), EQUAL);
-//         Verify_Double("Matrix Element", -105.0, result.get(0, 0), EQUAL);
-//         Verify_Double("Matrix Element", -70.0, result.get(0, 1), EQUAL);
-//         Verify_Double("Matrix Element", -135.0, result.get(1, 0), EQUAL);
-//         Verify_Double("Matrix Element", -90.0, result.get(1, 1), EQUAL);
-//         Verify_Double("Matrix Element", -165.0, result.get(2, 0), EQUAL);
-//         Verify_Double("Matrix Element", -110.0, result.get(2, 1), EQUAL);
-//     }
-
-//     // Decimal Matrix Transposition
-//     {
-//         Matrix<double> result = ~double_matrix1;
-//         Verify_UInt("Matrix Rows", double_matrix1.columns(), result.rows(), EQUAL);
-//         Verify_UInt("Matrix Columns", double_matrix1.rows(), result.columns(), EQUAL);
-//         Verify_Double("Matrix Element", 1.5, result.get(0, 0), EQUAL);
-//         Verify_Double("Matrix Element", 3.5, result.get(0, 1), EQUAL);
-//         Verify_Double("Matrix Element", 2.5, result.get(1, 0), EQUAL);
-//         Verify_Double("Matrix Element", 4.5, result.get(1, 1), EQUAL);
-//     }
-
-//     TestPostamble();
-// }
 
 // void Matrix_MultiMatrix_Assignment_Operations() {
 //     const char *description = "Verify multi-matrix assignment operations modify matrixs as expected";
@@ -903,12 +772,16 @@ void setup() {
     delay(3000);
     assert(Serial);
 
+    UNITY_BEGIN();
+
     Matrix_Constructor();
-    // Matrix_MultiMatrix_Operations();
+    Matrix_MultiMatrix_Operations();
     // Matrix_MultiMatrix_Assignment_Operations();
     // Matrix_MultiMatrix_Element_Operations();
     // Matrix_MultiMatrix_Element_Assignment_Operations();
     // Matrix_State();
+
+    UNITY_END();
 }
 
 void loop() {

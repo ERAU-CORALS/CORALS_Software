@@ -27,11 +27,11 @@ struct MatrixSize_t {
 template<typename T>
 class Matrix {
     template<typename U>
-    friend Matrix<U> matrix_add(Matrix<U> &matrix1, Matrix<U> &matrix2);
+    friend Matrix<U> matrix_add(Matrix<U> matrix1, Matrix<U> matrix2);
     template<typename U>
-    friend Matrix<U> matrix_subtract(Matrix<U> &matrix1, Matrix<U> &matrix2);
+    friend Matrix<U> matrix_subtract(Matrix<U> matrix1, Matrix<U> matrix2);
     template<typename U>
-    friend Matrix<U> matrix_multiply(Matrix<U> &matrix1, Matrix<U> &matrix2);
+    friend Matrix<U> matrix_multiply(Matrix<U> matrix1, Matrix<U> matrix2);
     template<typename U>
     friend Matrix<U> matrix_hcat(Matrix<U> &left, Matrix<U> &right);
     template<typename U>
@@ -47,6 +47,11 @@ class Matrix {
         Matrix(MatrixSize_t size) {
             m_size = size;
             initialize();
+        }
+        Matrix(Matrix<T> matrix) {
+            m_size = matrix.m_size;
+            initialize(false);
+            copy(matrix);
         }
         Matrix(Matrix<T> &matrix) {
             m_size = matrix.m_size;
@@ -72,39 +77,39 @@ class Matrix {
         }
 
     // MultiMatrix Operations
-        Matrix<T> operator+(Matrix<T> &matrix) {
+        Matrix<T> operator+(const Matrix<T> matrix) {
             return matrix_add(*this, matrix);
         }
-        Matrix<T> operator-(Matrix<T> &matrix) {
+        Matrix<T> operator-(Matrix<T> matrix) {
             return matrix_subtract(*this, matrix);
         }
-        Matrix<T> operator*(Matrix<T> &matrix) {
+        Matrix<T> operator*(Matrix<T> matrix) {
             return matrix_multiply(*this, matrix);
         }
         Matrix<T> operator~() {
             return transpose();
         }
-        Matrix<T> operator<<(Matrix<T> &matrix) {
+        Matrix<T> operator<<(Matrix<T> matrix) {
             return matrix_hcat(*this, matrix);
         }
-        Matrix<T> operator||(Matrix<T> &matrix) {
+        Matrix<T> operator||(Matrix<T> matrix) {
             return matrix_vcat(*this, matrix);
         }
 
     // MultiMatrix Assignment Operations
-        void operator+=(Matrix<T> &matrix) {
+        void operator+=(Matrix<T> matrix) {
             *this = *this + matrix;
         } 
-        void operator-=(Matrix<T> &matrix) {
+        void operator-=(Matrix<T> matrix) {
             *this = *this - matrix;
         }
-        void operator*=(Matrix<T> &matrix) {
+        void operator*=(Matrix<T> matrix) {
             *this = *this * matrix;
         }
-        void operator<<=(Matrix<T> &matrix) {
+        void operator<<=(Matrix<T> matrix) {
             *this = *this << matrix;
         }
-        void operator|=(Matrix<T> &matrix) {
+        void operator|=(Matrix<T> matrix) {
             *this = *this || matrix;
         }
 
@@ -348,7 +353,7 @@ class Matrix {
             }
         }
 
-        void copy(Matrix<T> &matrix) {
+        void copy(Matrix<T> matrix) {
             for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
                 m_data[i] = matrix.m_data[i];
             }
@@ -361,7 +366,7 @@ class Matrix {
 
 // Matrix Friend Function Definitions
 template<typename U> 
-Matrix<U> matrix_add(Matrix<U> &matrix1, Matrix<U> &matrix2) {
+Matrix<U> matrix_add(Matrix<U> matrix1, Matrix<U> matrix2) {
     assert(matrix1.m_size.rows == matrix2.m_size.rows && matrix1.m_size.columns == matrix2.m_size.columns);
     Matrix<U> result(matrix1.m_size);
     for (MatrixLength_t i = 0; i < matrix1.m_size.rows * matrix1.m_size.columns; i++) {
@@ -371,7 +376,7 @@ Matrix<U> matrix_add(Matrix<U> &matrix1, Matrix<U> &matrix2) {
 }
 
 template<typename U>
-Matrix<U> matrix_subtract(Matrix<U> &matrix1, Matrix<U> &matrix2) {
+Matrix<U> matrix_subtract(Matrix<U> matrix1, Matrix<U> matrix2) {
     assert(matrix1.m_size.rows == matrix2.m_size.rows && matrix1.m_size.columns == matrix2.m_size.columns);
     Matrix<U> result(matrix1.m_size);
     for (MatrixLength_t i = 0; i < matrix1.m_size.rows * matrix1.m_size.columns; i++) {
@@ -381,7 +386,7 @@ Matrix<U> matrix_subtract(Matrix<U> &matrix1, Matrix<U> &matrix2) {
 }
 
 template<typename U>
-Matrix<U> matrix_multiply(Matrix<U> &matrix1, Matrix<U> &matrix2) {
+Matrix<U> matrix_multiply(Matrix<U> matrix1, Matrix<U> matrix2) {
     assert(matrix1.m_size.columns == matrix2.m_size.rows);
     Matrix<U> result(matrix1.m_size.rows, matrix2.m_size.columns);
     for (MatrixLength_t i = 0; i < matrix1.m_size.rows; i++) {
