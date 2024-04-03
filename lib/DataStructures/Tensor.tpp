@@ -187,11 +187,6 @@ class Tensor {
             }
         }
 
-        // Access Operator Overloads
-        T operator()(TensorLength_t row, TensorLength_t column) {
-            return get(row, column);
-        }
-
         bool isZero() {
             for (TensorLength_t i = 0; i < tensor_size.rows * tensor_size.columns; i++) {
                 if (data[i] != 0) {

@@ -818,6 +818,79 @@ void Tensor_MultiTensor_Element_Assignment_Operations() {
     TestPostamble();
 }
 
+void Tensor_State() {
+    const char *description = "Verify tensor state methods return expected values";
+    const char *for_set[] = {
+        "isZero, isOne, length, size, rows, columns"
+    };
+    const char *preconditions[] = {
+        "Valid Sizes"
+    };
+    const char *results[] = {
+        "Tensor Set with Expected Size and Values"
+    };
+
+    TestPreamble(description, for_set, preconditions, results);
+
+    // Integer tensor
+    TensorLength_t rows = 4;
+    TensorLength_t columns = 3;
+    Tensor<int> zero_tensor(rows, columns);
+    Tensor<int> one_tensor(rows, columns);
+    one_tensor += 1;
+    Tensor<int> tensor(rows, columns);
+    for (TensorLength_t i = 0; i < rows; i++) {
+        for (TensorLength_t j = 0; j < columns; j++) {
+            tensor.set(i, j, i * j);
+        }
+    }
+
+    // Integer Tensor isZero
+    {
+        Verify("Zero Tensor isZero", zero_tensor.isZero(), true, EQUAL);
+        Verify("One Tensor isZero", one_tensor.isZero(), false, EQUAL);
+        Verify("Random Tensor isZero", tensor.isZero(), false, EQUAL);
+    }
+
+    // Integer Tensor isOne
+    {
+        Verify("Zero Tensor isOne", zero_tensor.isOne(), false, EQUAL);
+        Verify("One Tensor isOne", one_tensor.isOne(), true, EQUAL);
+        Verify("Random Tensor isOne", tensor.isOne(), false, EQUAL);
+    }
+
+    // Integer Tensor length
+    {
+        Verify_UInt("Zero Tensor length", zero_tensor.length(), rows, EQUAL);
+        Verify_UInt("One Tensor length", one_tensor.length(), rows, EQUAL);
+        Verify_UInt("Random Tensor length", tensor.length(), rows, EQUAL);
+    }
+
+    // Integer Tensor size
+    {
+        TensorSize_t expected_size = {rows, columns};
+        Verify_Memory("Zero Tensor size", zero_tensor.size(), &expected_size, sizeof(TensorSize_t));
+        Verify_Memory("One Tensor size", one_tensor.size(), &expected_size, sizeof(TensorSize_t));
+        Verify_Memory("Random Tensor size", tensor.size(), &expected_size, sizeof(TensorSize_t));
+    }
+
+    // Integer Tensor rows
+    {
+        Verify_UInt("Zero Tensor rows", zero_tensor.rows(), rows, EQUAL);
+        Verify_UInt("One Tensor rows", one_tensor.rows(), rows, EQUAL);
+        Verify_UInt("Random Tensor rows", tensor.rows(), rows, EQUAL);
+    }
+
+    // Integer Tensor columns
+    {
+        Verify_UInt("Zero Tensor columns", zero_tensor.columns(), columns, EQUAL);
+        Verify_UInt("One Tensor columns", one_tensor.columns(), columns, EQUAL);
+        Verify_UInt("Random Tensor columns", tensor.columns(), columns, EQUAL);
+    }
+
+    TestPostamble();
+}
+
 void setup() {
     Serial.begin(115200);
     delay(3000);
@@ -828,6 +901,7 @@ void setup() {
     Tensor_MultiTensor_Assignment_Operations();
     Tensor_MultiTensor_Element_Operations();
     Tensor_MultiTensor_Element_Assignment_Operations();
+    Tensor_State();
 }
 
 void loop() {
