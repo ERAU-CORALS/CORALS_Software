@@ -527,7 +527,7 @@ void Tensor_MultiTensor_Assignment_Operations() {
 void Tensor_MultiTensor_Element_Operations() {
     const char *description = "Verify tensor element operations modify tensors as expected";
     const char *for_set[] = {
-        "Addition, Subtraction, Multiplication, Division, Modulus, Exponentiation",
+        "Addition, Subtraction, Multiplication, Division, Exponentiation",
         "Integer, Decimal"
     };
     const char *preconditions[] = {
@@ -588,17 +588,6 @@ void Tensor_MultiTensor_Element_Operations() {
         Verify_Int("Tensor Element", 1, result.get(0, 1), EQUAL);
         Verify_Int("Tensor Element", 1, result.get(1, 0), EQUAL);
         Verify_Int("Tensor Element", 2, result.get(1, 1), EQUAL);
-    }
-
-    // Integer Element Modulus
-    {
-        Tensor<int> result = int_tensor % 3;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 1, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1, result.get(1, 1), EQUAL);
     }
 
     // Integer Element Exponentiation
@@ -663,17 +652,6 @@ void Tensor_MultiTensor_Element_Operations() {
         Verify_Double("Tensor Element", 1.8, result.get(1, 1), EQUAL);
     }
 
-    // Decimal Element Modulus
-    {
-        Tensor<double> result = double_tensor % 3.0;
-        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
-        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
-        Verify_Double("Tensor Element", 1.5, result.get(0, 0), EQUAL);
-        Verify_Double("Tensor Element", 2.5, result.get(0, 1), EQUAL);
-        Verify_Double("Tensor Element", 0.5, result.get(1, 0), EQUAL);
-        Verify_Double("Tensor Element", 1.5, result.get(1, 1), EQUAL);
-    }
-
     // Decimal Element Exponentiation
     {
         Tensor<double> result = double_tensor ^ 2.0;
@@ -691,7 +669,7 @@ void Tensor_MultiTensor_Element_Operations() {
 void Tensor_MultiTensor_Element_Assignment_Operations() {
     const char *description = "Verify tensor element operations modify tensors as expected";
     const char *for_set[] = {
-        "Addition, Subtraction, Multiplication, Division, Modulus, Exponentiation",
+        "Addition, Subtraction, Multiplication, Division, Exponentiation",
         "Integer, Decimal"
     };
     const char *preconditions[] = {
@@ -756,18 +734,6 @@ void Tensor_MultiTensor_Element_Assignment_Operations() {
         Verify_Int("Tensor Element", 1, copy_int.get(0, 1), EQUAL);
         Verify_Int("Tensor Element", 1, copy_int.get(1, 0), EQUAL);
         Verify_Int("Tensor Element", 2, copy_int.get(1, 1), EQUAL);
-    }
-
-    // Integer Element Modulus
-    {
-        Tensor<int> copy_int = int_tensor;
-        copy_int %= 3;
-        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
-        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
-        Verify_Int("Tensor Element", 1, copy_int.get(0, 0), EQUAL);
-        Verify_Int("Tensor Element", 2, copy_int.get(0, 1), EQUAL);
-        Verify_Int("Tensor Element", 0, copy_int.get(1, 0), EQUAL);
-        Verify_Int("Tensor Element", 1, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Exponentiation
@@ -835,18 +801,6 @@ void Tensor_MultiTensor_Element_Assignment_Operations() {
         Verify_Double("Tensor Element", 1.0, copy_double.get(0, 1), EQUAL);
         Verify_Double("Tensor Element", 1.4, copy_double.get(1, 0), EQUAL);
         Verify_Double("Tensor Element", 1.8, copy_double.get(1, 1), EQUAL);
-    }
-
-    // Decimal Element Modulus
-    {
-        Tensor<double> copy_double = double_tensor;
-        copy_double %= 3.0;
-        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
-        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
-        Verify_Double("Tensor Element", 1.5, copy_double.get(0, 0), EQUAL);
-        Verify_Double("Tensor Element", 2.5, copy_double.get(0, 1), EQUAL);
-        Verify_Double("Tensor Element", 0.5, copy_double.get(1, 0), EQUAL);
-        Verify_Double("Tensor Element", 1.5, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Exponentiation

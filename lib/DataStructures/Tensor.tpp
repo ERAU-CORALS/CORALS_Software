@@ -27,6 +27,10 @@ struct TensorSize_t {
 
 template<typename T>
 class Tensor {
+    template<typename U>
+    friend Tensor<U> hcat(const Tensor<U> &left, const Tensor<U> &right);
+    template<typename U>
+    friend Tensor<U> vcat(const Tensor<U> &top, const Tensor<U> &bottom);
 
     public:
         // Constructors
@@ -51,21 +55,21 @@ class Tensor {
         }
 
         // MultiTensor Operations
-        Tensor<T> operator+(const Tensor<T> &tensor) {
+        Tensor<T> operator+(Tensor<T> &tensor) {
             assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             Tensor<T> result(*this);
             result += tensor;
             return result;
         }
-        Tensor<T> operator-(const Tensor<T> &tensor) {
+        Tensor<T> operator-(Tensor<T> &tensor) {
             assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             Tensor<T> result(*this);
             result -= tensor;
             return result;
         }
-        Tensor<T> operator*(const Tensor<T> &tensor) {
+        Tensor<T> operator*(Tensor<T> &tensor) {
             assert(tensor_size.columns == tensor.tensor_size.rows);
-            Tensor<T> result({tensor_size.rows, tensor.tensor_size.columns});
+            Tensor<T> result(tensor_size);
             
             for (TensorLength_t r = 0; r < tensor_size.rows; r++) {
                 for (TensorLength_t c = 0; c < tensor.tensor_size.columns; c++) {
@@ -84,7 +88,7 @@ class Tensor {
         }
 
         // MultiTensor Assignment Operations
-        void operator+=(const Tensor<T> &tensor) {
+        void operator+=(Tensor<T> &tensor) {
             assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             for (TensorLength_t i = 0; i < tensor_size.rows; i++) {
                 for (TensorLength_t j = 0; j < tensor_size.columns; j++) {
@@ -92,7 +96,7 @@ class Tensor {
                 }
             }
         }
-        void operator-=(const Tensor<T> &tensor) {
+        void operator-=(Tensor<T> &tensor) {
             assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             for (TensorLength_t i = 0; i < tensor_size.rows; i++) {
                 for (TensorLength_t j = 0; j < tensor_size.columns; j++) {
@@ -100,7 +104,7 @@ class Tensor {
                 }
             }
         }
-        void operator*=(const Tensor<T> &tensor) {
+        void operator*=(Tensor<T> &tensor) {
             Tensor<T> temp(*this);
             temp = temp * tensor;
             *this = temp;
@@ -115,7 +119,7 @@ class Tensor {
                 }
             }
         }
-        void operator<<(const Tensor<T> &tensor) {
+        void operator<<(Tensor<T> &tensor) {
             *this = hcat(*this, tensor);
         }
 
@@ -176,7 +180,6 @@ class Tensor {
                 data[i] /= value;
             }
         }
-        template
         template<typename U>
         void operator^=(const U &value) {
             for (TensorLength_t i = 0; i < tensor_size.rows * tensor_size.columns; i++) {
@@ -187,37 +190,6 @@ class Tensor {
         // Access Operator Overloads
         T operator()(TensorLength_t row, TensorLength_t column) {
             return get(row, column);
-        }
-
-        // Tensor Functions
-        template<typename U>
-        friend Tensor<U> vcat(const Tensor<U> &top, const Tensor<U> &bottom) {
-            assert(top.tensor_size.columns == bottom.tensor_size.columns);
-            Tensor<U> result({top.tensor_size.rows + bottom.tensor_size.rows, top.tensor_size.columns});
-            TensorLength_t i = 0;
-            const TensorLength_t topSize = top.tensor_size.rows * top.tensor_size.columns;
-            for (; i < topSize; i++) {
-                result.data[i] = top.data[i];
-            }
-            const TensorLength_t bottomSize = bottom.tensor_size.rows * bottom.tensor_size.columns;
-            for (; i < topSize + bottomSize; i++) {
-                result.data[i + topSize] = bottom.data[i];
-            }
-            return result;
-        }
-
-        template<typename U>
-        friend Tensor<U> hcat(const Tensor<U> &left, const Tensor<U> &right) {
-            assert(left.tensor_size.rows == right.tensor_size.rows);
-            Tensor<U> result(left.tensor_size.rows, left.tensor_size.columns + right.tensor_size.columns);
-            for (TensorLength_t i = 0; i < left.tensor_size.rows * result.tensor_size.columns; i++) {
-                if (i % result.tensor_size.columns < left.tensor_size.columns) {
-                    result.data[i] = left.data[i];
-                } else {
-                    result.data[i] = right.data[i - left.tensor_size.columns];
-                }
-            }
-            return result;
         }
 
         bool isZero() {
@@ -290,6 +262,37 @@ class Tensor {
         T *data;
 
 };
+
+// Tensor Friend Function Definitions
+template<typename U>
+Tensor<U> hcat(const Tensor<U> &left, const Tensor<U> &right) {
+    assert(left.tensor_size.rows == right.tensor_size.rows);
+    Tensor<U> result(left.tensor_size.rows, left.tensor_size.columns + right.tensor_size.columns);
+    for (TensorLength_t i = 0; i < left.tensor_size.rows * result.tensor_size.columns; i++) {
+        if (i % result.tensor_size.columns < left.tensor_size.columns) {
+            result.data[i] = left.data[i];
+        } else {
+            result.data[i] = right.data[i - left.tensor_size.columns];
+        }
+    }
+    return result;
+}
+
+template<typename U>
+Tensor<U> vcat(const Tensor<U> &top, const Tensor<U> &bottom) {
+    assert(top.tensor_size.columns == bottom.tensor_size.columns);
+    Tensor<U> result({top.tensor_size.rows + bottom.tensor_size.rows, top.tensor_size.columns});
+    TensorLength_t i = 0;
+    const TensorLength_t topSize = top.tensor_size.rows * top.tensor_size.columns;
+    for (; i < topSize; i++) {
+        result.data[i] = top.data[i];
+    }
+    const TensorLength_t bottomSize = bottom.tensor_size.rows * bottom.tensor_size.columns;
+    for (; i < topSize + bottomSize; i++) {
+        result.data[i + topSize] = bottom.data[i];
+    }
+    return result;
+}
 
 } // end namespace DataStructures
 
