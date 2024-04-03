@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+    "name": "CORALS_TestUtilities",
+    "description": "Unit Test Utilities for the CORALS Software Unit Tests.",
+    "authors": {
+        "name": "Logan Ruddick",
+        "email": "Logan@Ruddicks.net"
+    },
+    "frameworks": "arduino",
+    "platforms": "*",
+    "headers": [
+        "test_utilities.hpp"
+    ],
+    "build": {
+        "includeDir": "."
+    }
+}

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include <Tensor.tpp>
+#include <Matrix.tpp>
 
 #include <CORALS.hpp>
 
