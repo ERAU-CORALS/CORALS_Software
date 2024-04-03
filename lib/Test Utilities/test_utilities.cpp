@@ -129,15 +129,15 @@ void __TestPostamble(const char *testName,
     PrintLine();
 }
 
-void __Verify(const char *testFile,
-              const int lineNumber,
-              const char *valueName,
-              int expected,
-              int actual,
-              test_results_t *results,
-              verification_type_t type,
-              double percent,
-              int margin) {
+void __Verify_Int(const char *file, 
+                  int line, 
+                  const char *valueName, 
+                  int expected, 
+                  int actual, 
+                  test_results_t *results, 
+                  verification_type_t type,
+                  int delta)
+{
     results->total++;
     bool passed = false;
     verify_output("\n");
@@ -154,7 +154,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case NOT_EQUAL:
             Print("Verifying %s is not equal to %d...\n", valueName, expected);
             if (expected != actual) {
@@ -167,7 +167,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN:
             Print("Verifying %s is greater than %d...\n", valueName, expected);
             if (actual > expected) {
@@ -180,7 +180,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN_OR_EQUAL:
             Print("Verifying %s is greater than or equal to %d...\n", valueName, expected);
             if (actual >= expected) {
@@ -193,7 +193,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case LESS_THAN:
             Print("Verifying %s is less than %d...\n", valueName, expected);
             if (actual < expected) {
@@ -206,7 +206,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case LESS_THAN_OR_EQUAL:
             Print("Verifying %s is less than or equal to %d...\n", valueName, expected);
             if (actual <= expected) {
@@ -219,54 +219,827 @@ void __Verify(const char *testFile,
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
-        case WITHIN_PERCENT:
-            Print("Verifying %s is within %.2lf%% of %d...\n", valueName, percent * 100, expected);
-            if (actual >= expected * (1 - percent) && actual <= expected * (1 + percent)) {
-                Print("The expected value of %d +/- %.2lf has been verified.", expected, percent * 100);
-                results->passed++;
-                passed = true;
-            }
-            else {
-                Print("The expected value of %d +/- %.2lf has not been verified.", expected, percent * 100);
-                Print("The actual value was %d.", actual);
-                results->failed++;
-            }
-            break;
+        break;
         case WITHIN_MARGIN:
-            Print("Verifying %s is within %d of %d...\n", valueName, margin, expected);
-            if (actual >= expected - margin && actual <= expected + margin) {
-                Print("The expected value of %d +/- %d has been verified.", expected, margin);
+            Print("Verifying %s is within %d of %d...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %d +/- %d has been verified.", expected, delta);
                 results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of %d +/- %d has not been verified.", expected, margin);
+                Print("The expected value of %d +/- %d has not been verified.", expected, delta);
                 Print("The actual value was %d.", actual);
                 results->failed++;
             }
-            break;
+        break;
         default:
             Print("Invalid verification type.");
             results->failed++;
-            break;
+        break;
     }
 
     if (passed) PrintPass(results->total);
-    else PrintFail(results->total, lineNumber, testFile);
+    else PrintFail(results->total, line, file);
 
     verify_output("\n");
 }
 
-void __Verify(const char *testFile,
-              const int lineNumber,
-              const char *valueName,
-              unsigned long expected,
-              unsigned long actual,
-              test_results_t *results,
-              verification_type_t type,
-              double percent,
-              unsigned long margin) {
+void __Verify_Long(const char *file, 
+                   int line, 
+                   const char *valueName, 
+                   long expected, 
+                   long actual, 
+                   test_results_t *results, 
+                   verification_type_t type,
+                   long delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %ld...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %ld...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %ld...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %ld...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %ld...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %ld...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%ld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%ld has not been verified.", expected);
+                Print("The actual value was %ld.", actual);
+                results->failed++;
+            }
+        break;
+        default: 
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_LongLong(const char *file, 
+                       int line, 
+                       const char *valueName, 
+                       long long expected, 
+                       long long actual, 
+                       test_results_t *results, 
+                       verification_type_t type,
+                       long long delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %lld...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %lld...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %lld...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %lld...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %lld...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %lld...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        default: 
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Int8(const char *file, 
+                   int line, 
+                   const char *valueName, 
+                   int8_t expected, 
+                   int8_t actual, 
+                   test_results_t *results, 
+                   verification_type_t type,
+                   int8_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %d...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %d...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %d...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %d...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %d...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %d...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %d of %d...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %d +/- %d has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %d +/- %d has not been verified.", expected, delta);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Int16(const char *file, 
+                   int line, 
+                   const char *valueName, 
+                   int16_t expected, 
+                   int16_t actual, 
+                   test_results_t *results, 
+                   verification_type_t type,
+                   int16_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %d...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %d...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %d...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %d...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %d...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %d...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %d of %d...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %d +/- %d has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %d +/- %d has not been verified.", expected, delta);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Int32(const char *file, 
+                   int line, 
+                   const char *valueName, 
+                   int32_t expected, 
+                   int32_t actual, 
+                   test_results_t *results, 
+                   verification_type_t type,
+                   int32_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %d...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %d...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %d...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %d...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %d...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %d...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%d has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%d has not been verified.", expected);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %d of %d...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %d +/- %d has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %d +/- %d has not been verified.", expected, delta);
+                Print("The actual value was %d.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Int64(const char *file, 
+                   int line, 
+                   const char *valueName, 
+                   int64_t expected, 
+                   int64_t actual, 
+                   test_results_t *results, 
+                   verification_type_t type,
+                   int64_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %lld...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %lld...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %lld...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %lld...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %lld...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %lld...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%lld has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%lld has not been verified.", expected);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %lld of %lld...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %lld +/- %lld has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %lld +/- %lld has not been verified.", expected, delta);
+                Print("The actual value was %lld.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_UInt(const char *file,
+                   int line,
+                   const char *valueName,
+                   unsigned int expected,
+                   unsigned int actual,
+                   test_results_t *results,
+                   verification_type_t type,
+                   unsigned int delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %u...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %u...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %u...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %u...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %u...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %u...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %u of %u...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %u +/- %u has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %u +/- %u has not been verified.", expected, delta);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_ULong(const char *file,
+                    int line,
+                    const char *valueName,
+                    unsigned long expected,
+                    unsigned long actual,
+                    test_results_t *results,
+                    verification_type_t type,
+                    unsigned long delta)
+{
     results->total++;
     bool passed = false;
     verify_output("\n");
@@ -283,7 +1056,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case NOT_EQUAL:
             Print("Verifying %s is not equal to %lu...\n", valueName, expected);
             if (expected != actual) {
@@ -296,7 +1069,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN:
             Print("Verifying %s is greater than %lu...\n", valueName, expected);
             if (actual > expected) {
@@ -309,7 +1082,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN_OR_EQUAL:
             Print("Verifying %s is greater than or equal to %lu...\n", valueName, expected);
             if (actual >= expected) {
@@ -322,7 +1095,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case LESS_THAN:
             Print("Verifying %s is less than %lu...\n", valueName, expected);
             if (actual < expected) {
@@ -335,7 +1108,7 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case LESS_THAN_OR_EQUAL:
             Print("Verifying %s is less than or equal to %lu...\n", valueName, expected);
             if (actual <= expected) {
@@ -348,252 +1121,1138 @@ void __Verify(const char *testFile,
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
-        case WITHIN_PERCENT:
-            Print("Verifying %s is within %.2lf%% of %lu...\n", valueName, percent * 100, expected);
-            if (actual >= expected * (1 - percent) && actual <= expected * (1 + percent)) {
-                Print("The expected value of %lu +/- %.2lf has been verified.", expected, percent * 100);
-                results->passed++;
-                passed = true;
-            }
-            else {
-                Print("The expected value of %lu +/- %.2lf has not been verified.", expected, percent * 100);
-                Print("The actual value was %lu.", actual);
-                results->failed++;
-            }
-            break;
+        break;
         case WITHIN_MARGIN:
-            Print("Verifying %s is within %lu of %lu...\n", valueName, margin, expected);
-            if (actual >= expected - margin && actual <= expected + margin) {
-                Print("The expected value of %lu +/- %lu has been verified.", expected, margin);
+            Print("Verifying %s is within %lu of %lu...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %lu +/- %lu has been verified.", expected, delta);
                 results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of %lu +/- %lu has not been verified.", expected, margin);
+                Print("The expected value of %lu +/- %lu has not been verified.", expected, delta);
                 Print("The actual value was %lu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         default:
             Print("Invalid verification type.");
             results->failed++;
-            break;
+        break;
     }
 
     if (passed) PrintPass(results->total);
-    else PrintFail(results->total, lineNumber, testFile);
+    else PrintFail(results->total, line, file);
 
     verify_output("\n");
 }
 
-void __Verify(const char *testFile,
-              const int lineNumber,
-              const char *valueName,
-              double expected,
-              double actual,
-              test_results_t *results,
-              verification_type_t type,
-              double percent,
-              double margin) {
+void __Verify_ULongLong(const char *file,
+                        int line,
+                        const char *valueName,
+                        unsigned long long expected,
+                        unsigned long long actual,
+                        test_results_t *results,
+                        verification_type_t type,
+                        unsigned long long delta)
+{
     results->total++;
     bool passed = false;
+    verify_output("\n");
     switch (type) {
         case EQUAL:
-            Print("Verifying %s is equal to %.2lf...\n", valueName, expected);
+            Print("Verifying %s is equal to %llu...\n", valueName, expected);
             if (expected == actual) {
-                Print("The expected value of ==%.2lf has been verified.", expected);
+                Print("The expected value of ==%llu has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of ==%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of ==%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case NOT_EQUAL:
-            Print("Verifying %s is not equal to %.2lf...\n", valueName, expected);
+            Print("Verifying %s is not equal to %llu...\n", valueName, expected);
             if (expected != actual) {
-                Print("The expected value of !=%.2lf has been verified.", expected);
+                Print("The expected value of !=%llu has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of !=%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of !=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN:
-            Print("Verifying %s is greater than %.2lf...\n", valueName, expected);
+            Print("Verifying %s is greater than %llu...\n", valueName, expected);
             if (actual > expected) {
-                Print("The expected value of >%.2lf has been verified.", expected);
+                Print("The expected value of >%llu has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of >%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of >%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case GREATER_THAN_OR_EQUAL:
-            Print("Verifying %s is greater than or equal to %.2lf...\n", valueName, expected);
+            Print("Verifying %s is greater than or equal to %llu...\n", valueName, expected);
             if (actual >= expected) {
-                Print("The expected value of >=%.2lf has been verified.", expected);
+                Print("The expected value of >=%llu has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of >=%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of >=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case LESS_THAN:
-            Print("Verifying %s is less than %.2lf...\n", valueName, expected);
+            Print("Verifying %s is less than %llu...\n", valueName, expected);
             if (actual < expected) {
-                Print("The expected value of <%.2lf has been verified.", expected);
+                Print("The expected value of <%llu has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of <%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of <%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case LESS_THAN_OR_EQUAL:
-            Print("Verifying %s is less than or equal to %.2lf...\n", valueName, expected);
+            Print("Verifying %s is less than or equal to %llu...\n", valueName, expected);
             if (actual <= expected) {
-                Print("The expected value of <=%.2lf has been verified.", expected);
-                passed = true;
-            }
-            else {
-                Print("The expected value of <=%.2lf has not been verified.", expected);
-                Print("The actual value was %.2lf.", actual);
-            }
-            break;
-        case WITHIN_PERCENT:
-            Print("Verifying %s is within %.2lf%% of %.2lf...\n", valueName, percent * 100, expected);
-            if (actual >= expected * (1 - percent) && actual <= expected * (1 + percent)) {
-                Print("The expected value of %.2lf +/- %.2lf has been verified.", expected, percent * 100);
+                Print("The expected value of <=%llu has been verified.", expected);
                 results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of %.2lf +/- %.2lf has not been verified.", expected, percent * 100);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of <=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         case WITHIN_MARGIN:
-            Print("Verifying %s is within %.2lf of %.2lf...\n", valueName, margin, expected);
-            if (actual >= expected - margin && actual <= expected + margin) {
-                Print("The expected value of %.2lf +/- %.2lf has been verified.", expected, margin);
+            Print("Verifying %s is within %llu of %llu...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %llu +/- %llu has been verified.", expected, delta);
                 results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of %.2lf +/- %.2lf has not been verified.", expected, margin);
-                Print("The actual value was %.2lf.", actual);
+                Print("The expected value of %llu +/- %llu has not been verified.", expected, delta);
+                Print("The actual value was %llu.", actual);
                 results->failed++;
             }
-            break;
+        break;
         default:
             Print("Invalid verification type.");
-            break;
+            results->failed++;
+        break;
     }
 
-    if (passed) {
-        PrintPass(results->total);
-        results->passed++;
-    }
-    else {
-        PrintFail(results->total, lineNumber, testFile);
-        results->failed++;
-    }
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
 
     verify_output("\n");
 }
 
-void __Verify(const char *testFile,
-              const int lineNumber,
-              const char *valueName,
-              const char *expected,
-              const char *actual,
-              test_results_t *results,
-              verification_type_t type) {
+void __Verify_UInt8(const char *file,
+                   int line,
+                   const char *valueName,
+                   uint8_t expected,
+                   uint8_t actual,
+                   test_results_t *results,
+                   verification_type_t type,
+                   uint8_t delta)
+{
     results->total++;
     bool passed = false;
+    verify_output("\n");
     switch (type) {
         case EQUAL:
-            Print("Verifying %s is equal to \"%s\"...\n", valueName, expected);
-            if (strcmp(expected, actual) == 0) {
-                Print("The expected value of ==\"%s\" has been verified.", expected);
+            Print("Verifying %s is equal to %u...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%u has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
-                Print("The expected value of ==\"%s\" has not been verified.", expected);
-                Print("The actual value was %s.", actual);
+                Print("The expected value of ==%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
             }
-            break;
+        break;
         case NOT_EQUAL:
-            Print("Verifying %s is not equal to \"%s\"...\n", valueName, expected);
+            Print("Verifying %s is not equal to %u...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %u...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %u...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %u...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %u...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %u of %u...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %u +/- %u has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %u +/- %u has not been verified.", expected, delta);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_UInt16(const char *file,
+                   int line,
+                   const char *valueName,
+                   uint16_t expected,
+                   uint16_t actual,
+                   test_results_t *results,
+                   verification_type_t type,
+                   uint16_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %u...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %u...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %u...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %u...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %u...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %u...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %u of %u...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %u +/- %u has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %u +/- %u has not been verified.", expected, delta);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_UInt32(const char *file,
+                   int line,
+                   const char *valueName,
+                   uint32_t expected,
+                   uint32_t actual,
+                   test_results_t *results,
+                   verification_type_t type,
+                   uint32_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %u...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %u...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %u...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %u...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %u...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %u...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %u of %u...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %u +/- %u has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %u +/- %u has not been verified.", expected, delta);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_UInt64(const char *file,
+                     int line,
+                     const char *valueName,
+                     uint64_t expected,
+                     uint64_t actual,
+                     test_results_t *results,
+                     verification_type_t type,
+                     uint64_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %llu...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %llu...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %llu...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %llu...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %llu...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %llu...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%llu has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%llu has not been verified.", expected);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %llu of %llu...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %llu +/- %llu has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %llu +/- %llu has not been verified.", expected, delta);
+                Print("The actual value was %llu.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Size_t(const char *file,
+                     int line,
+                     const char *valueName,
+                     size_t expected,
+                     size_t actual,
+                     test_results_t *results,
+                     verification_type_t type,
+                     size_t delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %u...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %u...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %u...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %u...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %u...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %u...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%u has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%u has not been verified.", expected);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %u of %u...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %u +/- %u has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %u +/- %u has not been verified.", expected, delta);
+                Print("The actual value was %u.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_Char(const char *file,
+                   int line,
+                   const char *valueName,
+                   char expected,
+                   char actual,
+                   test_results_t *results,
+                   verification_type_t type)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %c...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%c has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%c has not been verified.", expected);
+                Print("The actual value was %c.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %c...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%c has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%c has not been verified.", expected);
+                Print("The actual value was %c.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+}
+
+void __Verify_Ptr(const char *file,
+                  int line,
+                  const char *valueName,
+                  void *expected,
+                  void *actual,
+                  test_results_t *results,
+                  verification_type_t type)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %p...\n", valueName, expected);
+            if (expected == actual) {
+                Print("The expected value of ==%p has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%p has not been verified.", expected);
+                Print("The actual value was %p.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %p...\n", valueName, expected);
+            if (expected != actual) {
+                Print("The expected value of !=%p has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%p has not been verified.", expected);
+                Print("The actual value was %p.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
+
+void __Verify_String(const char *file,
+                     int line,
+                     const char *valueName,
+                     const char *expected,
+                     const char *actual,
+                     test_results_t *results,
+                     verification_type_t type)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %s...\n", valueName, expected);
+            if (strcmp(expected, actual) == 0) {
+                Print("The expected value of ==%s has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%s has not been verified.", expected);
+                Print("The actual value was %s.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %s...\n", valueName, expected);
             if (strcmp(expected, actual) != 0) {
                 Print("The expected value of !=%s has been verified.", expected);
+                results->passed++;
                 passed = true;
             }
             else {
                 Print("The expected value of !=%s has not been verified.", expected);
                 Print("The actual value was %s.", actual);
+                results->failed++;
             }
-            break;
+        break;
         default:
             Print("Invalid verification type.");
-            break;
+            results->failed++;
+        break;
     }
 
-    if (passed) {
-        PrintPass(results->total);
-        results->passed++;
-    }
-    else {
-        PrintFail(results->total, lineNumber, testFile);
-        results->failed++;
-    }
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
 
     verify_output("\n");
 }
 
-void PrintLine() {
-    for (uint8_t i = 0; i < MAX_LINE_LENGTH; i++) {
-        verify_output('-');
+void __Verify_Float(const char *file,
+                    int line,
+                    const char *valueName,
+                    float expected,
+                    float actual,
+                    test_results_t *results,
+                    verification_type_t type,
+                    float delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %f...\n", valueName, expected);
+            if (fabs(expected - actual) < delta) {
+                Print("The expected value of ==%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %f...\n", valueName, expected);
+            if (fabs(expected - actual) >= delta) {
+                Print("The expected value of !=%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %f...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %f...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %f...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %f...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%f has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%f has not been verified.", expected);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %f of %f...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %f +/- %f has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %f +/- %f has not been verified.", expected, delta);
+                Print("The actual value was %f.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
     }
-    verify_output('\n');
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
 }
 
-void BlockPrint(const char *content) {
-    char line_buffer[MAX_LINE_LENGTH + 2];
-    char *line_buffer_ptr = line_buffer;
-    char *content_ptr = (char *)content;
-    uint8_t line_length = 0;
+void __Verify_Double(const char *file,
+                     int line,
+                     const char *valueName,
+                     double expected,
+                     double actual,
+                     test_results_t *results,
+                     verification_type_t type,
+                     double delta)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
 
-    while (strlen(content_ptr) > MAX_LINE_LENGTH) {
-
-        // Copy a line of test from the content to the line buffer
-        strncpy(line_buffer_ptr, content_ptr, MAX_LINE_LENGTH);
-        line_buffer_ptr[MAX_LINE_LENGTH + 1] = '\0';
-        
-        // Redact Line to last whitespace
-        line_length = strlen(line_buffer_ptr);
-        int itermax = (MAX_LINE_LENGTH < line_length) ? MAX_LINE_LENGTH : line_length;
-        for (int i = itermax; i >= 0 && !isspace(line_buffer_ptr[i]); i--) continue;
-        line_length = strlen(line_buffer_ptr);
-
-        // Print the line buffer
-        verify_output(line_buffer_ptr);
-        verify_output('\n');
-
-        // Move the content pointer to the next line
-        content_ptr += line_length;
+    switch (type) {
+        case EQUAL:
+            Print("Verifying %s is equal to %lf...\n", valueName, expected);
+            if (fabs(expected - actual) < delta) {
+                Print("The expected value of ==%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of ==%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case NOT_EQUAL:
+            Print("Verifying %s is not equal to %lf...\n", valueName, expected);
+            if (fabs(expected - actual) >= delta) {
+                Print("The expected value of !=%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of !=%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN:
+            Print("Verifying %s is greater than %lf...\n", valueName, expected);
+            if (actual > expected) {
+                Print("The expected value of >%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case GREATER_THAN_OR_EQUAL:
+            Print("Verifying %s is greater than or equal to %lf...\n", valueName, expected);
+            if (actual >= expected) {
+                Print("The expected value of >=%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of >=%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN:
+            Print("Verifying %s is less than %lf...\n", valueName, expected);
+            if (actual < expected) {
+                Print("The expected value of <%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case LESS_THAN_OR_EQUAL:
+            Print("Verifying %s is less than or equal to %lf...\n", valueName, expected);
+            if (actual <= expected) {
+                Print("The expected value of <=%lf has been verified.", expected);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of <=%lf has not been verified.", expected);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        case WITHIN_MARGIN:
+            Print("Verifying %s is within %lf of %lf...\n", valueName, delta, expected);
+            if (actual >= expected - delta && actual <= expected + delta) {
+                Print("The expected value of %lf +/- %lf has been verified.", expected, delta);
+                results->passed++;
+                passed = true;
+            }
+            else {
+                Print("The expected value of %lf +/- %lf has not been verified.", expected, delta);
+                Print("The actual value was %lf.", actual);
+                results->failed++;
+            }
+        break;
+        default:
+            Print("Invalid verification type.");
+            results->failed++;
+        break;
     }
 
-    // Print the last line
-    verify_output(content_ptr);
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
 }
 
+void __Verify_Memory(const char *file,
+                     int line,
+                     const char *valueName,
+                     const void *expected,
+                     const void *actual,
+                     size_t size,
+                     test_results_t *results)
+{
+    results->total++;
+    bool passed = false;
+    verify_output("\n");
+
+    if (memcmp(expected, actual, size) == 0) {
+        Print("The expected value of %s has been verified.", valueName);
+        results->passed++;
+        passed = true;
+    }
+    else {
+        Print("The expected value of %s has not been verified.", valueName);
+        results->failed++;
+    }
+
+    if (passed) PrintPass(results->total);
+    else PrintFail(results->total, line, file);
+
+    verify_output("\n");
+}
 
 inline void PrintPass(int testNumber) {
     Print("\t(X) Pass\t( ) Fail\t[%d]", testNumber);

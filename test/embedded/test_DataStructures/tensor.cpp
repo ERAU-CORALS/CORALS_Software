@@ -45,12 +45,12 @@ void Tensor_Constructor() {
         TensorLength_t rows = 3;
         TensorLength_t columns = 4;
         tensor = new Tensor<int>(rows, columns);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)tensor, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)rows, (unsigned long)tensor->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)columns, (unsigned long)tensor->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, tensor, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", rows, tensor->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", columns, tensor->columns(), EQUAL);
         for (TensorLength_t i = 0; i < rows; i++) {
             for (TensorLength_t j = 0; j < columns; j++) {
-                Verify("Tensor Element", 0, tensor->get(i, j), EQUAL);
+                Verify_Int("Tensor Element", 0, tensor->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -61,12 +61,12 @@ void Tensor_Constructor() {
         Tensor<int> *tensor = nullptr;
         TensorSize_t size = {3, 4};
         tensor = new Tensor<int>(size);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)tensor, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)size.rows, (unsigned long)tensor->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)size.columns, (unsigned long)tensor->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, tensor, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", size.rows, tensor->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", size.columns, tensor->columns(), EQUAL);
         for (TensorLength_t i = 0; i < size.rows; i++) {
             for (TensorLength_t j = 0; j < size.columns; j++) {
-                Verify("Tensor Element", 0, tensor->get(i, j), EQUAL);
+                Verify_Int("Tensor Element", 0, tensor->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -85,12 +85,12 @@ void Tensor_Constructor() {
             }
         }
         copy = new Tensor<int>(*tensor);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)copy, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)rows, (unsigned long)copy->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)columns, (unsigned long)copy->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, copy, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", rows, copy->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", columns, copy->columns(), EQUAL);
         for (TensorLength_t i = 0; i < rows; i++) {
             for (TensorLength_t j = 0; j < columns; j++) {
-                Verify("Tensor Element", i + j, copy->get(i, j), EQUAL);
+                Verify_Int("Tensor Element", i + j, copy->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -103,12 +103,12 @@ void Tensor_Constructor() {
         TensorLength_t rows = 3;
         TensorLength_t columns = 4;
         tensor = new Tensor<double>(rows, columns);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)tensor, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)rows, (unsigned long)tensor->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)columns, (unsigned long)tensor->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, tensor, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", rows, tensor->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", columns, tensor->columns(), EQUAL);
         for (TensorLength_t i = 0; i < rows; i++) {
             for (TensorLength_t j = 0; j < columns; j++) {
-                Verify("Tensor Element", 0.0, tensor->get(i, j), EQUAL);
+                Verify_Double("Tensor Element", 0.0, tensor->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -119,12 +119,12 @@ void Tensor_Constructor() {
         Tensor<double> *tensor = nullptr;
         TensorSize_t size = {3, 4};
         tensor = new Tensor<double>(size);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)tensor, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)size.rows, (unsigned long)tensor->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)size.columns, (unsigned long)tensor->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, tensor, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", size.rows, tensor->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", size.columns, tensor->columns(), EQUAL);
         for (TensorLength_t i = 0; i < size.rows; i++) {
             for (TensorLength_t j = 0; j < size.columns; j++) {
-                Verify("Tensor Element", 0.0, tensor->get(i, j), EQUAL);
+                Verify_Double("Tensor Element", 0.0, tensor->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -143,12 +143,12 @@ void Tensor_Constructor() {
             }
         }
         copy = new Tensor<double>(*tensor);
-        Verify("Tensor Memory Allocation", (int)nullptr, (int)copy, NOT_EQUAL);
-        Verify("Tensor Rows", (unsigned long)rows, (unsigned long)copy->rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)columns, (unsigned long)copy->columns(), EQUAL);
+        Verify_Ptr("Tensor Memory Allocation", nullptr, copy, NOT_EQUAL);
+        Verify_UInt("Tensor Rows", rows, copy->rows(), EQUAL);
+        Verify_UInt("Tensor Columns", columns, copy->columns(), EQUAL);
         for (TensorLength_t i = 0; i < rows; i++) {
             for (TensorLength_t j = 0; j < columns; j++) {
-                Verify("Tensor Element", 1.5 + i + j, copy->get(i, j), EQUAL);
+                Verify_Double("Tensor Element", 1.5 + i + j, copy->get(i, j), EQUAL);
             }
         }
         delete tensor;
@@ -189,23 +189,23 @@ void Tensor_MultiTensor_Operations() {
     // Integer Tensor Addition
     {
         Tensor<int> result = int_tensor1 + int_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 6, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 8, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 10, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 12, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 6, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 8, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 10, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 12, result.get(1, 1), EQUAL);
     }
 
     // Integer Tensor Subtraction
     {
         Tensor<int> result = int_tensor1 - int_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -4, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", -4, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", -4, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", -4, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", -4, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", -4, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", -4, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", -4, result.get(1, 1), EQUAL);
     }
 
     // Integer Tensor Multiplication
@@ -225,25 +225,25 @@ void Tensor_MultiTensor_Operations() {
         }
         
         Tensor<int> result = int_mult_tensor1 * int_mult_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_mult_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_mult_tensor2.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -60, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", -40, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", -90, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", -60, result.get(1, 1), EQUAL);
-        Verify("Tensor Element", -120, result.get(2, 0), EQUAL);
-        Verify("Tensor Element", -80, result.get(2, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_mult_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_mult_tensor2.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", -60, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", -40, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", -90, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", -60, result.get(1, 1), EQUAL);
+        Verify_Int("Tensor Element", -120, result.get(2, 0), EQUAL);
+        Verify_Int("Tensor Element", -80, result.get(2, 1), EQUAL);
     }
 
     // Integer Tensor Transposition
     {
         Tensor<int> result = ~int_tensor1;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.columns(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.rows(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 1, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 3, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 2, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 4, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 1, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 3, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 2, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, result.get(1, 1), EQUAL);
     }
 
     // Decimal tensors for most tests
@@ -262,23 +262,23 @@ void Tensor_MultiTensor_Operations() {
     // Decimal Tensor Addition
     {
         Tensor<double> result = double_tensor1 + double_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 7.0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 9.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 11.0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 13.0, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 7.0, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 9.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 11.0, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 13.0, result.get(1, 1), EQUAL);
     }
 
     // Decimal Tensor Subtraction
     {
         Tensor<double> result = double_tensor1 - double_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -4.0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", -4.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", -4.0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", -4.0, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", -4.0, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", -4.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", -4.0, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", -4.0, result.get(1, 1), EQUAL);
     }
 
     // Decimal Tensor Multiplication
@@ -298,25 +298,25 @@ void Tensor_MultiTensor_Operations() {
         }
         
         Tensor<double> result = double_mult_tensor1 * double_mult_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_mult_tensor1.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_mult_tensor2.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -105.0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", -70.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", -135.0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", -90.0, result.get(1, 1), EQUAL);
-        Verify("Tensor Element", -165.0, result.get(2, 0), EQUAL);
-        Verify("Tensor Element", -110.0, result.get(2, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_mult_tensor1.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_mult_tensor2.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", -105.0, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", -70.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", -135.0, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", -90.0, result.get(1, 1), EQUAL);
+        Verify_Double("Tensor Element", -165.0, result.get(2, 0), EQUAL);
+        Verify_Double("Tensor Element", -110.0, result.get(2, 1), EQUAL);
     }
 
     // Decimal Tensor Transposition
     {
         Tensor<double> result = ~double_tensor1;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.columns(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.rows(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 1.5, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 3.5, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 2.5, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 4.5, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.columns(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.rows(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 1.5, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 3.5, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 2.5, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 4.5, result.get(1, 1), EQUAL);
     }
 
     TestPostamble();
@@ -354,24 +354,24 @@ void Tensor_MultiTensor_Assignment_Operations() {
     {
         Tensor<int> int_copy = int_tensor1;
         int_copy += int_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), (unsigned long)int_copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), (unsigned long)int_copy.columns(), EQUAL);
-        Verify("Tensor Element", 6, int_copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", 8, int_copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", 10, int_copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", 12, int_copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), int_copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), int_copy.columns(), EQUAL);
+        Verify_Int("Tensor Element", 6, int_copy.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 8, int_copy.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 10, int_copy.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 12, int_copy.get(1, 1), EQUAL);
     }
 
     // Integer Tensor Subtraction
     {
         Tensor<int> int_copy = int_tensor1;
         int_copy -= int_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), (unsigned long)int_copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), (unsigned long)int_copy.columns(), EQUAL);
-        Verify("Tensor Element", -4, int_copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", -4, int_copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", -4, int_copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", -4, int_copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), int_copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), int_copy.columns(), EQUAL);
+        Verify_Int("Tensor Element", -4, int_copy.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", -4, int_copy.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", -4, int_copy.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", -4, int_copy.get(1, 1), EQUAL);
     }
 
     // Integer Tensor Multiplication
@@ -392,41 +392,41 @@ void Tensor_MultiTensor_Assignment_Operations() {
         
         TensorLength_t original_rows = int_mult_tensor1.rows();
         int_mult_tensor1 *= int_mult_tensor2;
-        Verify("Tensor Rows", (unsigned long)original_rows, (unsigned long)int_mult_tensor1.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_mult_tensor2.columns(), (unsigned long)int_mult_tensor1.columns(), EQUAL);
-        Verify("Tensor Element", -60, int_mult_tensor1.get(0, 0), EQUAL);
-        Verify("Tensor Element", -40, int_mult_tensor1.get(0, 1), EQUAL);
-        Verify("Tensor Element", -90, int_mult_tensor1.get(1, 0), EQUAL);
-        Verify("Tensor Element", -60, int_mult_tensor1.get(1, 1), EQUAL);
-        Verify("Tensor Element", -120, int_mult_tensor1.get(2, 0), EQUAL);
-        Verify("Tensor Element", -80, int_mult_tensor1.get(2, 1), EQUAL);
+        Verify_UInt("Tensor Rows", original_rows, int_mult_tensor1.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_mult_tensor2.columns(), int_mult_tensor1.columns(), EQUAL);
+        Verify_Int("Tensor Element", -60, int_mult_tensor1.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", -40, int_mult_tensor1.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", -90, int_mult_tensor1.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", -60, int_mult_tensor1.get(1, 1), EQUAL);
+        Verify_Int("Tensor Element", -120, int_mult_tensor1.get(2, 0), EQUAL);
+        Verify_Int("Tensor Element", -80, int_mult_tensor1.get(2, 1), EQUAL);
     }
 
     // Integer Tensor Assignment
     {
         Tensor<int> int_copy(int_tensor1.size());
         int_copy = int_tensor1;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), (unsigned long)int_copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), (unsigned long)int_copy.columns(), EQUAL);
-        Verify("Tensor Element", int_tensor1.get(0, 0), int_copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", int_tensor1.get(0, 1), int_copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", int_tensor1.get(1, 0), int_copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", int_tensor1.get(1, 1), int_copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), int_copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor1.columns(), int_copy.columns(), EQUAL);
+        Verify_Int("Tensor Element", int_tensor1.get(0, 0), int_copy.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", int_tensor1.get(0, 1), int_copy.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", int_tensor1.get(1, 0), int_copy.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", int_tensor1.get(1, 1), int_copy.get(1, 1), EQUAL);
     }
 
     // Integer Tensor Concatenation
     {
         int_tensor1 << int_tensor2;
-        Verify("Tensor Rows", (unsigned long)int_tensor1.rows(), 2ul, EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor1.columns(), 4ul, EQUAL);
-        Verify("Tensor Element", 1, int_tensor1.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2, int_tensor1.get(0, 1), EQUAL);
-        Verify("Tensor Element", 5, int_tensor1.get(0, 2), EQUAL);
-        Verify("Tensor Element", 6, int_tensor1.get(0, 3), EQUAL);
-        Verify("Tensor Element", 3, int_tensor1.get(1, 0), EQUAL);
-        Verify("Tensor Element", 4, int_tensor1.get(1, 1), EQUAL);
-        Verify("Tensor Element", 7, int_tensor1.get(1, 2), EQUAL);
-        Verify("Tensor Element", 8, int_tensor1.get(1, 3), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor1.rows(), 2u, EQUAL);
+        Verify_UInt("Tensor Columns", (unsigned long)int_tensor1.columns(), 4u, EQUAL);
+        Verify_Int("Tensor Element", 1, int_tensor1.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, int_tensor1.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 5, int_tensor1.get(0, 2), EQUAL);
+        Verify_Int("Tensor Element", 6, int_tensor1.get(0, 3), EQUAL);
+        Verify_Int("Tensor Element", 3, int_tensor1.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, int_tensor1.get(1, 1), EQUAL);
+        Verify_Int("Tensor Element", 7, int_tensor1.get(1, 2), EQUAL);
+        Verify_Int("Tensor Element", 8, int_tensor1.get(1, 3), EQUAL);
     }
 
     // Decimal tensors for most tests
@@ -446,24 +446,24 @@ void Tensor_MultiTensor_Assignment_Operations() {
     {
         Tensor<double> copy = double_tensor1;
         copy += double_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), (unsigned long)copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), (unsigned long)copy.columns(), EQUAL);
-        Verify("Tensor Element", 7.0, copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", 9.0, copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", 11.0, copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", 13.0, copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), copy.columns(), EQUAL);
+        Verify_Double("Tensor Element", 7.0, copy.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 9.0, copy.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 11.0, copy.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 13.0, copy.get(1, 1), EQUAL);
     }
 
     // Decimal Tensor Subtraction
     {
         Tensor<double> copy = double_tensor1;
         copy -= double_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), (unsigned long)copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), (unsigned long)copy.columns(), EQUAL);
-        Verify("Tensor Element", -4.0, copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", -4.0, copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", -4.0, copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", -4.0, copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), copy.columns(), EQUAL);
+        Verify_Double("Tensor Element", -4.0, copy.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", -4.0, copy.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", -4.0, copy.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", -4.0, copy.get(1, 1), EQUAL);
     }
 
     // Decimal Tensor Multiplication
@@ -484,41 +484,41 @@ void Tensor_MultiTensor_Assignment_Operations() {
         
         TensorLength_t original_rows = double_mult_tensor1.rows();
         double_mult_tensor1 *= double_mult_tensor2;
-        Verify("Tensor Rows", (unsigned long)original_rows, (unsigned long)double_mult_tensor1.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_mult_tensor2.columns(), (unsigned long)double_mult_tensor1.columns(), EQUAL);
-        Verify("Tensor Element", -105.0, double_mult_tensor1.get(0, 0), EQUAL);
-        Verify("Tensor Element", -70.0, double_mult_tensor1.get(0, 1), EQUAL);
-        Verify("Tensor Element", -135.0, double_mult_tensor1.get(1, 0), EQUAL);
-        Verify("Tensor Element", -90.0, double_mult_tensor1.get(1, 1), EQUAL);
-        Verify("Tensor Element", -165.0, double_mult_tensor1.get(2, 0), EQUAL);
-        Verify("Tensor Element", -110.0, double_mult_tensor1.get(2, 1), EQUAL);
+        Verify_UInt("Tensor Rows", original_rows, double_mult_tensor1.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_mult_tensor2.columns(), double_mult_tensor1.columns(), EQUAL);
+        Verify_Double("Tensor Element", -105.0, double_mult_tensor1.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", -70.0, double_mult_tensor1.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", -135.0, double_mult_tensor1.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", -90.0, double_mult_tensor1.get(1, 1), EQUAL);
+        Verify_Double("Tensor Element", -165.0, double_mult_tensor1.get(2, 0), EQUAL);
+        Verify_Double("Tensor Element", -110.0, double_mult_tensor1.get(2, 1), EQUAL);
     }
 
     // Decimal Tensor Assignment
     {
         Tensor<double> double_copy(double_tensor1.size());
         double_copy = double_tensor1;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), (unsigned long)double_copy.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), (unsigned long)double_copy.columns(), EQUAL);
-        Verify("Tensor Element", double_tensor1.get(0, 0), double_copy.get(0, 0), EQUAL);
-        Verify("Tensor Element", double_tensor1.get(0, 1), double_copy.get(0, 1), EQUAL);
-        Verify("Tensor Element", double_tensor1.get(1, 0), double_copy.get(1, 0), EQUAL);
-        Verify("Tensor Element", double_tensor1.get(1, 1), double_copy.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), double_copy.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), double_copy.columns(), EQUAL);
+        Verify_Double("Tensor Element", double_tensor1.get(0, 0), double_copy.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", double_tensor1.get(0, 1), double_copy.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", double_tensor1.get(1, 0), double_copy.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", double_tensor1.get(1, 1), double_copy.get(1, 1), EQUAL);
     }
 
     // Decimal Tensor Concatenation
     {
         double_tensor1 << double_tensor2;
-        Verify("Tensor Rows", (unsigned long)double_tensor1.rows(), 2ul, EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor1.columns(), 4ul, EQUAL);
-        Verify("Tensor Element", 1.5, double_tensor1.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2.5, double_tensor1.get(0, 1), EQUAL);
-        Verify("Tensor Element", 5.5, double_tensor1.get(0, 2), EQUAL);
-        Verify("Tensor Element", 6.5, double_tensor1.get(0, 3), EQUAL);
-        Verify("Tensor Element", 3.5, double_tensor1.get(1, 0), EQUAL);
-        Verify("Tensor Element", 4.5, double_tensor1.get(1, 1), EQUAL);
-        Verify("Tensor Element", 7.5, double_tensor1.get(1, 2), EQUAL);
-        Verify("Tensor Element", 8.5, double_tensor1.get(1, 3), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor1.rows(), 2u, EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor1.columns(), 4u, EQUAL);
+        Verify_Double("Tensor Element", 1.5, double_tensor1.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 2.5, double_tensor1.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 5.5, double_tensor1.get(0, 2), EQUAL);
+        Verify_Double("Tensor Element", 6.5, double_tensor1.get(0, 3), EQUAL);
+        Verify_Double("Tensor Element", 3.5, double_tensor1.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 4.5, double_tensor1.get(1, 1), EQUAL);
+        Verify_Double("Tensor Element", 7.5, double_tensor1.get(1, 2), EQUAL);
+        Verify_Double("Tensor Element", 8.5, double_tensor1.get(1, 3), EQUAL);
     }
 
     TestPostamble();
@@ -549,45 +549,45 @@ void Tensor_MultiTensor_Element_Operations() {
     // Integer Element Addition
     {
         Tensor<int> result = int_tensor + 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 3, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 5, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 6, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 3, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 5, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 6, result.get(1, 1), EQUAL);
     }
 
     // Integer Element Subtraction
     {
         Tensor<int> result = int_tensor - 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -1, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", -1, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 0, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 1, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, result.get(1, 1), EQUAL);
     }
 
     // Integer Element Multiplication
     {
         Tensor<int> result = int_tensor * 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 2, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 6, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 8, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 2, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 6, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 8, result.get(1, 1), EQUAL);
     }
 
     // Integer Element Division
     {
         Tensor<int> result = int_tensor / 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 1, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 0, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 1, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 1, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, result.get(1, 1), EQUAL);
     }
 
     // Integer Element Modulus
@@ -604,12 +604,12 @@ void Tensor_MultiTensor_Element_Operations() {
     // Integer Element Exponentiation
     {
         Tensor<int> result = int_tensor ^ 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 1, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 9, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 16, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), result.columns(), EQUAL);
+        Verify_Int("Tensor Element", 1, result.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, result.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 9, result.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 16, result.get(1, 1), EQUAL);
     }
 
     // Decimal tensors for most tests
@@ -622,67 +622,67 @@ void Tensor_MultiTensor_Element_Operations() {
     // Decimal Element Addition
     {
         Tensor<double> result = double_tensor + 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 4.0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 5.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 6.0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 7.0, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 4.0, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 5.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 6.0, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 7.0, result.get(1, 1), EQUAL);
     }
 
     // Decimal Element Subtraction
     {
         Tensor<double> result = double_tensor - 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", -1.0, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 0.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1.0, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2.0, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", -1.0, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 0.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 1.0, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 2.0, result.get(1, 1), EQUAL);
     }
 
     // Decimal Element Multiplication
     {
         Tensor<double> result = double_tensor * 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 3.75, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 6.25, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 8.75, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 11.25, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 3.75, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 6.25, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 8.75, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 11.25, result.get(1, 1), EQUAL);
     }
 
     // Decimal Element Division
     {
         Tensor<double> result = double_tensor / 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 0.6, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 1.0, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1.4, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1.8, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 0.6, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.0, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 1.4, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.8, result.get(1, 1), EQUAL);
     }
 
     // Decimal Element Modulus
     {
         Tensor<double> result = double_tensor % 3.0;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 1.5, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2.5, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 0.5, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1.5, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 1.5, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 2.5, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 0.5, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.5, result.get(1, 1), EQUAL);
     }
 
     // Decimal Element Exponentiation
     {
         Tensor<double> result = double_tensor ^ 2.0;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)result.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)result.columns(), EQUAL);
-        Verify("Tensor Element", 2.25, result.get(0, 0), EQUAL);
-        Verify("Tensor Element", 6.25, result.get(0, 1), EQUAL);
-        Verify("Tensor Element", 12.25, result.get(1, 0), EQUAL);
-        Verify("Tensor Element", 20.25, result.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), result.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), result.columns(), EQUAL);
+        Verify_Double("Tensor Element", 2.25, result.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 6.25, result.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 12.25, result.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 20.25, result.get(1, 1), EQUAL);
     }
 
     TestPostamble();
@@ -714,72 +714,72 @@ void Tensor_MultiTensor_Element_Assignment_Operations() {
     {
         Tensor<int> copy_int = int_tensor;
         copy_int += 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", 3, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 5, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 6, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", 3, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 5, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 6, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Subtraction
     {
         Tensor<int> copy_int = int_tensor;
         copy_int -= 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", -1, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 0, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", -1, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 0, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Multiplication
     {
         Tensor<int> copy_int = int_tensor;
         copy_int *= 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", 2, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 6, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 8, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", 2, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 6, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 8, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Division
     {
         Tensor<int> copy_int = int_tensor;
         copy_int /= 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", 0, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", 0, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Modulus
     {
         Tensor<int> copy_int = int_tensor;
         copy_int %= 3;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 0, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 2, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 0, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(1, 1), EQUAL);
     }
 
     // Integer Element Exponentiation
     {
         Tensor<int> copy_int = int_tensor;
         copy_int ^= 2;
-        Verify("Tensor Rows", (unsigned long)int_tensor.rows(), (unsigned long)copy_int.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)int_tensor.columns(), (unsigned long)copy_int.columns(), EQUAL);
-        Verify("Tensor Element", 1, copy_int.get(0, 0), EQUAL);
-        Verify("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
-        Verify("Tensor Element", 9, copy_int.get(1, 0), EQUAL);
-        Verify("Tensor Element", 16, copy_int.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", int_tensor.rows(), copy_int.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", int_tensor.columns(), copy_int.columns(), EQUAL);
+        Verify_Int("Tensor Element", 1, copy_int.get(0, 0), EQUAL);
+        Verify_Int("Tensor Element", 4, copy_int.get(0, 1), EQUAL);
+        Verify_Int("Tensor Element", 9, copy_int.get(1, 0), EQUAL);
+        Verify_Int("Tensor Element", 16, copy_int.get(1, 1), EQUAL);
     }
 
     // Decimal tensors for most tests
@@ -793,72 +793,72 @@ void Tensor_MultiTensor_Element_Assignment_Operations() {
     {
         Tensor<double> copy_double = double_tensor;
         copy_double += 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", 4.0, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 5.0, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 6.0, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 7.0, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", 4.0, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 5.0, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 6.0, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 7.0, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Subtraction
     {
         Tensor<double> copy_double = double_tensor;
         copy_double -= 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", -1.0, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 0.0, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1.0, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 2.0, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", -1.0, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 0.0, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 1.0, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 2.0, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Multiplication
     {
         Tensor<double> copy_double = double_tensor;
         copy_double *= 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", 3.75, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 6.25, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 8.75, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 11.25, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", 3.75, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 6.25, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 8.75, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 11.25, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Division
     {
         Tensor<double> copy_double = double_tensor;
         copy_double /= 2.5;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", 0.6, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 1.0, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 1.4, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1.8, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", 0.6, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.0, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 1.4, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.8, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Modulus
     {
         Tensor<double> copy_double = double_tensor;
         copy_double %= 3.0;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", 1.5, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 2.5, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 0.5, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 1.5, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", 1.5, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 2.5, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 0.5, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 1.5, copy_double.get(1, 1), EQUAL);
     }
 
     // Decimal Element Exponentiation
     {
         Tensor<double> copy_double = double_tensor;
         copy_double ^= 2.0;
-        Verify("Tensor Rows", (unsigned long)double_tensor.rows(), (unsigned long)copy_double.rows(), EQUAL);
-        Verify("Tensor Columns", (unsigned long)double_tensor.columns(), (unsigned long)copy_double.columns(), EQUAL);
-        Verify("Tensor Element", 2.25, copy_double.get(0, 0), EQUAL);
-        Verify("Tensor Element", 6.25, copy_double.get(0, 1), EQUAL);
-        Verify("Tensor Element", 12.25, copy_double.get(1, 0), EQUAL);
-        Verify("Tensor Element", 20.25, copy_double.get(1, 1), EQUAL);
+        Verify_UInt("Tensor Rows", double_tensor.rows(), copy_double.rows(), EQUAL);
+        Verify_UInt("Tensor Columns", double_tensor.columns(), copy_double.columns(), EQUAL);
+        Verify_Double("Tensor Element", 2.25, copy_double.get(0, 0), EQUAL);
+        Verify_Double("Tensor Element", 6.25, copy_double.get(0, 1), EQUAL);
+        Verify_Double("Tensor Element", 12.25, copy_double.get(1, 0), EQUAL);
+        Verify_Double("Tensor Element", 20.25, copy_double.get(1, 1), EQUAL);
     }
 
     TestPostamble();
@@ -869,15 +869,11 @@ void setup() {
     delay(3000);
     assert(Serial);
 
-    UNITY_BEGIN();
-
     Tensor_Constructor();
     Tensor_MultiTensor_Operations();
     Tensor_MultiTensor_Assignment_Operations();
     Tensor_MultiTensor_Element_Operations();
     Tensor_MultiTensor_Element_Assignment_Operations();
-
-    UNITY_END();
 }
 
 void loop() {

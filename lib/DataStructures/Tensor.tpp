@@ -33,7 +33,7 @@ class Tensor {
         Tensor(TensorLength_t rows, TensorLength_t columns) : tensor_size({rows, columns}){
             initialize();
         }
-        Tensor(TensorSize_t tensor_size) : tensor_size(size) {
+        Tensor(TensorSize_t tensor_size) : tensor_size(tensor_size) {
             initialize();
         }
         Tensor(const Tensor &tensor) : tensor_size(tensor.tensor_size) {
@@ -46,26 +46,26 @@ class Tensor {
         }
 
         // Destructor
-        ~Tensor() {
+        virtual ~Tensor() {
             destroy();
         }
 
         // MultiTensor Operations
         Tensor<T> operator+(const Tensor<T> &tensor) {
-            assert(size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
+            assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             Tensor<T> result(*this);
             result += tensor;
             return result;
         }
         Tensor<T> operator-(const Tensor<T> &tensor) {
-            assert(size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
+            assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             Tensor<T> result(*this);
             result -= tensor;
             return result;
         }
         Tensor<T> operator*(const Tensor<T> &tensor) {
-            assert(size.columns == tensor.tensor_size.rows);
-            Tensor<T> result({size.rows, tensor.tensor_size.columns});
+            assert(tensor_size.columns == tensor.tensor_size.rows);
+            Tensor<T> result({tensor_size.rows, tensor.tensor_size.columns});
             
             for (TensorLength_t r = 0; r < tensor_size.rows; r++) {
                 for (TensorLength_t c = 0; c < tensor.tensor_size.columns; c++) {
@@ -85,7 +85,7 @@ class Tensor {
 
         // MultiTensor Assignment Operations
         void operator+=(const Tensor<T> &tensor) {
-            assert(size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
+            assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             for (TensorLength_t i = 0; i < tensor_size.rows; i++) {
                 for (TensorLength_t j = 0; j < tensor_size.columns; j++) {
                     set(i, j, get(i, j) + tensor.get(i, j));
@@ -93,7 +93,7 @@ class Tensor {
             }
         }
         void operator-=(const Tensor<T> &tensor) {
-            assert(size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
+            assert(tensor_size.rows == tensor.tensor_size.rows && tensor_size.columns == tensor.tensor_size.columns);
             for (TensorLength_t i = 0; i < tensor_size.rows; i++) {
                 for (TensorLength_t j = 0; j < tensor_size.columns; j++) {
                     set(i, j, get(i, j) - tensor.get(i, j));
@@ -122,37 +122,31 @@ class Tensor {
         // Element Operations
         template<typename U>
         Tensor<T> operator+(const U &value) {
-            Tensor<T> result(this);
+            Tensor<T> result(*this);
             result += value;
             return result;
         }
         template<typename U>
         Tensor<T> operator-(const U &value) {
-            Tensor<T> result(this);
+            Tensor<T> result(*this);
             result -= value;
             return result;
         }
         template<typename U>
         Tensor<T> operator*(const U &value) {
-            Tensor<T> result(this);
+            Tensor<T> result(*this);
             result *= value;
             return result;
         }
         template<typename U>
         Tensor<T> operator/(const U &value) {
-            Tensor<T> result(this);
+            Tensor<T> result(*this);
             result /= value;
             return result;
         }
         template<typename U>
-        Tensor<T> operator%(const U &value) {
-            Tensor<T> result(this);
-            result %= value;
-            return result;
-        }
-        template<typename U>
         Tensor<T> operator^(const U &value) {
-            Tensor<T> result(this);
+            Tensor<T> result(*this);
             result ^= value;
             return result;
         }
@@ -182,16 +176,11 @@ class Tensor {
                 data[i] /= value;
             }
         }
-        template<typename U>
-        void operator%=(const U &value) {
-            for (TensorLength_t i = 0; i < tensor_size.rows * tensor_size.columns; i++) {
-                data[i] %= value;
-            }
-        }
+        template
         template<typename U>
         void operator^=(const U &value) {
             for (TensorLength_t i = 0; i < tensor_size.rows * tensor_size.columns; i++) {
-                data[i] ^= value;
+                data[i] = pow(data[i], value);
             }
         }
 
@@ -201,9 +190,10 @@ class Tensor {
         }
 
         // Tensor Functions
-        friend Tensor<T> vcat(const Tensor<T> &top, const Tensor<T> &bottom) {
+        template<typename U>
+        friend Tensor<U> vcat(const Tensor<U> &top, const Tensor<U> &bottom) {
             assert(top.tensor_size.columns == bottom.tensor_size.columns);
-            Tensor result({top.tensor_size.rows + bottom.tensor_size.rows, top.tensor_size.columns});
+            Tensor<U> result({top.tensor_size.rows + bottom.tensor_size.rows, top.tensor_size.columns});
             TensorLength_t i = 0;
             const TensorLength_t topSize = top.tensor_size.rows * top.tensor_size.columns;
             for (; i < topSize; i++) {
@@ -216,9 +206,10 @@ class Tensor {
             return result;
         }
 
-        friend Tensor<T> hcat(const Tensor<T> &left, const Tensor<T> &right) {
+        template<typename U>
+        friend Tensor<U> hcat(const Tensor<U> &left, const Tensor<U> &right) {
             assert(left.tensor_size.rows == right.tensor_size.rows);
-            Tensor<T> result({left.tensor_size.rows, left.tensor_size.columns + right.tensor_size.columns});
+            Tensor<U> result(left.tensor_size.rows, left.tensor_size.columns + right.tensor_size.columns);
             for (TensorLength_t i = 0; i < left.tensor_size.rows * result.tensor_size.columns; i++) {
                 if (i % result.tensor_size.columns < left.tensor_size.columns) {
                     result.data[i] = left.data[i];
