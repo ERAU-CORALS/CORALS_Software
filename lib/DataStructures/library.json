@@ -11,7 +11,8 @@
     "headers": [
         "List.tpp",
         "Queue.tpp",
-        "Tensor.tpp"
+        "Vector.tpp",
+        "Matrix.tpp"
     ],
     "build": {
         "includeDir": "."
