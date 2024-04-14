@@ -619,7 +619,7 @@ class Matrix {
             T det = determinant();
             assert(det != 0);
 
-            Matrix<T> inv = adjoint() / det;
+            Matrix<T> inv = adjugate() / det;
         }
 
         /**

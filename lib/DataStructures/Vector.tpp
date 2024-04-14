@@ -273,7 +273,7 @@ class Vector {
             *this = *this << vector;
         }
         // Alternative syntax
-        void operator||=(const Vector<T> &vector) {
+        void operator|=(const Vector<T> &vector) {
             *this <<= vector;
         }
 
@@ -537,7 +537,7 @@ class Vector {
          ********************************************************************************
         **/
         void initialize(bool zeroize = true) {
-            m_data = new T[m_size.rows * m_size.columns];
+            m_data = new T(m_size);
             if (zeroize) {
                 for (VectorLength_t i = 0; i < m_size; i++) {
                     m_data[i] = 0;
@@ -556,7 +556,7 @@ class Vector {
             // Vectors must be the same size
             assert(m_size == vector.m_size);
 
-            for (MatrixLength_t i = 0; i < m_size; i++) {
+            for (VectorLength_t i = 0; i < m_size; i++) {
                 m_data[i] = vector.m_data[i];
             }
         }
