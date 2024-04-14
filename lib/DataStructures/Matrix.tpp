@@ -14,6 +14,7 @@
 #define __MATRIX_TPP__
 
 #include <assert.h>
+#include <math.h>
 
 #include "Vector.tpp"
 namespace DataStructures {
@@ -80,7 +81,6 @@ class Matrix {
             copy(matrix);
         }
 
-    // Assignment Operators
         /**
          ********************************************************************************
          * @brief   Assign a Matrix object
@@ -99,6 +99,11 @@ class Matrix {
         }
     
     // Deconstructor
+        /**
+         ********************************************************************************
+         * @brief   Deconstruct the Matrix
+         ********************************************************************************
+        **/
         virtual ~Matrix() {
             destroy();
         }
@@ -779,7 +784,7 @@ class Matrix {
             }
             return true;
         }
-
+        
         /**
          ********************************************************************************
          * @brief   Get the length of the matrix
@@ -878,10 +883,13 @@ class Matrix {
          ********************************************************************************
          * @brief   Copy a matrix
          ********************************************************************************
-         * @param[in]   matrix  TYPE: Matrix<T>
+         * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void copy(Matrix<T> matrix) {
+        void copy(const Matrix<T> &matrix) {
+            // Matrices must be the same size
+            assert(m_size.rows == matrix.m_size.rows && m_size.columns == matrix.m_size.columns);
+
             for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
                 m_data[i] = matrix.m_data[i];
             }
