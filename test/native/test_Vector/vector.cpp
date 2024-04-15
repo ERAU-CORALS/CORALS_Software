@@ -1,8 +1,8 @@
 /**
  ********************************************************************************
- * @file    matrix.inc
+ * @file    test.cpp
  * @author  Logan Ruddick (Logan@Ruddicks.net)
- * @brief   Unit Tests of DataStructures
+ * @brief   Unit Tests of Matrix Class
  * @version 1.0
  * @date    2024-03-18
  ********************************************************************************
@@ -10,22 +10,21 @@
  ********************************************************************************
 **/
 
+#include <unity.h>
+
 #include "vector.hpp"
-#include "matrix.hpp"
 
-void setup() {
-    Serial.begin(115200);
-    delay(3000);
-    assert(Serial);
-
+int main(void) {
     UNITY_BEGIN();
-
-    Vector_Test();
-    Matrix_Test();
-
+    
+    RUN_TEST(Vector_Constructor);
+    RUN_TEST(Vector_MultiVector_Operators);
+    RUN_TEST(Vector_MultiVector_Assignment_Operators);
+    RUN_TEST(Vector_Element_Operators);
+    RUN_TEST(Vector_Element_Assignment_Operators);
+    RUN_TEST(Vector_Operations);
+    
     UNITY_END();
-}
 
-void loop() {
-    while (true) continue;
+    return 0;
 }
