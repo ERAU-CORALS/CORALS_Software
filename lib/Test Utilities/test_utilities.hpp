@@ -235,7 +235,7 @@ void PrintLine();
                     __TestPreamble(__func__, __FILE__, testDescription, forLoopSets, preconditionsList, resultsList); \
                     __test_results = {0, 0, 0};
 #define TestPostamble() __TestPostamble(__func__, __test_results); \
-                        verify_output("\n");
+                        verify_output("\n"); if (__test_results.failed > 0) { TEST_FAIL(); }
 
 #define Verify(valueName, expected, actual, type) __Verify (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type)
 #define Verify_Int(valueName, expected, actual, type) __Verify_Int (__FILE__, __LINE__, valueName, expected, actual, &__test_results, type, 0)

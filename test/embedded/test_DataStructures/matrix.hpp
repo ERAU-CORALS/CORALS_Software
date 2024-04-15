@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    matrix.cpp
+ * @file    matrix.inc
  * @author  Logan Ruddick (Logan@Ruddicks.net)
  * @brief   Unit Tests of Matrix Class
  * @version 1.0
@@ -11,9 +11,8 @@
 **/
 
 #include <Arduino.h>
-
 #include <unity.h>
-#include <assert.h>
+
 #include "test_utilities.hpp"
 
 #include "Matrix.tpp"
@@ -110,7 +109,10 @@ void Matrix_Constructor() {
 void Matrix_MultiMatrix_Operations() {
     const char *description = "Verify multi-matrix operations create result matrixs as expected";
     const char *for_set[] = {
-        "Addition, Subtraction, Multiplication, Transposition"
+        "Addition", 
+        "Subtraction", 
+        "Multiplication", 
+        "Transposition"
     };
     const char *preconditions[] = {
         "Valid Sizes",
@@ -767,7 +769,7 @@ void Matrix_MultiMatrix_Operations() {
 //     TestPostamble();
 // }
 
-void setup() {
+void Matrix_Test() {
     Serial.begin(115200);
     delay(3000);
     assert(Serial);
@@ -782,8 +784,4 @@ void setup() {
     // Matrix_State();
 
     UNITY_END();
-}
-
-void loop() {
-    while (true) continue;
 }

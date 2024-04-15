@@ -237,13 +237,16 @@ class Vector {
          * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        void dot(const Vector<T> &vector) {
+        T dot(const Vector<T> &vector) {
             // Vectors must be the same size
             assert(m_size == vector.m_size);
 
+            T result = 0;
             for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] *= vector.m_data[i];
+                result += m_data[i] * vector.m_data[i];
             }
+
+            return result;
         }
 
         /**
@@ -430,11 +433,7 @@ class Vector {
          ********************************************************************************
         **/
         double magnitude() {
-            T result = 0;
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result += m_data[i] * m_data[i];
-            }
-            return sqrt(result);
+            return sqrt(dot(*this));
         }
 
         /**
@@ -444,10 +443,10 @@ class Vector {
          * @return  Vector<T>
          ********************************************************************************
         **/
-        Vector<T> normalize() {
+        Vector<double> normalize() {
             Vector<double> result(m_size);
             for (VectorLength_t i = 0; i < m_size; i++) {
-                result.m_data[i] = m_data[i];
+                result.set(i, m_data[i]);
             }
             result /= magnitude();
             return result;
@@ -543,7 +542,7 @@ class Vector {
          ********************************************************************************
         **/
         void initialize(bool zeroize = true) {
-            m_data = new T(m_size);
+            m_data = new T[m_size];
             if (zeroize) {
                 for (VectorLength_t i = 0; i < m_size; i++) {
                     m_data[i] = 0;
