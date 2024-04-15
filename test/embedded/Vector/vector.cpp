@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    vector.inc
+ * @file    vector.ino
  * @author  Logan Ruddick (Logan@Ruddicks.net)
  * @brief   Unit Tests of Vector Class
  * @version 1.0
@@ -10,6 +10,7 @@
  ********************************************************************************
 **/
 
+#include <Arduino.h>
 #include <unity.h>
 
 #include "Vector.tpp"
@@ -205,16 +206,16 @@ void Vector_Element_Operators() {
     VectorLength_t length = 3;
 
     // Operating Vectors
-    Vector<int> vector(length);
+    Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
         const int value = i;
-        vector.set(i, 3*value - 1);
+        vector.set(i, 3*value + 1);
     }
 
     TEST_MESSAGE("Element Addition");
     {
-        Vector<int> result = vector + 2;
+        Vector<double> result = vector + 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) + 2, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Element and Scalar");
@@ -223,7 +224,7 @@ void Vector_Element_Operators() {
 
     TEST_MESSAGE("Element Subtraction");
     {
-        Vector<int> result = vector - 2;
+        Vector<double> result = vector - 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) - 2, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Element and Scalar");
@@ -232,7 +233,7 @@ void Vector_Element_Operators() {
 
     TEST_MESSAGE("Element Multiplication");
     {
-        Vector<int> result = vector * 2;
+        Vector<double> result = vector * 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * 2, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Element and Scalar");
@@ -241,7 +242,7 @@ void Vector_Element_Operators() {
 
     TEST_MESSAGE("Element Division");
     {
-        Vector<int> result = vector / 2;
+        Vector<double> result = vector / 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) / 2, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Element and Scalar");
@@ -250,10 +251,11 @@ void Vector_Element_Operators() {
 
     TEST_MESSAGE("Element Exponentiation");
     {
-        Vector<int> result = vector ^ 2;
+        Vector<double> result = vector ^ 2.5;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * vector.get(i), result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element");
+            double expected = pow(vector.get(i), 2.5);
+            TEST_ASSERT_INT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element");
         }
     }
 }
@@ -263,7 +265,7 @@ void Vector_Element_Assignment_Operators() {
     VectorLength_t length = 3;
 
     // Operating Vectors
-    Vector<int> vector(length);
+    Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
         const int value = i;
@@ -272,7 +274,7 @@ void Vector_Element_Assignment_Operators() {
 
     TEST_MESSAGE("Element Assignment Addition");
     {
-        Vector<int> result = vector;
+        Vector<double> result = vector;
         result += 2;
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) + 2, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Element and Scalar");
@@ -281,7 +283,7 @@ void Vector_Element_Assignment_Operators() {
     
     TEST_MESSAGE("Element Assignment Subtraction");
     {
-        Vector<int> result = vector;
+        Vector<double> result = vector;
         result -= 2;
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) - 2, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Element and Scalar");
@@ -290,7 +292,7 @@ void Vector_Element_Assignment_Operators() {
 
     TEST_MESSAGE("Element Assignment Multiplication");
     {
-        Vector<int> result = vector;
+        Vector<double> result = vector;
         result *= 2;
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * 2, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Element and Scalar");
@@ -299,7 +301,7 @@ void Vector_Element_Assignment_Operators() {
 
     TEST_MESSAGE("Element Assignment Division");
     {
-        Vector<int> result = vector;
+        Vector<double> result = vector;
         result /= 2;
         for (VectorLength_t i = 0; i < length; i++) {
             TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) / 2, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Element and Scalar");
@@ -308,10 +310,11 @@ void Vector_Element_Assignment_Operators() {
 
     TEST_MESSAGE("Element Assignment Exponentiation");
     {
-        Vector<int> result = vector;
-        result ^= 2;
+        Vector<double> result = vector;
+        result ^= 2.5;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * vector.get(i), result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element");
+            double expected = pow(vector.get(i), 2.5);
+            TEST_ASSERT_INT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element");
         }
     }
 }
@@ -321,7 +324,7 @@ void Vector_Operations() {
     VectorLength_t length = 3;
 
     // Operating Vectors
-    Vector<int> vector(length);
+    Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
         const int value = i;
@@ -332,7 +335,7 @@ void Vector_Operations() {
     {
         double result = vector.magnitude();
         double expected = sqrt(dot(vector, vector));
-        TEST_ASSERT_DOUBLE_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result, "Vector Magnitude not equal to Square Root of Dot Product of Vector with Itself");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result, "Vector Magnitude not equal to Square Root of Dot Product of Vector with Itself");
     }
 
     TEST_MESSAGE("Vector Normalize");
@@ -341,7 +344,7 @@ void Vector_Operations() {
         double magnitude = vector.magnitude();
         for (VectorLength_t i = 0; i < length; i++) {
             double expected = vector.get(i) / magnitude;
-            TEST_ASSERT_DOUBLE_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Normalized Vector Element not equal to Element Divided by Magnitude");
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Normalized Vector Element not equal to Element Divided by Magnitude");
         }
     }
 
@@ -364,4 +367,21 @@ void Vector_Operations() {
     {
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, vector.length(), "Vector Length not equal to Constructor Argument");
     }
+}
+
+void setup(void) {
+    UNITY_BEGIN();
+    
+    RUN_TEST(Vector_Constructor);
+    RUN_TEST(Vector_MultiVector_Operators);
+    RUN_TEST(Vector_MultiVector_Assignment_Operators);
+    RUN_TEST(Vector_Element_Operators);
+    RUN_TEST(Vector_Element_Assignment_Operators);
+    RUN_TEST(Vector_Operations);
+    
+    UNITY_END();
+}
+
+void loop(void) {
+    // Do nothing
 }

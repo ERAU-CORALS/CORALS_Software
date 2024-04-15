@@ -83,6 +83,22 @@ class Matrix {
 
         /**
          ********************************************************************************
+         * @brief   Copy Vector to a new Matrix
+         ********************************************************************************
+         * @param[in]   vector    TYPE: const Vector<T>&
+         ********************************************************************************
+        **/
+        Matrix(const Vector<T> &vector) {
+            m_size.rows = vector.length();
+            m_size.columns = 1;
+            initialize(false);
+            for (MatrixLength_t i = 0; i < m_size.rows; i++) {
+                m_data[i] = vector.get(i);
+            }
+        }
+
+        /**
+         ********************************************************************************
          * @brief   Assign a Matrix object
          ********************************************************************************
          * @param[in]   matrix  TYPE: const Matrix<T>&
@@ -181,15 +197,42 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator*(const Vector<T> &vector) {
+        Vector<T> operator*(const Vector<T> &vector) {
             // Columns of matrix must equal length of vector
             assert(m_size.columns == vector.length());
 
-            Matrix<T> result(m_size.rows, 1);
+            Vector<T> result(m_size.rows);
             for (MatrixLength_t i = 0; i < m_size.rows; i++) {
+                T sum = 0;
                 for (MatrixLength_t j = 0; j < m_size.columns; j++) {
-                    result.m_data[i] += m_data[i * m_size.columns + j] * vector.get(j);
+                    sum += m_data[i * m_size.columns + j] * vector.get(j);
                 }
+                result.set(i, sum);
+            }
+
+            return result;
+        }
+
+        /**
+         ********************************************************************************
+         * @brief   Multiply a vector by a matrix
+         ********************************************************************************
+         * @param[in]   vector  TYPE: const Vector<T>&
+         * @param[in]   matrix  TYPE: const Matrix<T>&
+         * @return      Matrix<T>
+         ********************************************************************************
+        **/
+        friend Vector<T> operator*(const Vector<T> &vector, const Matrix<T> &matrix) {
+            // Length of vector must equal columns of matrix
+            assert(vector.length() == matrix.m_size.rows);
+
+            Vector<T> result(matrix.m_size.columns);
+            for (MatrixLength_t i = 0; i < matrix.m_size.columns; i++) {
+                T sum = 0;
+                for (MatrixLength_t j = 0; j < matrix.m_size.rows; j++) {
+                    sum += vector.get(j) * matrix.get(j, i);
+                }
+                result.set(i, sum);
             }
 
             return result;
@@ -262,7 +305,7 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator||(const Matrix<T> &matrix) {
+        Matrix<T> operator|(const Matrix<T> &matrix) {
             // Matrices must have the same number of columns
             assert(m_size.columns == matrix.m_size.columns);
 
@@ -288,7 +331,7 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator||(const Vector<T> &vector) {
+        Matrix<T> operator|(const Vector<T> &vector) {
             // Matrix must have the same number of columns as the vector has elements
             assert(m_size.columns == vector.length());
 
@@ -352,18 +395,6 @@ class Matrix {
 
         /**
          ********************************************************************************
-         * @brief   Multiply this matrix by a vector
-         ********************************************************************************
-         * @param[in]   vector  TYPE: const Vector<T>&
-         ********************************************************************************
-        **/
-        void operator*=(const Vector<T> &vector) {
-            Matrix<T> result = *this * vector;
-            *this = result;
-        }
-
-        /**
-         ********************************************************************************
          * @brief   Concatenate a matrix to this matrix horizontally
          ********************************************************************************
          * @param[in]   matrix  TYPE: const Matrix<T>&
@@ -401,7 +432,7 @@ class Matrix {
             // Matrices must have the same number of columns
             assert(m_size.columns == matrix.m_size.columns);
 
-            *this = *this || matrix;
+            *this = *this | matrix;
         }
 
         /**
@@ -415,7 +446,7 @@ class Matrix {
             // Matrix must have the same number of columns as the vector has elements
             assert(m_size.columns == vector.length());
 
-            *this = *this || vector;
+            *this = *this | vector;
         }
 
     // Element Operations
