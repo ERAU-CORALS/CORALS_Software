@@ -263,10 +263,12 @@ class Matrix {
 
             Matrix<T> result(m_size.rows, m_size.columns + matrix.m_size.columns);
             for (MatrixLength_t i = 0; i < m_size.rows * result.m_size.columns; i++) {
-                if (i % result.m_size.columns < m_size.columns) {
-                    result.m_data[i] = m_data[i];
-                } else {
-                    result.m_data[i] = matrix.m_data[i - m_size.columns];
+                for (MatrixLength_t j = 0; j < result.columns(); j++) {
+                    if (j < m_size.columns) {
+                        result.set(i, j, get(i, j));
+                    } else {
+                        result.set(i, j, matrix.get(i, j - m_size.columns));
+                    }
                 }
             }
 
@@ -884,6 +886,7 @@ class Matrix {
          ********************************************************************************
         **/
         T get(MatrixLength_t row, MatrixLength_t column) {
+            assert(row < m_size.rows && column < m_size.columns);
             return m_data[row * m_size.columns + column];
         }
 
