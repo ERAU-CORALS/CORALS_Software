@@ -10,7 +10,6 @@
  ********************************************************************************
 **/
 
-#include <Arduino.h>
 #include <unity.h>
 
 #include "Matrix.tpp"
@@ -399,7 +398,7 @@ void Matrix_MultiMatrix_Assignment_Operators() {
     }
 }
 
-void setup(void) {
+int main(void) {
     UNITY_BEGIN();
     
     RUN_TEST(Matrix_Constructor);
@@ -407,8 +406,6 @@ void setup(void) {
     RUN_TEST(Matrix_MultiMatrix_Assignment_Operators);
     
     UNITY_END();
-}
 
-void loop(void) {
-    // Do nothing
+    return 0;
 }

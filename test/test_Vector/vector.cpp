@@ -10,11 +10,10 @@
  ********************************************************************************
 **/
 
-#include <Arduino.h>
 #include <unity.h>
 
 #include "Vector.tpp"
-using namespace DataStructures;
+using namespace DataStructures::Vector;
 
 void Vector_Constructor() {
     // Size for all Constructors
@@ -67,65 +66,66 @@ void Vector_MultiVector_Operators() {
     VectorLength_t length = 3;
 
     // Operating Vectors
-    Vector<int> vector1(length);
-    Vector<int> vector2(length);
+    Vector<double> vector1(length);
+    Vector<double> vector2(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
-        const int value = i;
-        vector1.set(i, value);
-        vector2.set(i, 3*value - 1);
+        vector1.set(i, i + 1.0);
+        vector2.set(i, 3.5*i + 1.0);
     }
 
     TEST_MESSAGE("Vector Addition");
     {
-        Vector<int> result = vector1 + vector2;
+        Vector<double> result = vector1 + vector2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i) + vector2.get(i), result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Elements");
+            double expected = vector1.get(i) + vector2.get(i);
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Elements");
         }
     }
 
     TEST_MESSAGE("Vector Subtraction");
     {
-        Vector<int> result = vector1 - vector2;
+        Vector<double> result = vector1 - vector2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i) - vector2.get(i), result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Elements");
+            double expected = vector1.get(i) - vector2.get(i);
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Elements");
         }
     }
 
     TEST_MESSAGE("Vector Dot Multiplication");
     {
-        int result = dot(vector1, vector2);
-        int expected = 0;
+        double result = vector1.dot(vector2);
+        double expected = 0;
         for (VectorLength_t i = 0; i < length; i++) {
             expected += vector1.get(i) * vector2.get(i);
         }
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result, "Dot Product of Vectors not equal to Sum of Element Multiplication");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result, "Dot Product of Vectors not equal to Sum of Element Multiplication");
     }
 
     TEST_MESSAGE("Vector Cross Multiplication");
     {
-        Vector<int> result = cross(vector1, vector2);
+        Vector<double> result = vector1 * vector2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
 
-        int expected = vector1.get(1) * vector2.get(2) - vector1.get(2) * vector2.get(1);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(0), "Cross Product Element 1 not equal to Expected Value");
+        double expected = vector1.get(1) * vector2.get(2) - vector1.get(2) * vector2.get(1);
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(0), "Cross Product Element 1 not equal to Expected Value");
         expected = vector1.get(2) * vector2.get(0) - vector1.get(0) * vector2.get(2);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(1), "Cross Product Element 2 not equal to Expected Value");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(1), "Cross Product Element 2 not equal to Expected Value");
         expected = vector1.get(0) * vector2.get(1) - vector1.get(1) * vector2.get(0);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(2), "Cross Product Element 3 not equal to Expected Value");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(2), "Cross Product Element 3 not equal to Expected Value");
     }
 
     TEST_MESSAGE("Vector Concatenation");
     {
-        Vector<int> result = vector1 << vector2;
+        Vector<double> result = vector1 << vector2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(vector1.length() + vector2.length(), result.length(), "Result Vector Length not equal to Sum of Source Vector Lengths");
         for (VectorLength_t i = 0; i < result.length(); i++) {
             if (i < vector1.length()) {
-                TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i), result.get(i), "Result Vector Element not equal to Source Vector Element");
+                TEST_ASSERT_EQUAL_FLOAT_MESSAGE(vector1.get(i), result.get(i), "Result Vector Element not equal to Source Vector Element");
             } else {
-                TEST_ASSERT_EQUAL_INT_MESSAGE(vector2.get(i - vector1.length()), result.get(i), "Result Vector Element not equal to Source Vector Element");
+                TEST_ASSERT_EQUAL_FLOAT_MESSAGE(vector2.get(i - vector1.length()), result.get(i), "Result Vector Element not equal to Source Vector Element");
             }
         }
     }
@@ -136,66 +136,58 @@ void Vector_MultiVector_Assignment_Operators() {
     VectorLength_t length = 3;
 
     // Operating Vectors
-    Vector<int> vector1(length);
-    Vector<int> vector2(length);
+    Vector<double> vector1(length);
+    Vector<double> vector2(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
-        const int value = i;
+        double value = i;
         vector1.set(i, value);
         vector2.set(i, 3*value - 1);
     }
 
     TEST_MESSAGE("Vector Addition Assignment");
     {
-        Vector<int> result = vector1;
+        Vector<double> result = vector1;
         result += vector2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i) + vector2.get(i), result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Elements");
+            double expected = vector1.get(i) + vector2.get(i);
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Elements");
         }
     }
 
     TEST_MESSAGE("Vector Subtraction Assignment");
     {
-        Vector<int> result = vector1;
+        Vector<double> result = vector1;
         result -= vector2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i) - vector2.get(i), result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Elements");
+            double expected = vector1.get(i) - vector2.get(i);
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Elements");
         }
-    }
-
-    TEST_MESSAGE("Vector Dot Multiplication Assignment");
-    {
-        int result = vector1.dot(vector2);
-        int expected = 0;
-        for (VectorLength_t i = 0; i < length; i++) {
-            expected += vector1.get(i) * vector2.get(i);
-        }
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result, "Dot Product of Vectors not equal to Sum of Element Multiplication");
     }
 
     TEST_MESSAGE("Vector Cross Multiplication Assignment");
     {
-        Vector<int> result = vector1;
-        result.cross(vector2);
+        Vector<double> result = vector1;
+        result *= vector2;
 
-        int expected = vector1.get(1) * vector2.get(2) - vector1.get(2) * vector2.get(1);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(0), "Cross Product Element 1 not equal to Expected Value");
+        double expected = vector1.get(1) * vector2.get(2) - vector1.get(2) * vector2.get(1);
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(0), "Cross Product Element 1 not equal to Expected Value");
         expected = vector1.get(2) * vector2.get(0) - vector1.get(0) * vector2.get(2);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(1), "Cross Product Element 2 not equal to Expected Value");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(1), "Cross Product Element 2 not equal to Expected Value");
         expected = vector1.get(0) * vector2.get(1) - vector1.get(1) * vector2.get(0);
-        TEST_ASSERT_EQUAL_INT_MESSAGE(expected, result.get(2), "Cross Product Element 3 not equal to Expected Value");
+        TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(2), "Cross Product Element 3 not equal to Expected Value");
     }
 
     TEST_MESSAGE("Vector Concatenation Assignment");
     {
-        Vector<int> result = vector1;
+        Vector<double> result = vector1;
         result <<= vector2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(vector1.length() + vector2.length(), result.length(), "Result Vector Length not equal to Sum of Source Vector Lengths");
         for (VectorLength_t i = 0; i < result.length(); i++) {
             if (i < vector1.length()) {
-                TEST_ASSERT_EQUAL_INT_MESSAGE(vector1.get(i), result.get(i), "Result Vector Element not equal to Source Vector Element");
+                TEST_ASSERT_EQUAL_FLOAT_MESSAGE(vector1.get(i), result.get(i), "Result Vector Element not equal to Source Vector Element");
             } else {
-                TEST_ASSERT_EQUAL_INT_MESSAGE(vector2.get(i - vector1.length()), result.get(i), "Result Vector Element not equal to Source Vector Element");
+                TEST_ASSERT_EQUAL_FLOAT_MESSAGE(vector2.get(i - vector1.length()), result.get(i), "Result Vector Element not equal to Source Vector Element");
             }
         }
     }
@@ -209,7 +201,7 @@ void Vector_Element_Operators() {
     Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
-        const int value = i;
+        double value = i;
         vector.set(i, 3*value + 1);
     }
 
@@ -218,7 +210,8 @@ void Vector_Element_Operators() {
         Vector<double> result = vector + 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) + 2, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Element and Scalar");
+            double expected = vector.get(i) + 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Elements");
         }
     }
 
@@ -227,7 +220,8 @@ void Vector_Element_Operators() {
         Vector<double> result = vector - 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) - 2, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Element and Scalar");
+            double expected = vector.get(i) - 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Elements");
         }
     }
 
@@ -236,7 +230,8 @@ void Vector_Element_Operators() {
         Vector<double> result = vector * 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * 2, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Element and Scalar");
+            double expected = vector.get(i) * 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Elements");
         }
     }
 
@@ -245,7 +240,8 @@ void Vector_Element_Operators() {
         Vector<double> result = vector / 2;
         TEST_ASSERT_EQUAL_UINT_MESSAGE(length, result.length(), "Result Vector Length not equal to Source Vector Length");
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) / 2, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Element and Scalar");
+            double expected = vector.get(i) / 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Elements");
         }
     }
 
@@ -268,7 +264,7 @@ void Vector_Element_Assignment_Operators() {
     Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
-        const int value = i;
+        double value = i;
         vector.set(i, 3*value - 1);
     }
 
@@ -277,7 +273,8 @@ void Vector_Element_Assignment_Operators() {
         Vector<double> result = vector;
         result += 2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) + 2, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Element and Scalar");
+            double expected = vector.get(i) + 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Sum of Source Vector Element and Scalar");
         }
     }
     
@@ -286,7 +283,8 @@ void Vector_Element_Assignment_Operators() {
         Vector<double> result = vector;
         result -= 2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) - 2, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Element and Scalar");
+            double expected = vector.get(i) - 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Difference of Source Vector Element and Scalar");
         }
     }
 
@@ -295,7 +293,8 @@ void Vector_Element_Assignment_Operators() {
         Vector<double> result = vector;
         result *= 2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) * 2, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Element and Scalar");
+            double expected = vector.get(i) * 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Product of Source Vector Element and Scalar");
         }
     }
 
@@ -304,7 +303,8 @@ void Vector_Element_Assignment_Operators() {
         Vector<double> result = vector;
         result /= 2;
         for (VectorLength_t i = 0; i < length; i++) {
-            TEST_ASSERT_EQUAL_INT_MESSAGE(vector.get(i) / 2, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Element and Scalar");
+            double expected = vector.get(i) / 2;
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Quotient of Source Vector Element and Scalar");
         }
     }
 
@@ -314,12 +314,12 @@ void Vector_Element_Assignment_Operators() {
         result ^= 2.5;
         for (VectorLength_t i = 0; i < length; i++) {
             double expected = pow(vector.get(i), 2.5);
-            TEST_ASSERT_INT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element");
+            TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result.get(i), "Result Vector Element not equivalent to Exponentiation of Source Vector Element and Scalar");
         }
     }
 }
 
-void Vector_Operations() {
+void Vector_Operators() {
     // Size for all Vectors
     VectorLength_t length = 3;
 
@@ -327,14 +327,14 @@ void Vector_Operations() {
     Vector<double> vector(length);
 
     for (VectorLength_t i = 0; i < length; i++) {
-        const int value = i;
+        double value = i;
         vector.set(i, 3*value - 1);
     }
 
     TEST_MESSAGE("Vector Magnitude");
     {
         double result = vector.magnitude();
-        double expected = sqrt(dot(vector, vector));
+        double expected = sqrt(vector.dot(vector));
         TEST_ASSERT_FLOAT_WITHIN_MESSAGE(fabs(0.001 * expected), expected, result, "Vector Magnitude not equal to Square Root of Dot Product of Vector with Itself");
     }
 
@@ -350,14 +350,14 @@ void Vector_Operations() {
 
     TEST_MESSAGE("Vector isZero");
     {
-        Vector<int> zero(length);
+        Vector<double> zero(length);
         TEST_ASSERT_MESSAGE(zero.isZero(), "Known Zero Vector not recognized as Zero Vector");
         TEST_ASSERT_FALSE_MESSAGE(vector.isZero(), "Known Non-Zero Vector recognized as Zero Vector");
     }
 
     TEST_MESSAGE("Vector isOne");
     {
-        Vector<int> one(length);
+        Vector<double> one(length);
         one += 1;
         TEST_ASSERT_MESSAGE(one.isOne(), "Known One Vector not recognized as One Vector");
         TEST_ASSERT_FALSE_MESSAGE(vector.isOne(), "Known Non-One Vector recognized as One Vector");
@@ -369,7 +369,7 @@ void Vector_Operations() {
     }
 }
 
-void setup(void) {
+int main(void) {
     UNITY_BEGIN();
     
     RUN_TEST(Vector_Constructor);
@@ -377,11 +377,7 @@ void setup(void) {
     RUN_TEST(Vector_MultiVector_Assignment_Operators);
     RUN_TEST(Vector_Element_Operators);
     RUN_TEST(Vector_Element_Assignment_Operators);
-    RUN_TEST(Vector_Operations);
+    RUN_TEST(Vector_Operators);
     
     UNITY_END();
-}
-
-void loop(void) {
-    // Do nothing
 }

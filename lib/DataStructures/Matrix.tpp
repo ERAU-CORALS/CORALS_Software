@@ -69,7 +69,7 @@ template<typename T> bool isOne(const Matrix<T> &matrix);
 
 } // end namespace Matrix_Property
 
-namespace Element_Operation {
+namespace Element_Operations {
 
 template<typename T> Matrix<T> add(const Matrix<T> &matrix, const T &value);
 template<typename T> Matrix<T> subtract(const Matrix<T> &matrix, const T &value);
@@ -382,7 +382,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> operator+(const T &value) const {
-            return Element_Operation::add<T>(*this, value);
+            return Element_Operations::add<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -393,7 +393,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> operator-(const T &value) const {
-            return Element_Operation::subtract<T>(*this, value);
+            return Element_Operations::subtract<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -404,7 +404,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> operator*(const T &value) const {
-            return Element_Operation::multiply<T>(*this, value);
+            return Element_Operations::multiply<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -415,7 +415,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> operator/(const T &value) const {
-            return Element_Operation::divide<T>(*this, value);
+            return Element_Operations::divide<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -426,7 +426,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> operator^(const T &value) const {
-            return Element_Operation::power<T>(*this, value);
+            return Element_Operations::power<T>(*this, value);
         }
 
     // Element Assignment Operations
@@ -438,7 +438,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator+=(const T &value) {
-            *this = Element_Operation::add(*this, value);
+            *this = Element_Operations::add(*this, value);
         }
 
         /**
@@ -449,7 +449,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator-=(const T &value) {
-            *this = Element_Operation::subtract(*this, value);
+            *this = Element_Operations::subtract(*this, value);
         }
 
         /**
@@ -460,7 +460,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator*=(const T &value) {
-            *this = Element_Operation::multiply(*this, value);
+            *this = Element_Operations::multiply(*this, value);
         }
 
         /**
@@ -471,7 +471,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator/=(const T &value) {
-            *this = Element_Operation::divide(*this, value);
+            *this = Element_Operations::divide(*this, value);
         }
 
         /**
@@ -482,7 +482,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator^=(const T &value) {
-            *this = Element_Operation::power(*this, value);
+            *this = Element_Operations::power(*this, value);
         }
 
     // Matrix Operations
@@ -692,19 +692,6 @@ class Matrix {
     // Element Access
         /**
          ********************************************************************************
-         * @brief   Set a value in the matrix
-         ********************************************************************************
-         * @param[in]   row     TYPE: MatrixLength_t
-         * @param[in]   column  TYPE: MatrixLength_t
-         * @param[in]   value   TYPE: T
-         ********************************************************************************
-        **/
-        void set(MatrixLength_t row, MatrixLength_t column, T value) {
-            m_data[row * m_size.columns + column] = value;
-        }
-
-        /**
-         ********************************************************************************
          * @brief   Get a value from the matrix
          ********************************************************************************
          * @param[in]   row     TYPE: MatrixLength_t
@@ -712,11 +699,26 @@ class Matrix {
          * @return      T
          ********************************************************************************
         **/
-        T get(MatrixLength_t row, MatrixLength_t column) const {
+        inline T get(MatrixLength_t row, MatrixLength_t column) const {
             assert(row < m_size.rows && column < m_size.columns);
             return m_data[row * m_size.columns + column];
         }
+        
+        /**
+         ********************************************************************************
+         * @brief   Set a value in the matrix
+         ********************************************************************************
+         * @param[in]   row     TYPE: MatrixLength_t
+         * @param[in]   column  TYPE: MatrixLength_t
+         * @param[in]   value   TYPE: T
+         ********************************************************************************
+        **/
+        inline void set(MatrixLength_t row, MatrixLength_t column, T value) {
+            assert(row < m_size.rows && column < m_size.columns);
+            m_data[row * m_size.columns + column] = value;
+        }
 
+        
     // Matrix Friend Functions
         template<typename U> friend Matrix<U> Matrix_Operations::add(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
         template<typename U> friend Matrix<U> Matrix_Operations::subtract(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
@@ -745,11 +747,11 @@ class Matrix {
         template<typename U> friend bool Matrix_Property::isZero(const Matrix<U> &matrix);
         template<typename U> friend bool Matrix_Property::isOne(const Matrix<U> &matrix);
 
-        template<typename U> friend Matrix<U> Element_Operation::add(const Matrix<U> &matrix, const T &value);
-        template<typename U> friend Matrix<U> Element_Operation::subtract(const Matrix<U> &matrix, const T &value);
-        template<typename U> friend Matrix<U> Element_Operation::multiply(const Matrix<U> &matrix, const T &value);
-        template<typename U> friend Matrix<U> Element_Operation::divide(const Matrix<U> &matrix, const T &value);
-        template<typename U> friend Matrix<U> Element_Operation::power(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operations::add(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operations::subtract(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operations::multiply(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operations::divide(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operations::power(const Matrix<U> &matrix, const T &value);
 
     private:
         MatrixSize_t m_size;
@@ -1423,7 +1425,7 @@ bool isOne(const Matrix<T> &matrix) {
 
 } // end namespace Matrix_Property
 
-namespace Element_Operation {
+namespace Element_Operations {
 
 /**
  ********************************************************************************

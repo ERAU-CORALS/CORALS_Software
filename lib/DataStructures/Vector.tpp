@@ -17,8 +17,40 @@
 #include <math.h>
 
 namespace DataStructures {
+namespace Vector {
+
+template<typename T> class Vector;
 
 using VectorLength_t = unsigned int;
+
+namespace Vector_Operations {
+
+template<typename T> Vector<T> add(const Vector<T> &vector1, const Vector<T> &vector2);
+template<typename T> Vector<T> subtract(const Vector<T> &vector1, const Vector<T> &vector2);
+template<typename T> T dot(const Vector<T> &vector1, const Vector<T> &vector2);
+template<typename T> Vector<T> cross(const Vector<T> &vector1, const Vector<T> &vector2);
+template<typename T> Vector<T> concat(const Vector<T> &vector1, const Vector<T> &vector2);
+template<typename T> double magnitude(const Vector<T> &vector);
+template<typename T> Vector<double> normalize(const Vector<T> &vector);
+
+} // end namespace Vector_Operations
+
+namespace Vector_Property {
+
+template<typename T> bool isZero(const Vector<T> &vector);
+template<typename T> bool isOne(const Vector<T> &vector);
+
+} // end namespace Vector_Property
+
+namespace Element_Operations {
+
+template<typename T> Vector<T> add(const Vector<T> &vector, const T value);
+template<typename T> Vector<T> subtract(const Vector<T> &vector, const T value);
+template<typename T> Vector<T> multiply(const Vector<T> &vector, const T value);
+template<typename T> Vector<T> divide(const Vector<T> &vector, const T value);
+template<typename T> Vector<T> power(const Vector<T> &vector, const T value);
+        
+} // end namespace Element_Operation
 
 /**
  ********************************************************************************
@@ -92,15 +124,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator+(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            Vector<T> result(m_size);
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result.m_data[i] = m_data[i] + vector.m_data[i];
-            }
-            return result;
+        inline Vector<T> operator+(const Vector<T> &vector) const {
+            return Vector_Operations::add<T>(*this, vector);
         }
 
         /**
@@ -111,59 +136,30 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator-(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            Vector<T> result(m_size);
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result.m_data[i] = m_data[i] - vector.m_data[i];
-            }
-            return result;
+        inline Vector<T> operator-(const Vector<T> &vector) const {
+            return Vector_Operations::subtract<T>(*this, vector);
         }
 
         /**
          ********************************************************************************
-         * @brief   Find the dot product of two vectors
+         * @brief   Dot a vector with this vector
          ********************************************************************************
-         * @param[in]   scalar  TYPE: const T
-         * @return      T
+         * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        friend T dot(const Vector<T> &vector1, const Vector<T> &vector2) {
-            // Vectors must be the same size
-            assert(vector1.m_size == vector2.m_size);
-
-            T result = 0;
-            for (VectorLength_t i = 0; i < vector1.m_size; i++) {
-                result += vector1.m_data[i] * vector2.m_data[i];
-            }
-
-            return result;
+        inline T dot(const Vector<T> &vector) const {
+            return Vector_Operations::dot<T>(*this, vector);
         }
 
         /**
          ********************************************************************************
-         * @brief   Find the cross product of two vectors
+         * @brief   Cross a vector with this vector
          ********************************************************************************
-         * @param[in]   vector1 TYPE: const Vector<T>&
-         * @param[in]   vector2 TYPE: const Vector<T>&
-         * @return      Vector<T>
+         * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        friend Vector<T> cross(const Vector<T> &vector1, const Vector<T> &vector2) {
-            // Vectors must be the same size
-            assert(vector1.m_size == vector2.m_size);
-
-            // Vectors must be 3D
-            assert(vector1.m_size == 3);
-
-            Vector<T> result(3);
-            result.m_data[0] = vector1.m_data[1] * vector2.m_data[2] - vector1.m_data[2] * vector2.m_data[1];
-            result.m_data[1] = vector1.m_data[2] * vector2.m_data[0] - vector1.m_data[0] * vector2.m_data[2];
-            result.m_data[2] = vector1.m_data[0] * vector2.m_data[1] - vector1.m_data[1] * vector2.m_data[0];
-
-            return result;
+        inline Vector<T> operator*(const Vector<T> &vector) const {
+            return Vector_Operations::cross<T>(*this, vector);
         }
 
         /**
@@ -174,21 +170,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator<<(const Vector<T> &vector) {
-            Vector<T> result(m_size + vector.m_size);
-
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result.m_data[i] = m_data[i];
-            }
-            for (VectorLength_t i = 0; i < vector.m_size; i++) {
-                result.m_data[m_size + i] = vector.m_data[i];
-            }
-
-            return result;
-        }
-        // Alternative syntax
-        Vector<T> operator||(const Vector<T> &vector) {
-            return *this << vector;
+        inline Vector<T> operator<<(const Vector<T> &vector) const {
+            return Vector_Operations::concat<T>(*this, vector);
         }
 
     // MultiVector Assignment Operations
@@ -197,58 +180,23 @@ class Vector {
          * @brief   Add a vector to this vector
          ********************************************************************************
          * @param[in]   vector  TYPE: const Vector<T>&
-         * @return      Vector<T>&
          ********************************************************************************
         **/
-        Vector<T>& operator+=(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] += vector.m_data[i];
-            }
-
-            return *this;
-        }
+        inline void operator+=(const Vector<T> &vector) {
+            *this = Vector_Operations::add<T>(*this, vector);
+        } 
 
         /**
          ********************************************************************************
          * @brief   Subtract a vector from this vector
          ********************************************************************************
          * @param[in]   vector  TYPE: const Vector<T>&
-         * @return      Vector<T>&
          ********************************************************************************
         **/
-        Vector<T>& operator-=(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] -= vector.m_data[i];
-            }
-
-            return *this;
+        inline void operator-=(const Vector<T> &vector) {
+            *this = Vector_Operations::subtract<T>(*this, vector);
         }
-
-        /**
-         ********************************************************************************
-         * @brief   Dot a vector with this vector
-         ********************************************************************************
-         * @param[in]   vector  TYPE: const Vector<T>&
-         ********************************************************************************
-        **/
-        T dot(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            T result = 0;
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result += m_data[i] * vector.m_data[i];
-            }
-
-            return result;
-        }
-
+        
         /**
          ********************************************************************************
          * @brief   Cross a vector with this vector
@@ -256,19 +204,8 @@ class Vector {
          * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        void cross(const Vector<T> &vector) {
-            // Vectors must be the same size
-            assert(m_size == vector.m_size);
-
-            // Vectors must be 3D
-            assert(m_size == 3);
-
-            const T x = m_data[0];
-            const T y = m_data[1];
-            const T z = m_data[2];
-            m_data[0] = y * vector.m_data[2] - z * vector.m_data[1];
-            m_data[1] = z * vector.m_data[0] - x * vector.m_data[2];
-            m_data[2] = x * vector.m_data[1] - y * vector.m_data[0];
+        inline void operator*=(const Vector<T> &vector) {
+            *this = Vector_Operations::cross<T>(*this, vector);
         }
 
         /**
@@ -278,12 +215,8 @@ class Vector {
          * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        void operator<<=(const Vector<T> &vector) {
-            *this = *this << vector;
-        }
-        // Alternative syntax
-        void operator|=(const Vector<T> &vector) {
-            *this <<= vector;
+        inline void operator<<=(const Vector<T> &vector) {
+            *this = Vector_Operations::concat<T>(*this, vector);
         }
 
     // Element Operations
@@ -295,10 +228,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator+(const T &value) {
-            Vector<T> result(*this);
-            result += value;
-            return result;
+        inline Vector<T> operator+(const T value) const {
+            return Element_Operations::add<T>(*this, value);
         }
 
         /**
@@ -309,10 +240,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator-(const T &value) {
-            Vector<T> result(*this);
-            result -= value;
-            return result;
+        inline Vector<T> operator-(const T value) const {
+            return Element_Operations::subtract<T>(*this, value);
         }
 
         /**
@@ -323,10 +252,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator*(const T &value) {
-            Vector<T> result(*this);
-            result *= value;
-            return result;
+        inline Vector<T> operator*(const T value) const {
+            return Element_Operations::multiply<T>(*this, value);
         }
 
         /**
@@ -337,11 +264,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-
-        Vector<T> operator/(const T &value) {
-            Vector<T> result(*this);
-            result /= value;
-            return result;
+        inline Vector<T> operator/(const T value) const {
+            return Element_Operations::divide<T>(*this, value);
         }
 
         /**
@@ -352,10 +276,8 @@ class Vector {
          * @return      Vector<T>
          ********************************************************************************
         **/
-        Vector<T> operator^(const T &value) {
-            Vector<T> result(*this);
-            result ^= value;
-            return result;
+        inline Vector<T> operator^(const T value) const {
+            return Element_Operations::power<T>(*this, value);
         }
 
     // Element Assignment Operations
@@ -366,10 +288,8 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void operator+=(const T &value) {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] += value;
-            }
+        inline void operator+=(const T value) {
+            *this = Element_Operations::add<T>(*this, value);
         }
 
         /**
@@ -379,10 +299,8 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void operator-=(const T &value) {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] -= value;
-            }
+        inline void operator-=(const T value) {
+            *this = Element_Operations::subtract<T>(*this, value);
         }
 
         /**
@@ -392,10 +310,8 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void operator*=(const T &value) {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] *= value;
-            }
+        inline void operator*=(const T value) {
+            *this = Element_Operations::multiply<T>(*this, value);
         }
 
         /**
@@ -405,10 +321,8 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void operator/=(const T &value) {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] /= value;
-            }
+        inline void operator/=(const T value) {
+            *this = Element_Operations::divide<T>(*this, value);
         }
 
         /**
@@ -418,10 +332,8 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void operator^=(const T &value) {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                m_data[i] = pow(m_data[i], value);
-            }
+        inline void operator^=(const T value) {
+            *this = Element_Operations::power<T>(*this, value);
         }
 
     // Vector Operations
@@ -429,27 +341,22 @@ class Vector {
          ********************************************************************************
          * @brief   Find the magnitude of the vector
          ********************************************************************************
-         * @return  T
+         * @return  double
          ********************************************************************************
         **/
-        double magnitude() {
-            return sqrt(dot(*this));
+        inline double magnitude() const {
+            return Vector_Operations::magnitude<T>(*this);
         }
 
         /**
          ********************************************************************************
          * @brief   Normalize the vector
          ********************************************************************************
-         * @return  Vector<T>
+         * @return  Vector<double>
          ********************************************************************************
         **/
-        Vector<double> normalize() {
-            Vector<double> result(m_size);
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                result.set(i, m_data[i]);
-            }
-            result /= magnitude();
-            return result;
+        inline Vector<double> normalize() const {
+            return Vector_Operations::normalize<T>(*this);
         }
 
     // Vector Properties
@@ -460,13 +367,8 @@ class Vector {
          * @return  bool
          ********************************************************************************
         **/
-        bool isZero() {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                if (m_data[i] != 0) {
-                    return false;
-                }
-            }
-            return true;
+        inline bool isZero() const {
+            return Vector_Property::isZero<T>(*this);
         }
 
         /**
@@ -476,13 +378,8 @@ class Vector {
          * @return  bool
          ********************************************************************************
         **/
-        bool isOne() {
-            for (VectorLength_t i = 0; i < m_size; i++) {
-                if (m_data[i] != 1) {
-                    return false;
-                }
-            }
-            return true;
+        inline bool isOne() const {
+            return Vector_Property::isOne<T>(*this);
         }
 
         /**
@@ -492,12 +389,8 @@ class Vector {
          * @return  VectorLength_t
          ********************************************************************************
         **/
-        VectorLength_t length() {
+        inline VectorLength_t length() const {
             return m_size;
-        }
-        // Alternative syntax
-        VectorLength_t size() {
-            return length();
         }
 
     // Element Access
@@ -509,7 +402,7 @@ class Vector {
          * @return  T
          ********************************************************************************
         **/
-        T get(const VectorLength_t index) {
+        inline T get(const VectorLength_t index) const {
             assert(index < m_size);
             return m_data[index];
         }
@@ -522,10 +415,29 @@ class Vector {
          * @param[in]   value   TYPE: const T&
          ********************************************************************************
         **/
-        void set(const VectorLength_t index, const T &value) {
+        inline void set(const VectorLength_t index, const T value) {
             assert(index < m_size);
             m_data[index] = value;
         }
+
+    // Vector Friend Functions
+        
+        template<typename U> friend Vector<U> Vector_Operations::add(const Vector<U> &vector1, const Vector<U> &vector2);
+        template<typename U> friend Vector<U> Vector_Operations::subtract(const Vector<U> &vector1, const Vector<U> &vector2);
+        template<typename U> friend U Vector_Operations::dot(const Vector<U> &vector1, const Vector<U> &vector2);
+        template<typename U> friend Vector<U> Vector_Operations::cross(const Vector<U> &vector1, const Vector<U> &vector2);
+        template<typename U> friend Vector<U> Vector_Operations::concat(const Vector<U> &vector1, const Vector<U> &vector2);
+        template<typename U> friend double Vector_Operations::magnitude(const Vector<U> &vector);
+        template<typename U> friend Vector<double> Vector_Operations::normalize(const Vector<U> &vector);
+
+        template<typename U> friend bool Vector_Property::isZero(const Vector<U> &vector);
+        template<typename U> friend bool Vector_Property::isOne(const Vector<U> &vector);
+
+        template<typename U> friend Vector<U> Element_Operations::add(const Vector<U> &vector, const U value);
+        template<typename U> friend Vector<U> Element_Operations::subtract(const Vector<U> &vector, const U value);
+        template<typename U> friend Vector<U> Element_Operations::multiply(const Vector<U> &vector, const U value);
+        template<typename U> friend Vector<U> Element_Operations::divide(const Vector<U> &vector, const U value);
+        template<typename U> friend Vector<U> Element_Operations::power(const Vector<U> &vector, const U value);
 
     private:
         VectorLength_t m_size;
@@ -538,7 +450,7 @@ class Vector {
          ********************************************************************************
          * @param[in]   zeroize TYPE: bool
          ********************************************************************************
-         * @note    If zeroize is true, the matrix will be initialized to zero
+         * @note    If zeroize is true, the vector will be initialized to zero
          ********************************************************************************
         **/
         void initialize(bool zeroize = true) {
@@ -554,7 +466,7 @@ class Vector {
          ********************************************************************************
          * @brief   Copy a vector
          ********************************************************************************
-         * @param[in]   matrix  TYPE: const Vector<T>&
+         * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
         void copy(const Vector<T> &vector) {
@@ -576,6 +488,292 @@ class Vector {
         }
 };
 
+namespace Vector_Operations {
+
+/**
+ ********************************************************************************
+ * @brief   Add two vectors
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector1 TYPE: const Vector<T>&
+ * @param[in]   vector2 TYPE: const Vector<T>&
+ * @return      Vector<T>
+ ******************************************************************************** 
+**/
+template<typename T> Vector<T> add(const Vector<T> &vector1, const Vector<T> &vector2) {
+    // Vectors must be the same size
+    assert(vector1.m_size == vector2.m_size);
+
+    Vector<T> result(vector1);
+    for (VectorLength_t i = 0; i < vector1.m_size; i++) {
+        result.m_data[i] += vector2.m_data[i];
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Subtract two vectors
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector1 TYPE: const Vector<T>&
+ * @param[in]   vector2 TYPE: const Vector<T>&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> subtract(const Vector<T> &vector1, const Vector<T> &vector2) {
+    // Vectors must be the same size
+    assert(vector1.m_size == vector2.m_size);
+
+    Vector<T> result(vector1);
+    for (VectorLength_t i = 0; i < vector1.m_size; i++) {
+        result.m_data[i] -= vector2.m_data[i];
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Dot two vectors
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector1 TYPE: const Vector<T>&
+ * @param[in]   vector2 TYPE: const Vector<T>&
+ * @return      T
+ ********************************************************************************
+**/
+template<typename T> T dot(const Vector<T> &vector1, const Vector<T> &vector2) {
+    // Vectors must be the same size
+    assert(vector1.m_size == vector2.m_size);
+
+    T result = 0;
+    for (VectorLength_t i = 0; i < vector1.m_size; i++) {
+        result += vector1.m_data[i] * vector2.m_data[i];
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Cross two vectors
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector1 TYPE: const Vector<T>&
+ * @param[in]   vector2 TYPE: const Vector<T>&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> cross(const Vector<T> &vector1, const Vector<T> &vector2) {
+    // Vectors must be the same size
+    assert(vector1.m_size == vector2.m_size);
+
+    Vector<T> result(vector1.m_size);
+    result.m_data[0] = vector1.m_data[1] * vector2.m_data[2] - vector1.m_data[2] * vector2.m_data[1];
+    result.m_data[1] = vector1.m_data[2] * vector2.m_data[0] - vector1.m_data[0] * vector2.m_data[2];
+    result.m_data[2] = vector1.m_data[0] * vector2.m_data[1] - vector1.m_data[1] * vector2.m_data[0];
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate two vectors
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector1 TYPE: const Vector<T>&
+ * @param[in]   vector2 TYPE: const Vector<T>&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> concat(const Vector<T> &vector1, const Vector<T> &vector2) {
+    Vector<T> result(vector1.m_size + vector2.m_size);
+    for (VectorLength_t i = 0; i < vector1.m_size; i++) {
+        result.m_data[i] = vector1.m_data[i];
+    }
+    for (VectorLength_t i = 0; i < vector2.m_size; i++) {
+        result.m_data[vector1.m_size + i] = vector2.m_data[i];
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Find the magnitude of the vector
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      double
+ ********************************************************************************
+**/
+template<typename T> double magnitude(const Vector<T> &vector) {
+    double result = 0;
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result += vector.m_data[i] * vector.m_data[i];
+    }
+
+    return sqrt(result);
+}
+
+/**
+ ********************************************************************************
+ * @brief   Normalize the vector
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      Vector<double>
+ ********************************************************************************
+**/
+template<typename T> Vector<double> normalize(const Vector<T> &vector) {
+    Vector<double> result(vector);
+    result /= vector.magnitude();
+
+    return result;
+}
+
+} // end namespace Vector_Operations
+
+namespace Vector_Property {
+
+/**
+ ********************************************************************************
+ * @brief   Check if the vector is zero
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T> bool isZero(const Vector<T> &vector) {
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        if (vector.m_data[i] != 0) return false;
+    }
+
+    return true;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if the vector is one
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T> bool isOne(const Vector<T> &vector) {
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        if (vector.m_data[i] != 1) return false;
+    }
+
+    return true;
+}
+
+} // end namespace Vector_Property
+
+namespace Element_Operations {
+
+/**
+ ********************************************************************************
+ * @brief   Add a value to each element in the vector
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> add(const Vector<T> &vector, const T value) {
+    Vector<T> result(vector);
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result.m_data[i] += value;
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Subtract a value from each element in the vector
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> subtract(const Vector<T> &vector, const T value) {
+    Vector<T> result(vector);
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result.m_data[i] -= value;
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Multiply each element in the vector by a value
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> multiply(const Vector<T> &vector, const T value) {
+    Vector<T> result(vector);
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result.m_data[i] *= value;
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Divide each element in the vector by a value
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> divide(const Vector<T> &vector, const T value) {
+    Vector<T> result(vector);
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result.m_data[i] /= value;
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Raise each element in the vector to a power
+ ********************************************************************************
+ * @tparam      T 
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T> Vector<T> power(const Vector<T> &vector, const T value) {
+    Vector<T> result(vector);
+    for (VectorLength_t i = 0; i < vector.m_size; i++) {
+        result.m_data[i] = pow(result.m_data[i], value);
+    }
+
+    return result;
+}
+
+} // end namespace Element_Operation
+
+} // end namespace Vector
 } // end namespace DataStructures
 
 #endif // __VECTOR_TPP__
