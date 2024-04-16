@@ -19,6 +19,7 @@
 #include "Vector.tpp"
 namespace DataStructures {
 namespace Matrix {
+using DataStructures::Vector::Vector;
 
 template<typename T> class Matrix;
 
@@ -821,7 +822,7 @@ Matrix<T> add(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
 
     Matrix<T> result(matrix1.size());
     for (MatrixLength_t i = 0; i < matrix1.rows() * matrix1.columns(); i++) {
-        result.set(i, matrix1.get(i) + matrix2.get(i));
+        result.m_data[i] = matrix1.m_data[i] + matrix2.m_data[i];
     }
 
     return result;   
@@ -844,7 +845,7 @@ Matrix<T> subtract(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
 
     Matrix<T> result(matrix1.size());
     for (MatrixLength_t i = 0; i < matrix1.rows() * matrix1.columns(); i++) {
-        result.set(i, matrix1.get(i) - matrix2.get(i));
+        result.m_data[i] = matrix1.m_data[i] - matrix2.m_data[i];
     }
 
     return result;
@@ -895,7 +896,7 @@ Vector<T> multiply(const Matrix<T> &matrix, const Vector<T> &vector) {
     Vector<T> result(matrix.rows());
     for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
         T sum = 0;
-        for (VectorLength_t i = 0; i < matrix.columns(); i++) {
+        for (MatrixLength_t i = 0; i < matrix.columns(); i++) {
             sum += matrix.get(i, j) * vector.get(i);
         }
         result.set(j, sum);
@@ -920,7 +921,7 @@ Vector<T> multiply(const Vector<T> &vector, const Matrix<T> &matrix) {
     assert(vector.length() == matrix.rows());
 
     Vector<T> result(matrix.columns());
-    for (VectorLength_t i = 0; i < result.length(); i++) {
+    for (MatrixLength_t i = 0; i < result.length(); i++) {
         T sum = 0;
         for (MatrixLength_t j = 0; j < matrix.rows(); j++) {
             sum += vector.get(j) * matrix.get(i, j);
@@ -1523,6 +1524,22 @@ Matrix<T> power(const Matrix<T> &matrix, const T &value) {
 }
 
 } // end namespace Element_Operation
+
+/**
+ ********************************************************************************
+ * @brief   Multiply a vector by a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Vector<T>
+ * @note    This function is defined outside of the Matrix class
+ ********************************************************************************
+**/
+template<typename T>
+inline Vector<T> operator*(const Vector<T> &vector, const Matrix<T> &matrix) {
+    return Matrix_Operations::multiply(vector, matrix);
+}
 
 } // end namespace Matrix
 } // end namespace DataStructure

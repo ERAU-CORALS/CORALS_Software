@@ -14,7 +14,8 @@
 
 #include "Matrix.tpp"
 #include "Vector.tpp"
-using namespace DataStructures;
+using namespace DataStructures::Matrix;
+using namespace DataStructures::Vector;
 
 void Matrix_Constructor() {
     // Size for all Constructors
