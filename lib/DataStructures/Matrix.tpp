@@ -18,6 +18,9 @@
 
 #include "Vector.tpp"
 namespace DataStructures {
+namespace Matrix {
+
+template<typename T> class Matrix;
 
 using MatrixLength_t = unsigned int;
 
@@ -31,12 +34,59 @@ struct MatrixSize_t {
     MatrixLength_t columns;
 };
 
+namespace Matrix_Operations {
+
+template<typename T> Matrix<T> add(const Matrix<T> &matrix1, const Matrix<T> &matrix2);
+template<typename T> Matrix<T> subtract(const Matrix<T> &matrix1, const Matrix<T> &matrix2);
+template<typename T> Matrix<T> multiply(const Matrix<T> &matrix1, const Matrix<T> &matrix2);
+template<typename T> Vector<T> multiply(const Matrix<T> &matrix, const Vector<T> &vector);
+template<typename T> Vector<T> multiply(const Vector<T> &vector, const Matrix<T> &matrix);
+template<typename T> Matrix<T> hcat(const Matrix<T> &matrix1, const Matrix<T> &matrix2);
+template<typename T> Matrix<T> hcat(const Matrix<T> &matrix, const Vector<T> &vector);
+template<typename T> Matrix<T> hcat(const Vector<T> &vector, const Matrix<T> &matrix);
+template<typename T> Matrix<T> vcat(const Matrix<T> &matrix1, const Matrix<T> &matrix2);
+template<typename T> Matrix<T> vcat(const Matrix<T> &matrix, const Vector<T> &vector);
+template<typename T> Matrix<T> vcat(const Vector<T> &vector, const Matrix<T> &matrix);
+template<typename T> Matrix<T> adjugate(const Matrix<T> &matrix);
+template<typename T> Matrix<T> cofactor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+template<typename T> Matrix<T> determinant(const MatrixLength_t size);
+template<typename T> Matrix<T> inverse(const Matrix<T> &matrix);
+template<typename T> Matrix<T> minor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+template<typename T> T trace(const Matrix<T> &matrix);
+template<typename T> Matrix<T> transpose(const Matrix<T> &matrix);
+
+} // end namespace Matrix_Operations
+
+namespace Matrix_Property {
+
+template<typename T> bool isDiagonal(const Matrix<T> &matrix);
+template<typename T> bool isIdentity(const Matrix<T> &matrix);
+template<typename T> bool isSquare(const Matrix<T> &matrix);
+template<typename T> bool isSymmetric(const Matrix<T> &matrix);
+template<typename T> bool isSkewSymmetric(const Matrix<T> &matrix);
+template<typename T> bool isZero(const Matrix<T> &matrix);
+template<typename T> bool isOne(const Matrix<T> &matrix);
+
+} // end namespace Matrix_Property
+
+namespace Element_Operation {
+
+template<typename T> Matrix<T> add(const Matrix<T> &matrix, const T &value);
+template<typename T> Matrix<T> subtract(const Matrix<T> &matrix, const T &value);
+template<typename T> Matrix<T> multiply(const Matrix<T> &matrix, const T &value);
+template<typename T> Matrix<T> divide(const Matrix<T> &matrix, const T &value);
+template<typename T> Matrix<T> power(const Matrix<T> &matrix, const T &value);
+        
+} // end namespace Element_Operation
+
 /**
  ********************************************************************************
  * @brief   Matrix Class
  * @tparam  T
  ******************************************************************************** 
 **/
+
+
 template<typename T>
 class Matrix {
     public:
@@ -89,7 +139,7 @@ class Matrix {
          ********************************************************************************
         **/
         Matrix(const Vector<T> &vector) {
-            m_size.rows = vector.length();
+            m_size.rows = (MatrixLength_t)vector.length();
             m_size.columns = 1;
             initialize(false);
             for (MatrixLength_t i = 0; i < m_size.rows; i++) {
@@ -133,16 +183,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator+(const Matrix<T> &matrix) {
-            // Matrices must be the same size
-            assert(m_size.rows == matrix.m_size.rows && m_size.columns == matrix.m_size.columns);
-
-            Matrix<T> result(m_size);
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                result.m_data[i] = m_data[i] + matrix.m_data[i];
-            }
-
-            return result;
+        inline Matrix<T> operator+(const Matrix<T> &matrix) const {
+            return Matrix_Operations::add<T>(*this, matrix);
         }
 
         /**
@@ -153,16 +195,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator-(const Matrix<T> &matrix) {
-            // Matrices must be the same size
-            assert(m_size.rows == matrix.m_size.rows && m_size.columns == matrix.m_size.columns);
-
-            Matrix<T> result(m_size);
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                result.m_data[i] = m_data[i] - matrix.m_data[i];
-            }
-
-            return result;
+        inline Matrix<T> operator-(const Matrix<T> &matrix) const {
+            return Matrix_Operations::subtract<T>(*this, matrix);
         }
 
         /**
@@ -173,20 +207,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator*(const Matrix<T> &matrix) {
-            // Columns of left matrix must equal rows of right matrix
-            assert(m_size.columns == matrix.m_size.rows);
-
-            Matrix<T> result(m_size.rows, matrix.m_size.columns);
-            for (MatrixLength_t i = 0; i < m_size.rows; i++) {
-                for (MatrixLength_t k = 0; k < m_size.columns; k++) {
-                    for (MatrixLength_t j = 0; j < matrix.m_size.columns; j++) {
-                        result.m_data[i * result.m_size.columns + j] += m_data[i * m_size.columns + k] * matrix.m_data[k * matrix.m_size.columns + j];
-                    }
-                }
-            }
-
-            return result;
+        inline Matrix<T> operator*(const Matrix<T> &matrix) const {
+            return Matrix_Operations::multiply<T>(*this, matrix);
         }
 
         /**
@@ -197,45 +219,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Vector<T> operator*(const Vector<T> &vector) {
-            // Columns of matrix must equal length of vector
-            assert(m_size.columns == vector.length());
-
-            Vector<T> result(m_size.rows);
-            for (MatrixLength_t i = 0; i < m_size.rows; i++) {
-                T sum = 0;
-                for (MatrixLength_t j = 0; j < m_size.columns; j++) {
-                    sum += m_data[i * m_size.columns + j] * vector.get(j);
-                }
-                result.set(i, sum);
-            }
-
-            return result;
-        }
-
-        /**
-         ********************************************************************************
-         * @brief   Multiply a vector by a matrix
-         ********************************************************************************
-         * @param[in]   vector  TYPE: const Vector<T>&
-         * @param[in]   matrix  TYPE: const Matrix<T>&
-         * @return      Matrix<T>
-         ********************************************************************************
-        **/
-        friend Vector<T> operator*(const Vector<T> &vector, const Matrix<T> &matrix) {
-            // Length of vector must equal columns of matrix
-            assert(vector.length() == matrix.m_size.rows);
-
-            Vector<T> result(matrix.m_size.columns);
-            for (MatrixLength_t i = 0; i < matrix.m_size.columns; i++) {
-                T sum = 0;
-                for (MatrixLength_t j = 0; j < matrix.m_size.rows; j++) {
-                    sum += vector.get(j) * matrix.get(j, i);
-                }
-                result.set(i, sum);
-            }
-
-            return result;
+        inline Vector<T> operator*(const Vector<T> &vector) const {
+            return Matrix_Operations::multiply<T>(*this, vector);
         }
 
         /**
@@ -245,7 +230,7 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator~() {
+        inline Matrix<T> operator~() const {
             return transpose();
         }
 
@@ -257,22 +242,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator<<(const Matrix<T> &matrix) {
-            // Matrices must have the same number of rows
-            assert(m_size.rows == matrix.m_size.rows);
-
-            Matrix<T> result(m_size.rows, m_size.columns + matrix.m_size.columns);
-            for (MatrixLength_t i = 0; i < m_size.rows * result.m_size.columns; i++) {
-                for (MatrixLength_t j = 0; j < result.columns(); j++) {
-                    if (j < m_size.columns) {
-                        result.set(i, j, get(i, j));
-                    } else {
-                        result.set(i, j, matrix.get(i, j - m_size.columns));
-                    }
-                }
-            }
-
-            return result;
+        inline Matrix<T> operator<<(const Matrix<T> &matrix) const {
+            return Matrix_Operations::hcat<T>(*this, matrix);
         }
 
         /**
@@ -283,20 +254,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator<<(const Vector<T> &vector) {
-            // Matrix must have the same number of rows as the vector has elements
-            assert(m_size.rows == vector.length());
-
-            Matrix<T> result(m_size.rows, m_size.columns + 1);
-            for (MatrixLength_t i = 0; i < m_size.rows * result.m_size.columns; i++) {
-                if (i % result.m_size.columns < m_size.columns) {
-                    result.m_data[i] = m_data[i];
-                } else {
-                    result.m_data[i] = vector.get(i - m_size.columns);
-                }
-            }
-
-            return result;
+        inline Matrix<T> operator<<(const Vector<T> &vector) const {
+            return Matrix_Operations::hcat<T>(*this, vector);
         }
 
         /**
@@ -307,22 +266,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator|(const Matrix<T> &matrix) {
-            // Matrices must have the same number of columns
-            assert(m_size.columns == matrix.m_size.columns);
-
-            Matrix<T> result(m_size.rows + matrix.m_size.rows, m_size.columns);
-            MatrixLength_t i = 0;
-            const MatrixLength_t size = m_size.rows * m_size.columns;
-            for (; i < size; i++) {
-                result.m_data[i] = m_data[i];
-            }
-            const MatrixLength_t matrixSize = matrix.m_size.rows * matrix.m_size.columns;
-            for (; i < size + matrixSize; i++) {
-                result.m_data[i + size] = matrix.m_data[i];
-            }
-
-            return result;
+        inline Matrix<T> operator|(const Matrix<T> &matrix) const {
+            return Matrix_Operations::vcat<T>(*this, matrix);
         }
 
         /**
@@ -333,20 +278,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator|(const Vector<T> &vector) {
-            // Matrix must have the same number of columns as the vector has elements
-            assert(m_size.columns == vector.length());
-
-            Matrix<T> result(m_size.rows + 1, m_size.columns);
-            MatrixLength_t i = 0;
-            const MatrixLength_t size = m_size.rows * m_size.columns;
-            for (; i < size; i++) {
-                result.m_data[i] = m_data[i];
-            }
-            const VectorLength_t vectorSize = vector.length();
-            for (; i < size + vectorSize; i++) {
-                result.m_data[i + size] = vector.get(i);
-            }
+        inline Matrix<T> operator|(const Vector<T> &vector) const {
+            return Matrix_Operations::vcat<T>(*this, vector);
         }
 
     // MultiMatrix Assignment Operations
@@ -358,13 +291,8 @@ class Matrix {
          * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void operator+=(const Matrix<T> &matrix) {
-            // Matrices must be the same size
-            assert(m_size.rows == matrix.m_size.rows && m_size.columns == matrix.m_size.columns);
-
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] += matrix.m_data[i];
-            }
+        inline void operator+=(const Matrix<T> &matrix) {
+            *this = Matrix_Operations::add<T>(*this, matrix);
         }
 
         /**
@@ -374,13 +302,8 @@ class Matrix {
          * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void operator-=(const Matrix<T> &matrix) {
-            // Matrices must be the same size
-            assert(m_size.rows == matrix.m_size.rows && m_size.columns == matrix.m_size.columns);
-
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] -= matrix.m_data[i];
-            }
+        inline void operator-=(const Matrix<T> &matrix) {
+            *this = Matrix_Operations::subtract<T>(*this, matrix);
         }
 
         /**
@@ -390,9 +313,19 @@ class Matrix {
          * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void operator*=(Matrix<T> matrix) {
-            Matrix<T> result = *this * matrix;
-            *this = result;
+        inline void operator*=(Matrix<T> matrix) {
+            *this = Matrix_Operations::multiply<T>(*this, matrix);
+        }
+
+        /**
+         ********************************************************************************
+         * @brief   Multiply this matrix by a vector
+         ********************************************************************************
+         * @param[in]   vector  TYPE: const Vector<T>&
+         ********************************************************************************
+        **/
+        inline void operator*=(const Vector<T> &vector) {
+            *this = Matrix_Operations::multiply<T>(*this, vector);
         }
 
         /**
@@ -402,11 +335,8 @@ class Matrix {
          * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void operator<<=(const Matrix<T> &matrix) {
-            // Matrices must have the same number of rows
-            assert(m_size.rows == matrix.m_size.rows);
-
-            *this = *this << matrix;
+        inline void operator<<=(const Matrix<T> &matrix) {
+            *this = Matrix_Operations::hcat<T>(*this, matrix);
         }
 
         /**
@@ -416,11 +346,8 @@ class Matrix {
          * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        void operator<<=(const Vector<T> &vector) {
-            // Matrix must have the same number of rows as the vector has elements
-            assert(m_size.rows == vector.length());
-
-            *this = *this << vector;
+        inline void operator<<=(const Vector<T> &vector) {
+            *this = Matrix_Operations::hcat<T>(*this, vector);
         }
         
         /**
@@ -430,11 +357,8 @@ class Matrix {
          * @param[in]   matrix  TYPE: const Matrix<T>&
          ********************************************************************************
         **/
-        void operator|=(Matrix<T> matrix) {
-            // Matrices must have the same number of columns
-            assert(m_size.columns == matrix.m_size.columns);
-
-            *this = *this | matrix;
+        inline void operator|=(Matrix<T> matrix) {
+            *this = Matrix_Operations::vcat<T>(*this, matrix);
         }
 
         /**
@@ -444,11 +368,8 @@ class Matrix {
          * @param[in]   vector  TYPE: const Vector<T>&
          ********************************************************************************
         **/
-        void operator|=(const Vector<T> &vector) {
-            // Matrix must have the same number of columns as the vector has elements
-            assert(m_size.columns == vector.length());
-
-            *this = *this | vector;
+        inline void operator|=(const Vector<T> &vector) {
+            *this = Matrix_Operations::vcat<T>(*this, vector);
         }
 
     // Element Operations
@@ -460,10 +381,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator+(const T &value) {
-            Matrix<T> result(*this);
-            result += value;
-            return result;
+        inline Matrix<T> operator+(const T &value) const {
+            return Element_Operation::add<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -473,10 +392,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator-(const T &value) {
-            Matrix<T> result(*this);
-            result -= value;
-            return result;
+        inline Matrix<T> operator-(const T &value) const {
+            return Element_Operation::subtract<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -486,10 +403,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator*(const T &value) {
-            Matrix<T> result(*this);
-            result *= value;
-            return result;
+        inline Matrix<T> operator*(const T &value) const {
+            return Element_Operation::multiply<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -499,10 +414,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator/(const T &value) {
-            Matrix<T> result(*this);
-            result /= value;
-            return result;
+        inline Matrix<T> operator/(const T &value) const {
+            return Element_Operation::divide<T>(*this, value);
         }
         /**
          ********************************************************************************
@@ -512,65 +425,67 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> operator^(const T &value) {
-            Matrix<T> result(*this);
-            result ^= value;
-            return result;
+        inline Matrix<T> operator^(const T &value) const {
+            return Element_Operation::power<T>(*this, value);
         }
 
     // Element Assignment Operations
-        void operator+=(const T &value) {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] += value;
-            }
+        /**
+         ********************************************************************************
+         * @brief   Add a value to each element in the matrix
+         ********************************************************************************
+         * @param[in]   value   TYPE: const T&
+         ********************************************************************************
+        **/
+        inline void operator+=(const T &value) {
+            *this = Element_Operation::add(*this, value);
         }
-        void operator-=(const T &value) {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] -= value;
-            }
+
+        /**
+         ********************************************************************************
+         * @brief   Subtract a value from each element in the matrix
+         ********************************************************************************
+         * @param[in]   value   TYPE: const T&
+         ********************************************************************************
+        **/
+        inline void operator-=(const T &value) {
+            *this = Element_Operation::subtract(*this, value);
         }
-        void operator*=(const T &value) {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] *= value;
-            }
+
+        /**
+         ********************************************************************************
+         * @brief   Multiply each element in the matrix by a value
+         ********************************************************************************
+         * @param[in]   value   TYPE: const T&
+         ********************************************************************************
+        **/
+        inline void operator*=(const T &value) {
+            *this = Element_Operation::multiply(*this, value);
         }
-        void operator/=(const T &value) {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] /= value;
-            }
+
+        /**
+         ********************************************************************************
+         * @brief   Divide each element in the matrix by a value
+         ********************************************************************************
+         * @param[in]   value   TYPE: const T&
+         ********************************************************************************
+        **/
+        inline void operator/=(const T &value) {
+            *this = Element_Operation::divide(*this, value);
         }
-        void operator^=(const T &value) {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                m_data[i] = pow(m_data[i], value);
-            }
+
+        /**
+         ********************************************************************************
+         * @brief   Raise each element in the matrix to a power
+         ********************************************************************************
+         * @param[in]   value   TYPE: const T&
+         ********************************************************************************
+        **/
+        inline void operator^=(const T &value) {
+            *this = Element_Operation::power(*this, value);
         }
 
     // Matrix Operations
-        /**
-         ********************************************************************************
-         * @brief   Get the determinant of the matrix
-         ********************************************************************************
-         * @return  T
-         ********************************************************************************
-        **/
-        T determinant() {
-            // Matrix must be square
-            assert(isSquare());
-
-            // Base Cases
-            if (rows() == 1) {
-                return get(0, 0);
-            }
-            if (rows() == 2) {
-                return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0);
-            }
-
-            // Higher Order Cases
-            Matrix<T> adj(adjugate());
-            Matrix<T> determinantIdentity = *this * adj;
-            return determinantIdentity.get(0, 0);
-        }
-
         /**
          ********************************************************************************
          * @brief   Get the adjugate of the matrix
@@ -578,19 +493,8 @@ class Matrix {
          * @return  Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> adjugate() {
-            // Matrix must be square
-            assert(isSquare());
-
-
-            Matrix<T> C(m_size); // Cofactor Matrix
-            for (MatrixLength_t i = 0; i < rows(); i++) {
-                for (MatrixLength_t j = 0; j < columns(); j++) {
-                    C.set(i, j, cofactor(i, j));
-                }
-            }
-
-            return C.transpose(); // Adjugate is the transpose of the cofactor matrix
+        inline Matrix<T> adjugate() const {
+            return Matrix_Operations::adjugate(*this);
         }
 
         /**
@@ -602,16 +506,21 @@ class Matrix {
          * @return      T
          ********************************************************************************
         **/
-        T cofactor(int remove_row, int remove_column) {
-            // Matrix must be square
-            assert(isSquare());
-
-            Matrix<T> M(minor(remove_row, remove_column)); // Minor Matrix
-            T cofactor_mag = M.determinant();
-            T cofactor_sign = (remove_row + remove_column) % 2 == 0 ? 1 : -1;
-            return cofactor_sign * cofactor_mag;
+        inline T cofactor(int remove_row, int remove_column) const {
+            return Matrix_Operations::cofactor(*this, remove_row, remove_column);
+        }
+        /**
+         ********************************************************************************
+         * @brief   Get the determinant of the matrix
+         ********************************************************************************
+         * @return  T
+         ********************************************************************************
+        **/
+        inline T determinant() const {
+            return Matrix_Operations::determinant(*this);
         }
 
+        
         /**
          ********************************************************************************
          * @brief   Get the minor of a matrix
@@ -621,20 +530,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> minor(int remove_row, int remove_column) {
-            // Matrix must be square
-            assert(isSquare());
-
-            Matrix<T> M(rows() - 1, columns() - 1);
-            for (MatrixLength_t i = 0; i < rows(); i++) {
-                for (MatrixLength_t j = 0; j < columns(); j++) {
-                    if (i != remove_row && j != remove_column) {
-                        M.set(i + (i > remove_row), j + (j > remove_column), get(i, j));
-                    }
-                }
-            }
-
-            return M;
+        inline Matrix<T> minor(int remove_row, int remove_column) const {
+            return Matrix_Operations::minor(*this, remove_row, remove_column);
         }
 
         /**
@@ -644,15 +541,8 @@ class Matrix {
          * @return      Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> inverse() {
-            // Matrix must be square
-            assert(isSquare());
-
-            // Matrix must be invertible
-            T det = determinant();
-            assert(det != 0);
-
-            Matrix<T> inv = adjugate() / det;
+        inline Matrix<T> inverse() const {
+            return Matrix_Operations::inverse(*this);
         }
 
         /**
@@ -662,15 +552,8 @@ class Matrix {
          * @return  Matrix<T>
          ********************************************************************************
         **/
-        T trace() {
-            // Matrix must be square
-            assert(isSquare());
-
-            T trace = 0;
-            for (MatrixLength_t i = 0; i < rows(); i++) {
-                trace += get(i, i);
-            }
-            return trace;
+        inline T trace() const {
+            return Matrix_Operations::trace(*this);
         }
 
         /**
@@ -680,39 +563,11 @@ class Matrix {
          * @return  Matrix<T>
          ********************************************************************************
         **/
-        Matrix<T> transpose() {
-            Matrix<T> transposed(this->columns(), this->rows());
-            for (MatrixLength_t i = 0; i < this->rows(); i++) {
-                for (MatrixLength_t j = 0; j < this->columns(); j++) {
-                    transposed.set(j, i, this->get(i, j));
-                }
-            }
-            return transposed;
+        inline Matrix<T> transpose() const {
+            return Matrix_Operations::transpose(*this);
         }
 
     // Matrix Properties
-        /**
-         ********************************************************************************
-         * @brief   Check if the matrix is the identity matrix
-         ********************************************************************************
-         * @return  bool
-         ********************************************************************************
-        **/
-        bool isIdentity() {
-            if (!isSquare()) {
-                return false;
-            }
-            if (!isDiagonal()) {
-                return false;
-            }
-            for (MatrixLength_t i = 0; i < this->rows(); i++) {
-                if (this->get(i, i) != 1) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         /**
          ********************************************************************************
          * @brief   Check if the matrix is diagonal
@@ -720,18 +575,19 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isDiagonal() {
-            if (!isSquare()) {
-                return false;
-            }
-            for (MatrixLength_t i = 0; i < this->rows(); i++) {
-                for (MatrixLength_t j = 0; j < this->columns(); j++) {
-                    if (i != j && this->get(i, j) != 0) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+        inline bool isDiagonal() const {
+            return Matrix_Property::isDiagonal(*this);
+        }
+
+        /**
+         ********************************************************************************
+         * @brief   Check if the matrix is the identity matrix
+         ********************************************************************************
+         * @return  bool
+         ********************************************************************************
+        **/
+        inline bool isIdentity() const {
+            return Matrix_Property::isIdentity(*this);
         }
 
         /**
@@ -741,18 +597,8 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isSymmetric() {
-            if (!isSquare()) {
-                return false;
-            }
-            for (MatrixLength_t i = 1; i < this->rows(); i++) {
-                for (MatrixLength_t j = i; j < this->columns(); j++) {
-                    if (this->get(i, j) != this->get(j, i)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+        inline bool isSymmetric() const {
+            return Matrix_Property::isSymmetric(*this);
         }
 
         /**
@@ -762,17 +608,8 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isSkewSymmetric() {
-            if (!isSquare()) {
-                return false;
-            }
-            for (MatrixLength_t i = 1; i < this->rows(); i++) {
-                for (MatrixLength_t j = i; j < this->columns(); j++) {
-                    if (this->get(i, j) != -this->get(j, i)) {
-                        return false;
-                    }
-                }
-            }
+        inline bool isSkewSymmetric() const {
+            return Matrix_Property::isSkewSymmetric(*this);
         }
 
         /**
@@ -782,8 +619,8 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isSquare() {
-            return this->rows() == this->columns();
+        inline bool isSquare() const {
+            return Matrix_Property::isSquare(*this);
         }
 
         /**
@@ -793,13 +630,8 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isZero() {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                if (m_data[i] != 0) {
-                    return false;
-                }
-            }
-            return true;
+        inline bool isZero() const {
+            return Matrix_Property::isZero(*this);
         }
 
         /**
@@ -809,13 +641,8 @@ class Matrix {
          * @return  bool
          ********************************************************************************
         **/
-        bool isOne() {
-            for (MatrixLength_t i = 0; i < m_size.rows * m_size.columns; i++) {
-                if (m_data[i] != 1) {
-                    return false;
-                }
-            }
-            return true;
+        inline bool isOne() const {
+            return Matrix_Property::isOne(*this);
         }
         
         /**
@@ -825,7 +652,7 @@ class Matrix {
          * @return  MatrixLength_t
          ****************************************************************************** 
         **/
-        MatrixLength_t length() {
+        inline MatrixLength_t length() const {
             return m_size.rows > m_size.columns ? m_size.rows : m_size.columns;
         }
 
@@ -836,7 +663,7 @@ class Matrix {
          * @return  MatrixSize_t
          ******************************************************************************
         **/
-        MatrixSize_t size() {
+        inline MatrixSize_t size() const {
             return m_size;
         }
 
@@ -847,7 +674,7 @@ class Matrix {
          * @return  MatrixLength_t
          ******************************************************************************
         **/
-        MatrixLength_t rows() {
+        inline MatrixLength_t rows() const {
             return m_size.rows;
         }
 
@@ -858,7 +685,7 @@ class Matrix {
          * @return  MatrixLength_t
          ******************************************************************************
         **/
-        MatrixLength_t columns() {
+        inline MatrixLength_t columns() const {
             return m_size.columns;
         }
 
@@ -885,10 +712,44 @@ class Matrix {
          * @return      T
          ********************************************************************************
         **/
-        T get(MatrixLength_t row, MatrixLength_t column) {
+        T get(MatrixLength_t row, MatrixLength_t column) const {
             assert(row < m_size.rows && column < m_size.columns);
             return m_data[row * m_size.columns + column];
         }
+
+    // Matrix Friend Functions
+        template<typename U> friend Matrix<U> Matrix_Operations::add(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
+        template<typename U> friend Matrix<U> Matrix_Operations::subtract(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
+        template<typename U> friend Matrix<U> Matrix_Operations::multiply(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
+        template<typename U> friend Vector<U> Matrix_Operations::multiply(const Matrix<U> &matrix, const Vector<U> &vector);
+        template<typename U> friend Vector<U> Matrix_Operations::multiply(const Vector<U> &vector, const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::hcat(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
+        template<typename U> friend Matrix<U> Matrix_Operations::hcat(const Matrix<U> &matrix, const Vector<U> &vector);
+        template<typename U> friend Matrix<U> Matrix_Operations::hcat(const Vector<U> &vector, const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::vcat(const Matrix<U> &matrix1, const Matrix<U> &matrix2);
+        template<typename U> friend Matrix<U> Matrix_Operations::vcat(const Matrix<U> &matrix, const Vector<U> &vector);
+        template<typename U> friend Matrix<U> Matrix_Operations::vcat(const Vector<U> &vector, const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::adjugate(const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::cofactor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+        template<typename U> friend Matrix<U> Matrix_Operations::determinant(const MatrixLength_t size);
+        template<typename U> friend Matrix<U> Matrix_Operations::inverse(const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::minor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+        template<typename U> friend U Matrix_Operations::trace(const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::transpose(const Matrix<U> &matrix);
+
+        template<typename U> friend bool Matrix_Property::isDiagonal(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isIdentity(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isSquare(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isSymmetric(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isSkewSymmetric(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isZero(const Matrix<U> &matrix);
+        template<typename U> friend bool Matrix_Property::isOne(const Matrix<U> &matrix);
+
+        template<typename U> friend Matrix<U> Element_Operation::add(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operation::subtract(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operation::multiply(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operation::divide(const Matrix<U> &matrix, const T &value);
+        template<typename U> friend Matrix<U> Element_Operation::power(const Matrix<U> &matrix, const T &value);
 
     private:
         MatrixSize_t m_size;
@@ -939,6 +800,729 @@ class Matrix {
         }
 };
 
-} // end namespace DataStructures
+namespace Matrix_Operations {
+
+/**
+ ********************************************************************************
+ * @brief   Add two matrices
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix1 TYPE: const Matrix<T>&
+ * @param[in]   matrix2 TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> add(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
+    // Matrices must be the same size
+    assert(matrix1.rows() == matrix2.rows() && matrix1.columns() == matrix2.columns());
+
+    Matrix<T> result(matrix1.size());
+    for (MatrixLength_t i = 0; i < matrix1.rows() * matrix1.columns(); i++) {
+        result.set(i, matrix1.get(i) + matrix2.get(i));
+    }
+
+    return result;   
+}
+
+/**
+ ********************************************************************************
+ * @brief   Subtract two matrices
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix1 TYPE: const Matrix<T>&
+ * @param[in]   matrix2 TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> subtract(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
+    // Matrices must be the same size
+    assert(matrix1.rows() == matrix2.rows() && matrix1.columns() == matrix2.columns());
+
+    Matrix<T> result(matrix1.size());
+    for (MatrixLength_t i = 0; i < matrix1.rows() * matrix1.columns(); i++) {
+        result.set(i, matrix1.get(i) - matrix2.get(i));
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Multiply two matrices
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix1 TYPE: const Matrix<T>&
+ * @param[in]   matrix2 TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> multiply(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
+    // Columns of left matrix must equal rows of right matrix
+    assert(matrix1.columns() == matrix2.rows());
+
+    Matrix<T> result(matrix1.rows(), matrix2.columns());
+    for (MatrixLength_t i = 0; i < matrix1.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix2.columns(); j++) {
+            for (MatrixLength_t k = 0; k < matrix1.columns(); k++) {
+                result.set(i, j, result.get(i, j) + matrix1.get(i, k) * matrix2.get(k, j));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Multiply a matrix by a vector
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T>
+Vector<T> multiply(const Matrix<T> &matrix, const Vector<T> &vector) {
+    // Columns of matrix must equal length of vector
+    assert(matrix.columns() == vector.length());
+
+    Vector<T> result(matrix.rows());
+    for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+        T sum = 0;
+        for (VectorLength_t i = 0; i < matrix.columns(); i++) {
+            sum += matrix.get(i, j) * vector.get(i);
+        }
+        result.set(j, sum);
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Multiply a vector by a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Vector<T>
+ ********************************************************************************
+**/
+template<typename T>
+Vector<T> multiply(const Vector<T> &vector, const Matrix<T> &matrix) {
+    // Length of vector must equal rows of matrix
+    assert(vector.length() == matrix.rows());
+
+    Vector<T> result(matrix.columns());
+    for (VectorLength_t i = 0; i < result.length(); i++) {
+        T sum = 0;
+        for (MatrixLength_t j = 0; j < matrix.rows(); j++) {
+            sum += vector.get(j) * matrix.get(i, j);
+        }
+        result.set(i, sum);
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate two matrices horizontally
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix1 TYPE: const Matrix<T>&
+ * @param[in]   matrix2 TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> hcat(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
+    // Matrices must have the same number of rows
+    assert(matrix1.rows() == matrix2.rows());
+
+    Matrix<T> result(matrix1.rows(), matrix1.columns() + matrix2.columns());
+    for (MatrixLength_t i = 0; i < matrix1.rows() * result.columns(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (j < matrix1.columns()) {
+                result.set(i, j, matrix1.get(i, j));
+            } else {
+                result.set(i, j, matrix2.get(i, j - matrix1.columns()));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate a matrix and a vector horizontally
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> hcat(const Matrix<T> &matrix, const Vector<T> &vector) {
+    // Matrix must have the same number of rows as the vector has elements
+    assert(matrix.rows() == vector.length());
+
+    Matrix<T> result(matrix.rows(), matrix.columns() + 1);
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (j < matrix.columns()) {
+                result.set(i, j, matrix.get(i, j));
+            } else {
+                result.set(i, j, vector.get(i));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate a vector and a matrix horizontally
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> hcat(const Vector<T> &vector, const Matrix<T> &matrix) {
+    // Matrix must have the same number of rows as the vector has elements
+    assert(matrix.rows() == vector.length());
+
+    Matrix<T> result(matrix.rows(), matrix.columns() + 1);
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (j < 1) {
+                result.set(i, j, vector.get(i));
+            } else {
+                result.set(i, j, matrix.get(i, j - 1));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate two matrices vertically
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix1 TYPE: const Matrix<T>&
+ * @param[in]   matrix2 TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> vcat(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
+    // Matrices must have the same number of columns
+    assert(matrix1.columns() == matrix2.columns());
+
+    Matrix<T> result(matrix1.rows() + matrix2.rows(), matrix1.columns());
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (i < matrix1.rows()) {
+                result.set(i, j, matrix1.get(i, j));
+            } else {
+                result.set(i, j, matrix2.get(i - matrix1.rows(), j));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate a matrix and a vector vertically
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> vcat(const Matrix<T> &matrix, const Vector<T> &vector) {
+    // Matrix must have the same number of columns as the vector has elements
+    assert(matrix.columns() == vector.length());
+
+    Matrix<T> result(matrix.rows() + 1, matrix.columns());
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (i < matrix.rows()) {
+                result.set(i, j, matrix.get(i, j));
+            } else {
+                result.set(i, j, vector.get(j));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Concatenate a vector and a matrix vertically
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   vector  TYPE: const Vector<T>&
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> vcat(const Vector<T> &vector, const Matrix<T> &matrix) {
+    // Matrix must have the same number of columns as the vector has elements
+    assert(matrix.columns() == vector.length());
+
+    Matrix<T> result(matrix.rows() + 1, matrix.columns());
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
+        for (MatrixLength_t j = 0; j < result.columns(); j++) {
+            if (i < 1) {
+                result.set(i, j, vector.get(j));
+            } else {
+                result.set(i, j, matrix.get(i - 1, j));
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the adjugate of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> adjugate(const Matrix<T> &matrix) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    Matrix<T> C(matrix.size()); // Cofactor Matrix
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            C.set(i, j, cofactor(matrix, i, j));
+        }
+    }
+
+    return C.transpose(); // Adjugate is the transpose of the cofactor matrix
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the cofactor of a matrix minor
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix          TYPE: const Matrix<T>&
+ * @param[in]   remove_row      TYPE: MatrixLength_t
+ * @param[in]   remove_column   TYPE: MatrixLength_t
+ * @return      T
+ ********************************************************************************
+**/
+template<typename T>
+T cofactor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    Matrix<T> M(minor(matrix, remove_row, remove_column)); // Minor Matrix
+    T cofactor_mag = M.determinant();
+    T cofactor_sign = (remove_row + remove_column) % 2 == 0 ? 1 : -1;
+    return cofactor_sign * cofactor_mag;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the determinant of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      T
+ ********************************************************************************
+**/
+template<typename T>
+T determinant(const Matrix<T> &matrix) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    // Base Cases
+    if (matrix.rows() == 1) {
+        return matrix.get(0, 0);
+    }
+    if (matrix.rows() == 2) {
+        return matrix.get(0, 0) * matrix.get(1, 1) - matrix.get(0, 1) * matrix.get(1, 0);
+    }
+
+    // Higher Order Cases
+    Matrix<T> adj(adjugate(matrix));
+    Matrix<T> determinantIdentity = matrix * adj;
+    return determinantIdentity.get(0, 0);
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the inverse of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> inverse(const Matrix<T> &matrix) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    // Matrix must be invertible
+    T det = determinant(matrix);
+    assert(det != 0);
+
+    Matrix<T> inv = adjugate(matrix) / det;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the minor of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix          TYPE: const Matrix<T>&
+ * @param[in]   remove_row      TYPE: MatrixLength_t
+ * @param[in]   remove_column   TYPE: MatrixLength_t
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> minor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    Matrix<T> M(matrix.rows() - 1, matrix.columns() - 1);
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            if (i != remove_row && j != remove_column) {
+                M.set(i + (i > remove_row), j + (j > remove_column), matrix.get(i, j));
+            }
+        }
+    }
+
+    return M;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the trace of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      T
+ ********************************************************************************
+**/
+template<typename T>
+T trace(const Matrix<T> &matrix) {
+    // Matrix must be square
+    assert(matrix.isSquare());
+
+    T trace = 0;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        trace += matrix.get(i, i);
+    }
+    return trace;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get the transpose of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> transpose(const Matrix<T> &matrix) {
+    Matrix<T> transposed(matrix.columns(), matrix.rows());
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            transposed.set(j, i, matrix.get(i, j));
+        }
+    }
+    return transposed;
+}
+
+} // end namespace Matrix_Operations
+
+namespace Matrix_Property {
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is diagonal
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T>
+bool isDiagonal(const Matrix<T> &matrix) {
+    if (!matrix.isSquare()) {
+        return false;
+    }
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            if (i != j && matrix.get(i, j) != 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is the identity matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+
+template<typename T>
+bool isIdentity(const Matrix<T> &matrix) {
+    if (!matrix.isSquare()) {
+        return false;
+    }
+    if (!isDiagonal(matrix)) {
+        return false;
+    }
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        if (matrix.get(i, i) != 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is square
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T>
+bool isSquare(const Matrix<T> &matrix) {
+    return matrix.rows() == matrix.columns();
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is symmetric
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+
+template<typename T>
+bool isSymmetric(const Matrix<T> &matrix) {
+    if (!matrix.isSquare()) {
+        return false;
+    }
+    for (MatrixLength_t i = 1; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = i; j < matrix.columns(); j++) {
+            if (matrix.get(i, j) != matrix.get(j, i)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is skew-symmetric
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T>
+bool isSkewSymmetric(const Matrix<T> &matrix) {
+    if (!matrix.isSquare()) {
+        return false;
+    }
+    for (MatrixLength_t i = 1; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = i; j < matrix.columns(); j++) {
+            if (matrix.get(i, j) != -matrix.get(j, i)) {
+                return false;
+            }
+        }
+    }
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is zero
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T>
+bool isZero(const Matrix<T> &matrix) {
+    for (MatrixLength_t i = 0; i < matrix.size().rows * matrix.size().columns; i++) {
+        if (matrix.get(i) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Check if a matrix is one
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @return      bool
+ ********************************************************************************
+**/
+template<typename T>
+bool isOne(const Matrix<T> &matrix) {
+    for (MatrixLength_t i = 0; i < matrix.size().rows * matrix.size().columns; i++) {
+        if (matrix.get(i) != 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // end namespace Matrix_Property
+
+namespace Element_Operation {
+
+/**
+ ********************************************************************************
+ * @brief   Add a value to a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> add(const Matrix<T> &matrix, const T &value) {
+    Matrix<T> result(matrix);
+    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
+        result.m_data[i] += value;
+    }
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Subtract a value from a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> subtract(const Matrix<T> &matrix, const T &value) {
+    Matrix<T> result(matrix);
+    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
+        result.m_data[i] -= value;
+    }
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Multiply a matrix by a value
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> multiply(const Matrix<T> &matrix, const T &value) {
+    Matrix<T> result(matrix);
+    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
+        result.m_data[i] *= value;
+    }
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Divide a matrix by a value
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> divide(const Matrix<T> &matrix, const T &value) {
+    Matrix<T> result(matrix);
+    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
+        result.m_data[i] /= value;
+    }
+    return result;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Raise a matrix to a power
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix  TYPE: const Matrix<T>&
+ * @param[in]   value   TYPE: const T&
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T>
+Matrix<T> power(const Matrix<T> &matrix, const T &value) {
+    Matrix<T> result(matrix);
+    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
+        result.m_data[i] = pow(result.m_data[i], value);
+    }
+    return result;
+}
+
+} // end namespace Element_Operation
+
+} // end namespace Matrix
+} // end namespace DataStructure
 
 #endif // __MATRIX_TPP__
