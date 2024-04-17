@@ -16,6 +16,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include <unity.h>
+
 #include "Vector.tpp"
 namespace DataStructures {
 namespace Matrix {
@@ -49,8 +51,8 @@ template<typename T> Matrix<T> vcat(const Matrix<T> &matrix1, const Matrix<T> &m
 template<typename T> Matrix<T> vcat(const Matrix<T> &matrix, const Vector<T> &vector);
 template<typename T> Matrix<T> vcat(const Vector<T> &vector, const Matrix<T> &matrix);
 template<typename T> Matrix<T> adjugate(const Matrix<T> &matrix);
-template<typename T> Matrix<T> cofactor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
-template<typename T> Matrix<T> determinant(const MatrixLength_t size);
+template<typename T> T cofactor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+template<typename T> T determinant(const Matrix<T> &size);
 template<typename T> Matrix<T> inverse(const Matrix<T> &matrix);
 template<typename T> Matrix<T> minor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
 template<typename T> T trace(const Matrix<T> &matrix);
@@ -439,7 +441,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator+=(const T &value) {
-            *this = Element_Operations::add(*this, value);
+            *this = Element_Operations::add<T>(*this, value);
         }
 
         /**
@@ -450,7 +452,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator-=(const T &value) {
-            *this = Element_Operations::subtract(*this, value);
+            *this = Element_Operations::subtract<T>(*this, value);
         }
 
         /**
@@ -461,7 +463,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator*=(const T &value) {
-            *this = Element_Operations::multiply(*this, value);
+            *this = Element_Operations::multiply<T>(*this, value);
         }
 
         /**
@@ -472,7 +474,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator/=(const T &value) {
-            *this = Element_Operations::divide(*this, value);
+            *this = Element_Operations::divide<T>(*this, value);
         }
 
         /**
@@ -483,7 +485,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline void operator^=(const T &value) {
-            *this = Element_Operations::power(*this, value);
+            *this = Element_Operations::power<T>(*this, value);
         }
 
     // Matrix Operations
@@ -495,7 +497,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> adjugate() const {
-            return Matrix_Operations::adjugate(*this);
+            return Matrix_Operations::adjugate<T>(*this);
         }
 
         /**
@@ -508,7 +510,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline T cofactor(int remove_row, int remove_column) const {
-            return Matrix_Operations::cofactor(*this, remove_row, remove_column);
+            return Matrix_Operations::cofactor<T>(*this, remove_row, remove_column);
         }
         /**
          ********************************************************************************
@@ -518,7 +520,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline T determinant() const {
-            return Matrix_Operations::determinant(*this);
+            return Matrix_Operations::determinant<T>(*this);
         }
 
         
@@ -532,7 +534,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> minor(int remove_row, int remove_column) const {
-            return Matrix_Operations::minor(*this, remove_row, remove_column);
+            return Matrix_Operations::minor<T>(*this, remove_row, remove_column);
         }
 
         /**
@@ -543,7 +545,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> inverse() const {
-            return Matrix_Operations::inverse(*this);
+            return Matrix_Operations::inverse<T>(*this);
         }
 
         /**
@@ -554,7 +556,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline T trace() const {
-            return Matrix_Operations::trace(*this);
+            return Matrix_Operations::trace<T>(*this);
         }
 
         /**
@@ -565,7 +567,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline Matrix<T> transpose() const {
-            return Matrix_Operations::transpose(*this);
+            return Matrix_Operations::transpose<T>(*this);
         }
 
     // Matrix Properties
@@ -577,7 +579,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isDiagonal() const {
-            return Matrix_Property::isDiagonal(*this);
+            return Matrix_Property::isDiagonal<T>(*this);
         }
 
         /**
@@ -588,7 +590,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isIdentity() const {
-            return Matrix_Property::isIdentity(*this);
+            return Matrix_Property::isIdentity<T>(*this);
         }
 
         /**
@@ -599,7 +601,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isSymmetric() const {
-            return Matrix_Property::isSymmetric(*this);
+            return Matrix_Property::isSymmetric<T>(*this);
         }
 
         /**
@@ -610,7 +612,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isSkewSymmetric() const {
-            return Matrix_Property::isSkewSymmetric(*this);
+            return Matrix_Property::isSkewSymmetric<T>(*this);
         }
 
         /**
@@ -621,7 +623,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isSquare() const {
-            return Matrix_Property::isSquare(*this);
+            return Matrix_Property::isSquare<T>(*this);
         }
 
         /**
@@ -632,7 +634,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isZero() const {
-            return Matrix_Property::isZero(*this);
+            return Matrix_Property::isZero<T>(*this);
         }
 
         /**
@@ -643,7 +645,7 @@ class Matrix {
          ********************************************************************************
         **/
         inline bool isOne() const {
-            return Matrix_Property::isOne(*this);
+            return Matrix_Property::isOne<T>(*this);
         }
         
         /**
@@ -733,8 +735,8 @@ class Matrix {
         template<typename U> friend Matrix<U> Matrix_Operations::vcat(const Matrix<U> &matrix, const Vector<U> &vector);
         template<typename U> friend Matrix<U> Matrix_Operations::vcat(const Vector<U> &vector, const Matrix<U> &matrix);
         template<typename U> friend Matrix<U> Matrix_Operations::adjugate(const Matrix<U> &matrix);
-        template<typename U> friend Matrix<U> Matrix_Operations::cofactor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
-        template<typename U> friend Matrix<U> Matrix_Operations::determinant(const MatrixLength_t size);
+        template<typename U> friend T Matrix_Operations::cofactor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
+        template<typename U> friend T Matrix_Operations::determinant(const Matrix<T> &matrix);
         template<typename U> friend Matrix<U> Matrix_Operations::inverse(const Matrix<U> &matrix);
         template<typename U> friend Matrix<U> Matrix_Operations::minor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
         template<typename U> friend U Matrix_Operations::trace(const Matrix<U> &matrix);
@@ -894,12 +896,12 @@ Vector<T> multiply(const Matrix<T> &matrix, const Vector<T> &vector) {
     assert(matrix.columns() == vector.length());
 
     Vector<T> result(matrix.rows());
-    for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+    for (MatrixLength_t i = 0; i < result.length(); i++) {
         T sum = 0;
-        for (MatrixLength_t i = 0; i < matrix.columns(); i++) {
-            sum += matrix.get(i, j) * vector.get(i);
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            sum += matrix.get(i, j) * vector.get(j);
         }
-        result.set(j, sum);
+        result.set(i, sum);
     }
 
     return result;
@@ -924,7 +926,7 @@ Vector<T> multiply(const Vector<T> &vector, const Matrix<T> &matrix) {
     for (MatrixLength_t i = 0; i < result.length(); i++) {
         T sum = 0;
         for (MatrixLength_t j = 0; j < matrix.rows(); j++) {
-            sum += vector.get(j) * matrix.get(i, j);
+            sum += vector.get(j) * matrix.get(j, i);
         }
         result.set(i, sum);
     }
@@ -948,7 +950,7 @@ Matrix<T> hcat(const Matrix<T> &matrix1, const Matrix<T> &matrix2) {
     assert(matrix1.rows() == matrix2.rows());
 
     Matrix<T> result(matrix1.rows(), matrix1.columns() + matrix2.columns());
-    for (MatrixLength_t i = 0; i < matrix1.rows() * result.columns(); i++) {
+    for (MatrixLength_t i = 0; i < result.rows(); i++) {
         for (MatrixLength_t j = 0; j < result.columns(); j++) {
             if (j < matrix1.columns()) {
                 result.set(i, j, matrix1.get(i, j));
@@ -1123,7 +1125,7 @@ Matrix<T> adjugate(const Matrix<T> &matrix) {
     Matrix<T> C(matrix.size()); // Cofactor Matrix
     for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
         for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
-            C.set(i, j, cofactor(matrix, i, j));
+            C.set(i, j, matrix.cofactor(i, j));
         }
     }
 
@@ -1132,7 +1134,7 @@ Matrix<T> adjugate(const Matrix<T> &matrix) {
 
 /**
  ********************************************************************************
- * @brief   Get the cofactor of a matrix minor
+ * @brief   Get the cofactor using the determinant of a matrix minor
  ********************************************************************************
  * @tparam      T
  * @param[in]   matrix          TYPE: const Matrix<T>&
@@ -1146,7 +1148,7 @@ T cofactor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const Matri
     // Matrix must be square
     assert(matrix.isSquare());
 
-    Matrix<T> M(minor(matrix, remove_row, remove_column)); // Minor Matrix
+    Matrix<T> M = minor(matrix, remove_row, remove_column); // Minor Matrix
     T cofactor_mag = M.determinant();
     T cofactor_sign = (remove_row + remove_column) % 2 == 0 ? 1 : -1;
     return cofactor_sign * cofactor_mag;
@@ -1198,7 +1200,8 @@ Matrix<T> inverse(const Matrix<T> &matrix) {
     T det = determinant(matrix);
     assert(det != 0);
 
-    Matrix<T> inv = adjugate(matrix) / det;
+    Matrix<T> adj = adjugate(matrix);
+    return adj / det;
 }
 
 /**
@@ -1214,14 +1217,11 @@ Matrix<T> inverse(const Matrix<T> &matrix) {
 **/
 template<typename T>
 Matrix<T> minor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column) {
-    // Matrix must be square
-    assert(matrix.isSquare());
-
     Matrix<T> M(matrix.rows() - 1, matrix.columns() - 1);
     for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
         for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
             if (i != remove_row && j != remove_column) {
-                M.set(i + (i > remove_row), j + (j > remove_column), matrix.get(i, j));
+                M.set(i - (i > remove_row), j - (j > remove_column), matrix.get(i, j));
             }
         }
     }
@@ -1353,8 +1353,9 @@ bool isSymmetric(const Matrix<T> &matrix) {
     if (!matrix.isSquare()) {
         return false;
     }
-    for (MatrixLength_t i = 1; i < matrix.rows(); i++) {
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
         for (MatrixLength_t j = i; j < matrix.columns(); j++) {
+            if (i == j) continue;
             if (matrix.get(i, j) != matrix.get(j, i)) {
                 return false;
             }
@@ -1377,13 +1378,15 @@ bool isSkewSymmetric(const Matrix<T> &matrix) {
     if (!matrix.isSquare()) {
         return false;
     }
-    for (MatrixLength_t i = 1; i < matrix.rows(); i++) {
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
         for (MatrixLength_t j = i; j < matrix.columns(); j++) {
+            if (i == j) continue;
             if (matrix.get(i, j) != -matrix.get(j, i)) {
                 return false;
             }
         }
     }
+    return true;
 }
 
 /**
@@ -1397,9 +1400,11 @@ bool isSkewSymmetric(const Matrix<T> &matrix) {
 **/
 template<typename T>
 bool isZero(const Matrix<T> &matrix) {
-    for (MatrixLength_t i = 0; i < matrix.size().rows * matrix.size().columns; i++) {
-        if (matrix.get(i) != 0) {
-            return false;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            if (matrix.get(i, j) != 0) {
+                return false;
+            }
         }
     }
     return true;
@@ -1416,9 +1421,11 @@ bool isZero(const Matrix<T> &matrix) {
 **/
 template<typename T>
 bool isOne(const Matrix<T> &matrix) {
-    for (MatrixLength_t i = 0; i < matrix.size().rows * matrix.size().columns; i++) {
-        if (matrix.get(i) != 1) {
-            return false;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            if (matrix.get(i, j) != 1) {
+                return false;
+            }
         }
     }
     return true;
@@ -1441,8 +1448,10 @@ namespace Element_Operations {
 template<typename T>
 Matrix<T> add(const Matrix<T> &matrix, const T &value) {
     Matrix<T> result(matrix);
-    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
-        result.m_data[i] += value;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            result.set(i, j, result.get(i, j) + value);
+        }
     }
     return result;
 }
@@ -1460,8 +1469,10 @@ Matrix<T> add(const Matrix<T> &matrix, const T &value) {
 template<typename T>
 Matrix<T> subtract(const Matrix<T> &matrix, const T &value) {
     Matrix<T> result(matrix);
-    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
-        result.m_data[i] -= value;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            result.set(i, j, result.get(i, j) - value);
+        }
     }
     return result;
 }
@@ -1479,8 +1490,10 @@ Matrix<T> subtract(const Matrix<T> &matrix, const T &value) {
 template<typename T>
 Matrix<T> multiply(const Matrix<T> &matrix, const T &value) {
     Matrix<T> result(matrix);
-    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
-        result.m_data[i] *= value;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            result.set(i, j, result.get(i, j) * value);
+        }
     }
     return result;
 }
@@ -1498,8 +1511,10 @@ Matrix<T> multiply(const Matrix<T> &matrix, const T &value) {
 template<typename T>
 Matrix<T> divide(const Matrix<T> &matrix, const T &value) {
     Matrix<T> result(matrix);
-    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
-        result.m_data[i] /= value;
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            result.set(i, j, result.get(i, j) / value);
+        }
     }
     return result;
 }
@@ -1517,8 +1532,10 @@ Matrix<T> divide(const Matrix<T> &matrix, const T &value) {
 template<typename T>
 Matrix<T> power(const Matrix<T> &matrix, const T &value) {
     Matrix<T> result(matrix);
-    for (MatrixLength_t i = 0; i < matrix.rows() * matrix.columns(); i++) {
-        result.m_data[i] = pow(result.m_data[i], value);
+    for (MatrixLength_t i = 0; i < matrix.rows(); i++) {
+        for (MatrixLength_t j = 0; j < matrix.columns(); j++) {
+            result.set(i, j, pow(result.get(i, j), value));
+        }
     }
     return result;
 }
