@@ -16,7 +16,7 @@
             "name": "CORALS_StateManager"
         },
         {
-            "name": "CORALS_Telecommunication"
+            "name": "ArduinoBLE"
         }
     ],
     "build": {

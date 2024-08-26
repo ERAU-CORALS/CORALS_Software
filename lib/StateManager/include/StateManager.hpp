@@ -40,9 +40,9 @@ class StateManager {
         SM_Time last_call;
     };
 
-    using FunctionList = DataStructures::List<SMFunction>;
-    using ProcessList = DataStructures::List<SMProcess>;
-    using ListSize = DataStructures::ListSize_t;
+    using FunctionList = DataStructures::List::List<SMFunction>;
+    using ProcessList = DataStructures::List::List<SMProcess>;
+    using ListSize = DataStructures::List::ListSize_t;
 
 public:
     StateManager();

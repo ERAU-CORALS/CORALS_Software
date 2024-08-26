@@ -16,6 +16,6 @@
 #include <Arduino.h>
 
 // Serial USART Allocation
-#define DEBUG Serial
+#define DEBUG_OUT Serial
 
 #endif // __CORALS_CONFIGURATION_HPP__

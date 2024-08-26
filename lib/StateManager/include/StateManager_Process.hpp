@@ -27,8 +27,8 @@ class Process {
         SM_Function_t function;
     };
 
-    using FunctionList = DataStructures::List<Function>;
-    using ListSize = DataStructures::ListSize_t;
+    using FunctionList = DataStructures::List::List<Function>;
+    using ListSize = DataStructures::List::ListSize_t;
 
     public:
         Process();

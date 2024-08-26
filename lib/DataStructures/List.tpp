@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 namespace DataStructures {
+namespace List {
 
 namespace __List {
 
@@ -158,6 +159,7 @@ class List {
 
 };
 
+} // end namespace List
 } // end namespace DataStructures
 
 #endif // __LIST_TPP__

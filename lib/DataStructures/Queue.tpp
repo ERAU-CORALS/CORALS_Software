@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 namespace DataStructures {
+namespace Queue {
 
 namespace __Queue {
 
@@ -91,6 +92,7 @@ class Queue {
 
 };
 
+} // end namespace Queue
 } // end namespace DataStructures
 
 #endif // __LIST_HPP__

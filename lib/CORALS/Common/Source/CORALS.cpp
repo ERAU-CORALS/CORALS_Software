@@ -15,6 +15,7 @@
 #include <StateManager.hpp>
 
 #include "CORALS_Configuration.hpp"
+#include "CORALS_DataStore.hpp"
 
 namespace CORALS {
 
@@ -25,7 +26,16 @@ namespace {
 } // end namespace
 
 void initialize() {
-    DEBUG.begin(115200);
+#ifdef GIGA_R1_M7
+    DEBUG_OUT.begin(115200);
+    DEBUG_OUT.println("CORALS Initializing...");
+#endif // GIGA_R1_M7
+
+    Initialize_DataStore();
+
+#ifdef GIGA_R1_M7
+    DEBUG_OUT.println("CORALS Initialized.");
+#endif // GIGA_R1_M7
 }
 
 void run() {
