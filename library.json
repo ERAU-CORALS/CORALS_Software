@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+    "name": "CORALS_DataStructures",
+    "description": "Data structures for the CORALS Software.",
+    "authors": {
+        "name": "Logan Ruddick",
+        "email": "Logan@Ruddicks.net"
+    },
+    "frameworks": "arduino",
+    "platforms": "*",
+    "headers": [
+        "List.tpp",
+        "Queue.tpp",
+        "Tensor.tpp"
+    ],
+    "build": {
+        "includeDir": "."
+    }
+}
