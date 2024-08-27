@@ -29,7 +29,7 @@ struct ListNode {
 
 } // end namespace __List
 
-using ListSize_t = unsigned int;
+using ListSize_t = int;
 
 template<typename T>
 class List {
@@ -143,9 +143,19 @@ class List {
             return current->data;
         }
         const T& operator[](const ListSize_t index) const {
-            ListNode *current = front;
-            for (ListSize_t i = 0; i < index; i++) {
-                current = current->next;
+            ListNode *current = nullptr;
+
+            if (index >= 0) {
+                current = front;    
+                for (ListSize_t i = 0; i < index; i++) {
+                    current = current->next;
+                }
+            }
+            else {
+                current = back;
+                for (ListSize_t i = 1; i < -index; i++) {
+                    current = current->prev;
+                }
             }
             return current->data;
         }

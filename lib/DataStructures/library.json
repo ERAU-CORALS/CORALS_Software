@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "CORALS_DataStructures",
-    "description": "Data structures for the CORALS Software.",
+    "description": "Data Structures for the CORALS Software.",
     "authors": {
         "name": "Logan Ruddick",
         "email": "Logan@Ruddicks.net"

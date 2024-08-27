@@ -49,25 +49,34 @@ void Set_Gain32(const double value);
 void Set_Gain33(const double value);
 
 // Targets
-double Get_Indexed_Target_Q0(ListSize_t index);
-double Get_Indexed_Target_Q1(ListSize_t index);
-double Get_Indexed_Target_Q2(ListSize_t index);
-double Get_Indexed_Target_Q3(ListSize_t index);
+void Get_Indexed_Target_Q0(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q1(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q2(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q3(const ListSize_t index, double &value);
+
+void Prepend_New_Target(const double q0, 
+                        const double q1, 
+                        const double q2, 
+                        const double q3);
 void Append_New_Target(const double q0, 
                        const double q1, 
                        const double q2, 
                        const double q3);
+
+void Remove_First_Target();
+void Remove_Last_Target();
 void Replace_Indexed_Target(const ListSize_t index, const double q0, 
                                                     const double q1, 
                                                     const double q2, 
                                                     const double q3);
-void Remove_Current_Target();
+
+void Clear_Target_List();
 
 // Attitude
-double Get_Attitude_Q0();
-double Get_Attitude_Q1();
-double Get_Attitude_Q2();
-double Get_Attitude_Q3();
+void Get_Attitude_Q0(double &value);
+void Get_Attitude_Q1(double &value);
+void Get_Attitude_Q2(double &value);
+void Get_Attitude_Q3(double &value);
 
 void Set_Attitude_Q0(const double value);
 void Set_Attitude_Q1(const double value);
@@ -77,14 +86,14 @@ void Set_Attitude_Q3(const double value);
 // Errors - TBD
 
 // States
-double Get_Primary_Voltage();
-double Get_Secondary_Voltage();
-double Get_Singularity_Parameter();
-double Get_Target_List_Length();
+void Get_Primary_Voltage(double &value);
+void Get_Secondary_Voltage(double &value);
+void Get_Singularity_Parameter(double &value);
+void Get_Target_List_Length(int &value);
 
-void Set_Primary_Voltage(double value);
-void Set_Secondary_Voltage(double value);
-void Set_Singularity_Parameter(double value);
+void Set_Primary_Voltage(const double value);
+void Set_Secondary_Voltage(const double value);
+void Set_Singularity_Parameter(const double value);
 
 #endif // GIGA_R1_M7
 

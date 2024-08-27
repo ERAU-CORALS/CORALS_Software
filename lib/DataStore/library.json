@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-    "name": "CORALS_StateManager",
-    "description": "A simple state manager for Arduino projects with support for function and multi-function process callbacks.",
+    "name": "CORALS_DataStore",
+    "description": "Software for CORALS DataStore.",
     "authors": {
         "name": "Logan Ruddick",
         "email": "Logan@Ruddicks.net"
@@ -9,12 +9,16 @@
     "frameworks": "arduino",
     "platforms": "*",
     "headers": [
-        "StateManager.hpp",
-        "StateManager_Process.hpp"
+        "DataStore.hpp"
     ],
-    "dependencies": {
-        "name": "CORALS_DataStructures"
-    },
+    "dependencies": [
+        {
+            "name": "CORALS_DataStructures"
+        },
+        {
+            "name": "ArduinoBLE"
+        }
+    ],
     "build": {
         "includeDir": "Include",
         "srcDir": "Source"

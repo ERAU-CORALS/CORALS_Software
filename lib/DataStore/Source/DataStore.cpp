@@ -10,7 +10,7 @@
  ********************************************************************************
 **/
 
-#include "CORALS_DataStore.hpp"
+#include "DataStore.hpp"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -24,7 +24,7 @@
 #include <Vector.tpp>
 #include <Matrix.tpp>
 
-#include "CORALS_BLE.inc"
+#include "Internal/CORALS_BLE.inc"
 
 namespace {
 
@@ -36,7 +36,6 @@ using namespace DataStructures::Vector;
 // Settings - TBD
 
 // Gains
-Matrix::Matrix<double> Gains(3, 3);
 double Gain11 = 0.0;
 double Gain12 = 0.0;
 double Gain13 = 0.0;
@@ -84,19 +83,35 @@ BLEDoubleCharacteristic Gain32Characteristic(BLE_UUID_CORALS_GAINS_GAIN32_CHARAC
 BLEDoubleCharacteristic Gain33Characteristic(BLE_UUID_CORALS_GAINS_GAIN33_CHARACTERISTIC, BLEWrite);
 
 // BLE Targets Characteristics
+typedef enum __Target_Queue_Action : uint8_t {
+    TARGET_QUEUE_NO_ACTION = 0x00,
+    
+    TARGET_QUEUE_GET_FRONT = 0x11,
+    TARGET_QUEUE_PREPEND = 0x12,
+    TARGET_QUEUE_REMOVE_FRONT = 0x14,
+    TARGET_QUEUE_REPLACE_FRONT = 0x18,
+    
+    TARGET_QUEUE_GET_BACK = 0x21,
+    TARGET_QUEUE_APPEND = 0x22,
+    TARGET_QUEUE_REMOVE_BACK = 0x24,
+    TARGET_QUEUE_REPLACE_BACK = 0x28,
+
+    TARGET_QUEUE_GET_INDEX = 0x41,
+    TARGET_QUEUE_REPLACE_INDEX = 0x48,
+
+    TARGET_QUEUE_CLEAR = 0xF4,
+} Target_Queue_Action_t;
+class BLETargetQueueActionCharacteristic : public BLETypedCharacteristic<Target_Queue_Action_t> {
+    public:
+        BLETargetQueueActionCharacteristic(const char* uuid, unsigned int permissions) : BLETypedCharacteristic<Target_Queue_Action_t>(uuid, permissions) {}
+};
+
 BLEIntCharacteristic TargetQueueIndexCharacteristic(BLE_UUID_CORALS_TARGETS_QUEUE_INDEX_CHARACTERISTIC, BLEWrite);
-BLECharCharacteristic TargetGetSetRemoveCharacteristic(BLE_UUID_CORALS_TARGETS_GET_SET_REMOVE_CHARACTERISTIC, BLERead | BLEWrite);
+BLETargetQueueActionCharacteristic TargetActionCharacteristic(BLE_UUID_CORALS_TARGETS_ACTION_CHARACTERISTIC, BLERead | BLEWrite);
 BLEDoubleCharacteristic TargetQ0Characteristic(BLE_UUID_CORALS_TARGETS_Q0_CHARACTERISTIC, BLERead | BLEWrite);
 BLEDoubleCharacteristic TargetQ1Characteristic(BLE_UUID_CORALS_TARGETS_Q1_CHARACTERISTIC, BLERead | BLEWrite);
 BLEDoubleCharacteristic TargetQ2Characteristic(BLE_UUID_CORALS_TARGETS_Q2_CHARACTERISTIC, BLERead | BLEWrite);
 BLEDoubleCharacteristic TargetQ3Characteristic(BLE_UUID_CORALS_TARGETS_Q3_CHARACTERISTIC, BLERead | BLEWrite);
-
-typedef enum __Target_Queue_Action {
-    TARGET_QUEUE_NO_ACTION = 0,
-    TARGET_QUEUE_GET = 1,
-    TARGET_QUEUE_SET = 2,
-    TARGET_QUEUE_REMOVE = 3
-} Target_Queue_Action_t;
 
 // BLE Attitude Characteristics
 BLEDoubleCharacteristic AttitudeQ0Characteristic(BLE_UUID_CORALS_ATTITUDE_Q0_CHARACTERISTIC, BLERead);
@@ -183,9 +198,15 @@ void Initialize_DataStore() {
     RPC.bind("Get_Indexed_Target_Q1", Get_Indexed_Target_Q1);
     RPC.bind("Get_Indexed_Target_Q2", Get_Indexed_Target_Q2);
     RPC.bind("Get_Indexed_Target_Q3", Get_Indexed_Target_Q3);
+
+    RPC.bind("Prepend_New_Target", Prepend_New_Target);
     RPC.bind("Append_New_Target", Append_New_Target);
+
+    RPC.bind("Remove_First_Target", Remove_First_Target);
+    RPC.bind("Remove_Last_Target", Remove_Last_Target);
     RPC.bind("Replace_Indexed_Target", Replace_Indexed_Target);
-    RPC.bind("Remove_Current_Target", Remove_Current_Target);
+
+    RPC.bind("Clear_Target_List", Clear_Target_List);
 
     // Attitude
     RPC.bind("Get_Attitude_Q0", Get_Attitude_Q0);
@@ -205,10 +226,6 @@ void Initialize_DataStore() {
     RPC.bind("Get_Secondary_Voltage", Get_Secondary_Voltage);
     RPC.bind("Get_Singularity_Parameter", Get_Singularity_Parameter);
     RPC.bind("Get_Target_List_Length", Get_Target_List_Length);
-
-    RPC.bind("Set_Primary_Voltage", Set_Primary_Voltage);
-    RPC.bind("Set_Secondary_Voltage", Set_Secondary_Voltage);
-    RPC.bind("Set_Singularity_Parameter", Set_Singularity_Parameter);
 
 #endif // GIGA_R1_M7
 
@@ -247,7 +264,7 @@ void Initialize_DataStore() {
 
     // Targets Characteristics
     TargetsService.addCharacteristic(TargetQueueIndexCharacteristic);
-    TargetsService.addCharacteristic(TargetGetSetRemoveCharacteristic);
+    TargetsService.addCharacteristic(TargetActionCharacteristic);
     TargetsService.addCharacteristic(TargetQ0Characteristic);
     TargetsService.addCharacteristic(TargetQ1Characteristic);
     TargetsService.addCharacteristic(TargetQ2Characteristic);
@@ -329,32 +346,118 @@ void Run_DataStore() {
     }
 
     // Targets
-    switch (TargetGetSetRemoveCharacteristic.value()) {
-        case TARGET_QUEUE_GET:
+    double double_buffer = 0.0;
+
+    switch (TargetActionCharacteristic.value()) {
+        case TARGET_QUEUE_GET_FRONT:
+
+            RPC.call("Get_Indexed_Target_Q0", 0, double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q1", 0, double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q2", 0, double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q3", 0, double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
+
+            break;
+
+        case TARGET_QUEUE_PREPEND:
+
+            RPC.call("Prepend_New_Target", 0, TargetQ0Characteristic.value(), 
+                                              TargetQ1Characteristic.value(), 
+                                              TargetQ2Characteristic.value(), 
+                                              TargetQ3Characteristic.value());
+
+            break;
             
-            double buffer = 0.0;
+        case TARGET_QUEUE_REMOVE_FRONT:
+                
+            RPC.call("Remove_First_Target");
+    
+            break;
 
-            RPC.call("Get_Indexed_Target_Q0", TargetQueueIndexCharacteristic.value(), buffer);
-            TargetQ0Characteristic.writeValue(buffer);
+        case TARGET_QUEUE_REPLACE_FRONT:
 
-            RPC.call("Get_Indexed_Target_Q1", TargetQueueIndexCharacteristic.value(), buffer);
-            TargetQ1Characteristic.writeValue(buffer);
-
-            RPC.call("Get_Indexed_Target_Q2", TargetQueueIndexCharacteristic.value(), buffer);
-            TargetQ2Characteristic.writeValue(buffer);
-
-            RPC.call("Get_Indexed_Target_Q3", TargetQueueIndexCharacteristic.value(), buffer);
-            TargetQ3Characteristic.writeValue(buffer);
+            RPC.call("Replace_Indexed_Target", 0, TargetQ0Characteristic.value(), 
+                                                  TargetQ1Characteristic.value(), 
+                                                  TargetQ2Characteristic.value(), 
+                                                  TargetQ3Characteristic.value());
 
             break;
 
-        case TARGET_QUEUE_SET:
+        case TARGET_QUEUE_GET_BACK:
 
+            RPC.call("Get_Indexed_Target_Q0", -1, double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
 
+            RPC.call("Get_Indexed_Target_Q1", -1, double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q2", -1, double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q3", -1, double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
 
             break;
 
-        case TARGET_QUEUE_REMOVE:
+        case TARGET_QUEUE_APPEND:
+        
+            RPC.call("Append_New_Target", TargetQ0Characteristic.value(), 
+                                          TargetQ1Characteristic.value(), 
+                                          TargetQ2Characteristic.value(), 
+                                          TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_REMOVE_BACK:
+        
+            RPC.call("Remove_Last_Target");
+    
+            break;
+
+        case TARGET_QUEUE_REPLACE_BACK:
+
+            RPC.call("Replace_Indexed_Target", -1, TargetQ0Characteristic.value(), 
+                                                   TargetQ1Characteristic.value(), 
+                                                   TargetQ2Characteristic.value(), 
+                                                   TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_GET_INDEX:
+
+            RPC.call("Get_Indexed_Target_Q0", TargetQueueIndexCharacteristic.value(), double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q1", TargetQueueIndexCharacteristic.value(), double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q2", TargetQueueIndexCharacteristic.value(), double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q3", TargetQueueIndexCharacteristic.value(), double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
+
+            break;
+
+        case TARGET_QUEUE_REPLACE_INDEX:
+
+            RPC.call("Replace_Indexed_Target", TargetQueueIndexCharacteristic.value(), 
+                                               TargetQ0Characteristic.value(), 
+                                               TargetQ1Characteristic.value(), 
+                                               TargetQ2Characteristic.value(), 
+                                               TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_CLEAR:
+
+            RPC.call("Clear_Target_List");
 
             break;
 
@@ -363,10 +466,31 @@ void Run_DataStore() {
             break;
     }
 
-    // Targets - TBD
+    // Attitude
+    RPC.call("Get_Attitude_Q0", double_buffer);
+    AttitudeQ0Characteristic.writeValue(double_buffer);
+    RPC.call("Get_Attitude_Q1", double_buffer);
+    AttitudeQ1Characteristic.writeValue(double_buffer);
+    RPC.call("Get_Attitude_Q2", double_buffer);
+    AttitudeQ2Characteristic.writeValue(double_buffer);
+    RPC.call("Get_Attitude_Q3", double_buffer);
+    AttitudeQ3Characteristic.writeValue(double_buffer);
 
+    // Errors - TBD
 
-    // Targets
+    // States
+    RPC.call("Get_Primary_Voltage", double_buffer);
+    PrimaryVoltageCharacteristic.writeValue(double_buffer);
+    RPC.call("Get_Secondary_Voltage", double_buffer);
+    SecondaryVoltageCharacteristic.writeValue(double_buffer);
+    RPC.call("Get_Singularity_Parameter", double_buffer);
+    SingularityParameterCharacteristic.writeValue(double_buffer);
+
+    int int_buffer = 0;
+
+    RPC.call("Get_Target_List_Length", int_buffer);
+    TargetListLengthCharacteristic.writeValue(int_buffer);
+
 #endif // CPU_TYPE
 }
 
@@ -435,15 +559,24 @@ void Set_Gain33(const double value) {
 void Get_Indexed_Target_Q0(const ListSize_t index, double &value) {
     value = TargetQueue[index]->get(0);
 }
-void Get_Indexed_Target_Q1(const ListSize_t index) {
-    return TargetQueue[index]->get(1);
+void Get_Indexed_Target_Q1(const ListSize_t index, double &value) {
+    value = TargetQueue[index]->get(1);
 
 }
-void Get_Indexed_Target_Q2(const ListSize_t index) {
-    return TargetQueue[index]->get(2);
+void Get_Indexed_Target_Q2(const ListSize_t index, double &value) {
+    value = TargetQueue[index]->get(2);
 }
-void Get_Indexed_Target_Q3(const ListSize_t index) {
-    return TargetQueue[index]->get(3);
+void Get_Indexed_Target_Q3(const ListSize_t index, double &value) {
+    value = TargetQueue[index]->get(3);
+}
+
+void Prepend_New_Target(const double q0, const double q1, const double q2, const double q3) {
+    Vector<double>* new_target = new Vector<double>(4);
+    new_target->set(0, q0);
+    new_target->set(1, q1);
+    new_target->set(2, q2);
+    new_target->set(3, q3);
+    TargetQueue.push_front(new_target);
 }
 
 void Append_New_Target(const double q0, const double q1, const double q2, const double q3) {
@@ -459,24 +592,34 @@ void Replace_Indexed_Target(const ListSize_t index, const double q0, const doubl
     TargetQueue[index]->set(1, q1);
     TargetQueue[index]->set(2, q2);
     TargetQueue[index]->set(3, q3);
-
 }
-void Remove_Current_Target() {
+
+void Remove_First_Target() {
     delete TargetQueue.pop_front();
 }
 
+void Remove_Last_Target() {
+    delete TargetQueue.pop_back();
+}
+
+void Clear_Target_List() {
+    while (!TargetQueue.empty()) {
+        delete TargetQueue.pop_front();
+    }
+}
+
 // Attitude
-double Get_Attitude_Q0() {
-    return Attitude.get(0);
+void Get_Attitude_Q0(double &value) {
+    value = Attitude.get(0);
 }
-double Get_Attitude_Q1() {
-    return Attitude.get(1);
+void Get_Attitude_Q1(double &value) {
+    value = Attitude.get(1);
 }
-double Get_Attitude_Q2() {
-    return Attitude.get(2);
+void Get_Attitude_Q2(double &value) {
+    value = Attitude.get(2);
 }
-double Get_Attitude_Q3() {
-    return Attitude.get(3);
+void Get_Attitude_Q3(double &value) {
+    value = Attitude.get(3);
 }
 
 void Set_Attitude_Q0(const double value) {
@@ -495,17 +638,17 @@ void Set_Attitude_Q3(const double value) {
 // Errors - TBD
 
 // States
-double Get_Primary_Voltage() {
-    return PrimaryVoltage;
+void Get_Primary_Voltage(double &value) {
+    value = PrimaryVoltage;
 }
-double Get_Secondary_Voltage() {
-    return SecondaryVoltage;
+void Get_Secondary_Voltage(double &value) {
+    value = SecondaryVoltage;
 }
-double Get_Singularity_Parameter() {
-    return SingularityParameter;
+void Get_Singularity_Parameter(double &value) {
+    value = SingularityParameter;
 }
-double Get_Target_List_Length() {
-    return TargetQueue.size();
+void Get_Target_List_Length(int &value) {
+    value = TargetQueue.size();
 }
 
 void Set_Primary_Voltage(const double value) {

@@ -15,7 +15,8 @@
 #include <StateManager.hpp>
 
 #include "CORALS_Configuration.hpp"
-#include "CORALS_DataStore.hpp"
+#include "CORALS_Blinky.hpp"
+#include "DataStore.hpp"
 
 namespace CORALS {
 
@@ -32,6 +33,9 @@ void initialize() {
 #endif // GIGA_R1_M7
 
     Initialize_DataStore();
+
+    CORALS_OS.Register("DataStore", Run_DataStore, 500, ::StateManager::SM_Priority::PRIORITY_MEDIUM);
+    CORALS_OS.Register("Blinky", Blinky, 1000, ::StateManager::SM_Priority::PRIORITY_HIGHEST);
 
 #ifdef GIGA_R1_M7
     DEBUG_OUT.println("CORALS Initialized.");
