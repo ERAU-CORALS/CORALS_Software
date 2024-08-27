@@ -73,37 +73,44 @@ BLEService StatesService(BLE_UUID_CORALS_STATES_SERVICE);
 // BLE Settings Characteristics - TBD
 
 // BLE Gains Characteristics
-BLEDoubleCharacteristic Gain11Characteristic(BLE_UUID_CORALS_GAINS_GAIN11_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain12Characteristic(BLE_UUID_CORALS_GAINS_GAIN12_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain13Characteristic(BLE_UUID_CORALS_GAINS_GAIN13_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain21Characteristic(BLE_UUID_CORALS_GAINS_GAIN21_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain22Characteristic(BLE_UUID_CORALS_GAINS_GAIN22_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain23Characteristic(BLE_UUID_CORALS_GAINS_GAIN23_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain31Characteristic(BLE_UUID_CORALS_GAINS_GAIN31_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain32Characteristic(BLE_UUID_CORALS_GAINS_GAIN32_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic Gain33Characteristic(BLE_UUID_CORALS_GAINS_GAIN33_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
+BLEDoubleCharacteristic Gain11Characteristic(BLE_UUID_CORALS_GAINS_GAIN11_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain12Characteristic(BLE_UUID_CORALS_GAINS_GAIN12_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain13Characteristic(BLE_UUID_CORALS_GAINS_GAIN13_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain21Characteristic(BLE_UUID_CORALS_GAINS_GAIN21_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain22Characteristic(BLE_UUID_CORALS_GAINS_GAIN22_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain23Characteristic(BLE_UUID_CORALS_GAINS_GAIN23_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain31Characteristic(BLE_UUID_CORALS_GAINS_GAIN31_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain32Characteristic(BLE_UUID_CORALS_GAINS_GAIN32_CHARACTERISTIC, BLEWrite);
+BLEDoubleCharacteristic Gain33Characteristic(BLE_UUID_CORALS_GAINS_GAIN33_CHARACTERISTIC, BLEWrite);
 
 // BLE Targets Characteristics
-BLEIntCharacteristic TargetQueueIndexCharacteristic(BLE_UUID_CORALS_TARGETS_QUEUE_INDEX_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLECharCharacteristic TargetGetSetRemoveCharacteristic(BLE_UUID_CORALS_TARGETS_GET_SET_REMOVE_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic TargetQ0Characteristic(BLE_UUID_CORALS_TARGETS_Q0_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic TargetQ1Characteristic(BLE_UUID_CORALS_TARGETS_Q1_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic TargetQ2Characteristic(BLE_UUID_CORALS_TARGETS_Q2_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
-BLEDoubleCharacteristic TargetQ3Characteristic(BLE_UUID_CORALS_TARGETS_Q3_CHARACTERISTIC, BLERead | BLEWrite | BLENotify);
+BLEIntCharacteristic TargetQueueIndexCharacteristic(BLE_UUID_CORALS_TARGETS_QUEUE_INDEX_CHARACTERISTIC, BLEWrite);
+BLECharCharacteristic TargetGetSetRemoveCharacteristic(BLE_UUID_CORALS_TARGETS_GET_SET_REMOVE_CHARACTERISTIC, BLERead | BLEWrite);
+BLEDoubleCharacteristic TargetQ0Characteristic(BLE_UUID_CORALS_TARGETS_Q0_CHARACTERISTIC, BLERead | BLEWrite);
+BLEDoubleCharacteristic TargetQ1Characteristic(BLE_UUID_CORALS_TARGETS_Q1_CHARACTERISTIC, BLERead | BLEWrite);
+BLEDoubleCharacteristic TargetQ2Characteristic(BLE_UUID_CORALS_TARGETS_Q2_CHARACTERISTIC, BLERead | BLEWrite);
+BLEDoubleCharacteristic TargetQ3Characteristic(BLE_UUID_CORALS_TARGETS_Q3_CHARACTERISTIC, BLERead | BLEWrite);
+
+typedef enum __Target_Queue_Action {
+    TARGET_QUEUE_NO_ACTION = 0,
+    TARGET_QUEUE_GET = 1,
+    TARGET_QUEUE_SET = 2,
+    TARGET_QUEUE_REMOVE = 3
+} Target_Queue_Action_t;
 
 // BLE Attitude Characteristics
-BLEDoubleCharacteristic AttitudeQ0Characteristic(BLE_UUID_CORALS_ATTITUDE_Q0_CHARACTERISTIC, BLERead | BLENotify);
-BLEDoubleCharacteristic AttitudeQ1Characteristic(BLE_UUID_CORALS_ATTITUDE_Q1_CHARACTERISTIC, BLERead | BLENotify);
-BLEDoubleCharacteristic AttitudeQ2Characteristic(BLE_UUID_CORALS_ATTITUDE_Q2_CHARACTERISTIC, BLERead | BLENotify);
-BLEDoubleCharacteristic AttitudeQ3Characteristic(BLE_UUID_CORALS_ATTITUDE_Q3_CHARACTERISTIC, BLERead | BLENotify);
+BLEDoubleCharacteristic AttitudeQ0Characteristic(BLE_UUID_CORALS_ATTITUDE_Q0_CHARACTERISTIC, BLERead);
+BLEDoubleCharacteristic AttitudeQ1Characteristic(BLE_UUID_CORALS_ATTITUDE_Q1_CHARACTERISTIC, BLERead);
+BLEDoubleCharacteristic AttitudeQ2Characteristic(BLE_UUID_CORALS_ATTITUDE_Q2_CHARACTERISTIC, BLERead);
+BLEDoubleCharacteristic AttitudeQ3Characteristic(BLE_UUID_CORALS_ATTITUDE_Q3_CHARACTERISTIC, BLERead);
 
 // BLE Errors Characteristics - TBD
 
 // BLE States Characteristics
-BLEDoubleCharacteristic PrimaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_PRIMARY_VOLTAGE_CHARACTERISTIC, BLERead | BLENotify);
-BLEDoubleCharacteristic SecondaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_SECONDARY_VOLTAGE_CHARACTERISTIC, BLERead | BLENotify);
-BLEDoubleCharacteristic SingularityParameterCharacteristic(BLE_UUID_CORALS_STATES_SINGULARITY_PARAMETER_CHARACTERISTIC, BLERead | BLENotify);
-BLEIntCharacteristic TargetListLengthCharacteristic(BLE_UUID_CORALS_STATES_TARGET_LIST_LENGTH_CHARACTERISTIC, BLERead | BLENotify);
+BLEDoubleCharacteristic PrimaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_PRIMARY_VOLTAGE_CHARACTERISTIC, BLERead);
+BLEDoubleCharacteristic SecondaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_SECONDARY_VOLTAGE_CHARACTERISTIC, BLERead);
+BLEDoubleCharacteristic SingularityParameterCharacteristic(BLE_UUID_CORALS_STATES_SINGULARITY_PARAMETER_CHARACTERISTIC, BLERead);
+BLEIntCharacteristic TargetListLengthCharacteristic(BLE_UUID_CORALS_STATES_TARGET_LIST_LENGTH_CHARACTERISTIC, BLERead);
 
 // BLE Devices
 BLEDevice DARTS;
@@ -161,6 +168,16 @@ void Initialize_DataStore() {
     RPC.bind("Set_Gain32", Set_Gain32);
     RPC.bind("Set_Gain33", Set_Gain33);
 
+    Set_Gain11(0.0);
+    Set_Gain12(0.0);
+    Set_Gain13(0.0);
+    Set_Gain21(0.0);
+    Set_Gain22(0.0);
+    Set_Gain23(0.0);
+    Set_Gain31(0.0);
+    Set_Gain32(0.0);
+    Set_Gain33(0.0);
+
     // Targets
     RPC.bind("Get_Indexed_Target_Q0", Get_Indexed_Target_Q0);
     RPC.bind("Get_Indexed_Target_Q1", Get_Indexed_Target_Q1);
@@ -193,27 +210,7 @@ void Initialize_DataStore() {
     RPC.bind("Set_Secondary_Voltage", Set_Secondary_Voltage);
     RPC.bind("Set_Singularity_Parameter", Set_Singularity_Parameter);
 
-#else // GIGA_R1_M4
-
-    // Settings - TBD
-
-    // Gains
-    RPC.call("Set_Gain11", 0.0);
-    RPC.call("Set_Gain12", 0.0);
-    RPC.call("Set_Gain13", 0.0);
-    RPC.call("Set_Gain21", 0.0);
-    RPC.call("Set_Gain22", 0.0);
-    RPC.call("Set_Gain23", 0.0);
-    RPC.call("Set_Gain31", 0.0);
-    RPC.call("Set_Gain32", 0.0);
-    RPC.call("Set_Gain33", 0.0);
-
-    // Targets - TBD
-
-    // Attitude - TBD
-
-    // Errors - TBD
-#endif // CPU_TYPE
+#endif // GIGA_R1_M7
 
     /**
      ********************************************************************************
@@ -303,15 +300,68 @@ void Run_DataStore() {
     // Settings - TBD
 
     // Gains
-    RPC.call("Set_Gain11", Gain11Characteristic.value());
-    RPC.call("Set_Gain12", Gain12Characteristic.value());
-    RPC.call("Set_Gain13", Gain13Characteristic.value());
-    RPC.call("Set_Gain21", Gain21Characteristic.value());
-    RPC.call("Set_Gain22", Gain22Characteristic.value());
-    RPC.call("Set_Gain23", Gain23Characteristic.value());
-    RPC.call("Set_Gain31", Gain31Characteristic.value());
-    RPC.call("Set_Gain32", Gain32Characteristic.value());
-    RPC.call("Set_Gain33", Gain33Characteristic.value());
+    if (Gain11Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain11", Gain11Characteristic.value());
+    }
+    if (Gain12Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain12", Gain12Characteristic.value());
+    }
+    if (Gain13Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain13", Gain13Characteristic.value());
+    }
+    if (Gain21Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain21", Gain21Characteristic.value());
+    }
+    if (Gain22Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain22", Gain22Characteristic.value());
+    }
+    if (Gain23Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain23", Gain23Characteristic.value());
+    }
+    if (Gain31Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain31", Gain31Characteristic.value());
+    }
+    if (Gain32Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain32", Gain32Characteristic.value());
+    }
+    if (Gain33Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain33", Gain33Characteristic.value());
+    }
+
+    // Targets
+    switch (TargetGetSetRemoveCharacteristic.value()) {
+        case TARGET_QUEUE_GET:
+            
+            double buffer = 0.0;
+
+            RPC.call("Get_Indexed_Target_Q0", TargetQueueIndexCharacteristic.value(), buffer);
+            TargetQ0Characteristic.writeValue(buffer);
+
+            RPC.call("Get_Indexed_Target_Q1", TargetQueueIndexCharacteristic.value(), buffer);
+            TargetQ1Characteristic.writeValue(buffer);
+
+            RPC.call("Get_Indexed_Target_Q2", TargetQueueIndexCharacteristic.value(), buffer);
+            TargetQ2Characteristic.writeValue(buffer);
+
+            RPC.call("Get_Indexed_Target_Q3", TargetQueueIndexCharacteristic.value(), buffer);
+            TargetQ3Characteristic.writeValue(buffer);
+
+            break;
+
+        case TARGET_QUEUE_SET:
+
+
+
+            break;
+
+        case TARGET_QUEUE_REMOVE:
+
+            break;
+
+        default:
+
+            break;
+    }
 
     // Targets - TBD
 
@@ -353,46 +403,46 @@ double Get_Gain33() {
     return Gain33;
 }
 
-void Set_Gain11(double value) {
+void Set_Gain11(const double value) {
     Gain11 = value;
 }
-void Set_Gain12(double value) {
+void Set_Gain12(const double value) {
     Gain12 = value;
 }
-void Set_Gain13(double value) {
+void Set_Gain13(const double value) {
     Gain13 = value;
 }
-void Set_Gain21(double value) {
+void Set_Gain21(const double value) {
     Gain21 = value;
 }
-void Set_Gain22(double value) {
+void Set_Gain22(const double value) {
     Gain22 = value;
 }
-void Set_Gain23(double value) {
+void Set_Gain23(const double value) {
     Gain23 = value;
 }
-void Set_Gain31(double value) {
+void Set_Gain31(const double value) {
     Gain31 = value;
 }
-void Set_Gain32(double value) {
+void Set_Gain32(const double value) {
     Gain32 = value;
 }
-void Set_Gain33(double value) {
+void Set_Gain33(const double value) {
     Gain33 = value;
 }
 
 // Targets
-double Get_Indexed_Target_Q0(ListSize_t index) {
-    return TargetQueue[index]->get(0);
+void Get_Indexed_Target_Q0(const ListSize_t index, double &value) {
+    value = TargetQueue[index]->get(0);
 }
-double Get_Indexed_Target_Q1(ListSize_t index) {
+void Get_Indexed_Target_Q1(const ListSize_t index) {
     return TargetQueue[index]->get(1);
 
 }
-double Get_Indexed_Target_Q2(ListSize_t index) {
+void Get_Indexed_Target_Q2(const ListSize_t index) {
     return TargetQueue[index]->get(2);
 }
-double Get_Indexed_Target_Q3(ListSize_t index) {
+void Get_Indexed_Target_Q3(const ListSize_t index) {
     return TargetQueue[index]->get(3);
 }
 
@@ -404,7 +454,7 @@ void Append_New_Target(const double q0, const double q1, const double q2, const 
     new_target->set(3, q3);
     TargetQueue.push_back(new_target);
 }
-void Replace_Indexed_Target(ListSize_t index, const double q0, const double q1, const double q2, const double q3) {
+void Replace_Indexed_Target(const ListSize_t index, const double q0, const double q1, const double q2, const double q3) {
     TargetQueue[index]->set(0, q0);
     TargetQueue[index]->set(1, q1);
     TargetQueue[index]->set(2, q2);
@@ -429,16 +479,16 @@ double Get_Attitude_Q3() {
     return Attitude.get(3);
 }
 
-void Set_Attitude_Q0(double value) {
+void Set_Attitude_Q0(const double value) {
     Attitude.set(0, value);
 }
-void Set_Attitude_Q1(double value) {
+void Set_Attitude_Q1(const double value) {
     Attitude.set(1, value);
 }
-void Set_Attitude_Q2(double value) {
+void Set_Attitude_Q2(const double value) {
     Attitude.set(2, value);
 }
-void Set_Attitude_Q3(double value) {
+void Set_Attitude_Q3(const double value) {
     Attitude.set(3, value);
 }
 
@@ -458,13 +508,13 @@ double Get_Target_List_Length() {
     return TargetQueue.size();
 }
 
-void Set_Primary_Voltage(double value) {
+void Set_Primary_Voltage(const double value) {
     PrimaryVoltage = value;
 }
-void Set_Secondary_Voltage(double value) {
+void Set_Secondary_Voltage(const double value) {
     SecondaryVoltage = value;
 }
-void Set_Singularity_Parameter(double value) {
+void Set_Singularity_Parameter(const double value) {
     SingularityParameter = value;
 }
 
