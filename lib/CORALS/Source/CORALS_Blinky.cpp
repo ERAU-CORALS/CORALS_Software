@@ -20,7 +20,7 @@ void Blinky(void) {
 #ifdef GIGA_R1_M7
 
     // Blink LED
-    if (digitalRead(PC_13) == LOW) {
+    if (digitalRead(PC_13) == HIGH) {
         digitalWrite(LED_BUILTIN, LOW);
         delay(100);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -29,7 +29,7 @@ void Blinky(void) {
 #else // GIGA_R1_M4
 
     // Blink LED
-    if (digitalRead(PC_13) == HIGH) {
+    if (digitalRead(PC_13) == LOW) {
         digitalWrite(LED_BUILTIN, LOW);
         delay(100);
         digitalWrite(LED_BUILTIN, HIGH);
