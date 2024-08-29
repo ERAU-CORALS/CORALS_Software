@@ -18,10 +18,17 @@
 #define CORALS_OUT SERIAL_OUT
 const String CORALS_NAME = CORE_NAME + " CORALS";
 
+#if !defined(CORALS_DEBUG) || CORALS_DEBUG > 1
+    #ifdef CORALS_DEBUG
+        #undef CORALS_DEBUG
+    #endif
+    #define CORALS_DEBUG DEBUG
+#endif
+
 #define CORALS_OUT_PRINT(x) CORALS_OUT.print(CORALS_NAME + ": " + x)
 #define CORALS_OUT_PRINTLN(x) CORALS_OUT_PRINT(x + "\n")
 
-#define CORALS_DEBUG_PRINT(x) if(DEBUG) CORALS_OUT.print(CORALS_NAME + " DEBUG: " + x)
+#define CORALS_DEBUG_PRINT(x) if(CORALS_DEBUG) CORALS_OUT.print(CORALS_NAME + " DEBUG: " + x)
 #define CORALS_DEBUG_PRINTLN(x) CORALS_DEBUG_PRINT(x + "\n")
 
 #endif // __CORALS_CONFIGURATION_HPP__
