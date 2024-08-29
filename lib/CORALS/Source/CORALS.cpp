@@ -23,6 +23,7 @@ namespace CORALS {
 namespace {
 
 ::StateManager::StateManager CORALS_OS;
+::DataStore::DataStore CORALS_DataStore;
 
 } // end namespace
 
@@ -41,6 +42,10 @@ void run() {
     DEBUG_PRINTLN("CORALS Loop.");
 
     CORALS_OS.Run();
+
+    if (digitalRead(PC_13) == HIGH) {
+        delay(1000);
+    }
 }
 
 } // end namespace CORALS
