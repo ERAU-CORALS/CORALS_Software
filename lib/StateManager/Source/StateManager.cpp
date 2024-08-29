@@ -37,13 +37,13 @@ void StateManager::Register(const char *name,
 
     functions.push_back(new_function);
 
-    SM_DEBUG.print("Registered Function: ");
-    SM_DEBUG.println(name);
-    SM_DEBUG.print("\tPeriod: ");
-    SM_DEBUG.print(period_ms);
-    SM_DEBUG.println("ms");
-    SM_DEBUG.print("\tPriority: ");
-    SM_DEBUG.println((int)priority);
+    SM_DEBUG_PRINT("Registered Function: ");
+    SM_DEBUG_PRINTLN(name);
+    SM_DEBUG_PRINT("\tPeriod: ");
+    SM_DEBUG_PRINT(period_ms);
+    SM_DEBUG_PRINTLN("ms");
+    SM_DEBUG_PRINT("\tPriority: ");
+    SM_DEBUG_PRINTLN((int)priority);
 }
 
 void StateManager::Register(const char *name, 
@@ -60,21 +60,21 @@ void StateManager::Register(const char *name,
 
     processes.push_back(new_process);
 
-    SM_DEBUG.print("Registered Process: ");
-    SM_DEBUG.println(name);
-    SM_DEBUG.print("\tPeriod: ");
-    SM_DEBUG.print(period_ms);
-    SM_DEBUG.println("ms");
-    SM_DEBUG.print("\tPriority: ");
-    SM_DEBUG.println((int)priority);
+    SM_DEBUG_PRINT("Registered Process: ");
+    SM_DEBUG_PRINTLN(name);
+    SM_DEBUG_PRINT("\tPeriod: ");
+    SM_DEBUG_PRINT(period_ms);
+    SM_DEBUG_PRINTLN("ms");
+    SM_DEBUG_PRINT("\tPriority: ");
+    SM_DEBUG_PRINTLN((int)priority);
 }
 
 void StateManager::Run() {
     if (functions.size() == 0 && processes.size() == 0) return;
 
-    SM_DEBUG.print("Iterating through ");
-    SM_DEBUG.print(functions.size());
-    SM_DEBUG.println(" functions...");
+    SM_DEBUG_PRINT("Iterating through ");
+    SM_DEBUG_PRINT(functions.size());
+    SM_DEBUG_PRINTLN(" functions...");
 
     SM_WeightedPriority max_function_priority = 0;
     ListSize max_function_priority_index = 0;
@@ -86,9 +86,9 @@ void StateManager::Run() {
         }
     }
 
-    SM_DEBUG.print("Iterating through ");
-    SM_DEBUG.print(processes.size());
-    SM_DEBUG.println(" processes...");
+    SM_DEBUG_PRINT("Iterating through ");
+    SM_DEBUG_PRINT(processes.size());
+    SM_DEBUG_PRINTLN(" processes...");
         
     SM_WeightedPriority max_process_priority = 0;
     ListSize max_process_priority_index = 0;
@@ -116,11 +116,11 @@ SM_WeightedPriority StateManager::DetermineWeightedFunctionPriority(ListSize f_i
     SM_Time delta_time = (delay_time > function.period_ms) ? delay_time - function.period_ms : 0;
     SM_WeightedPriority weighted_priority = (SM_WeightedPriority)function.priority * delta_time;
 
-    SM_DEBUG.print(function.name);
-    SM_DEBUG.print(": ");
-    SM_DEBUG.print(delta_time);
-    SM_DEBUG.print("ms, ");
-    SM_DEBUG.println(weighted_priority);
+    SM_DEBUG_PRINT(function.name);
+    SM_DEBUG_PRINT(": ");
+    SM_DEBUG_PRINT(delta_time);
+    SM_DEBUG_PRINT("ms, ");
+    SM_DEBUG_PRINTLN(weighted_priority);
 
     return weighted_priority;
 }
@@ -131,25 +131,25 @@ SM_WeightedPriority StateManager::DetermineWeightedProcessPriority(ListSize p_in
     SM_Time delta_time = (delay_time > process.period_ms) ? delay_time - process.period_ms : 0;
     SM_WeightedPriority weighted_priority = (SM_WeightedPriority)process.priority * delta_time;
         
-    SM_DEBUG.print(process.name);
-    SM_DEBUG.print(": ");
-    SM_DEBUG.print(delta_time);
-    SM_DEBUG.print("ms, ");
-    SM_DEBUG.println(weighted_priority);
+    SM_DEBUG_PRINT(process.name);
+    SM_DEBUG_PRINT(": ");
+    SM_DEBUG_PRINT(delta_time);
+    SM_DEBUG_PRINT("ms, ");
+    SM_DEBUG_PRINTLN(weighted_priority);
         
     return weighted_priority;
 }
 
 void StateManager::CallFunction(ListSize f_index) {
-    SM_DEBUG.print("CALLING FUNCTION: ");
-    SM_DEBUG.println(functions[f_index].name);
+    SM_DEBUG_PRINT("CALLING FUNCTION: ");
+    SM_DEBUG_PRINTLN(functions[f_index].name);
     functions[f_index].last_call = millis();
     functions[f_index].function();
 }
 
 void StateManager::CallProcess(ListSize p_index) {
-    SM_DEBUG.print("CALLING PROCESS: ");
-    SM_DEBUG.println(processes[p_index].name);
+    SM_DEBUG_PRINT("CALLING PROCESS: ");
+    SM_DEBUG_PRINTLN(processes[p_index].name);
     processes[p_index].last_call = millis();
     processes[p_index].process->Run();
 }

@@ -31,7 +31,11 @@ const String CORE_NAME = "GIGA_R1_M7";
 
 #endif
 
-#define DEBUG_PRINT(x) DEBUG_OUT.print(CORE_NAME + ": " + x)
-#define DEBUG_PRINTLN(x) DEBUG_OUT.println(CORE_NAME + ": " + x)
+#ifndef DEBUG
+    #define DEBUG false
+#endif
+
+#define DEBUG_PRINT(x) if(DEBUG) DEBUG_OUT.print(CORE_NAME + ": " + x)
+#define DEBUG_PRINTLN(x) DEBUG_PRINT(x + "\n")
 
 #endif // __CORALS_CONFIGURATION_HPP__

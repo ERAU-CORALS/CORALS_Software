@@ -28,8 +28,8 @@ void Process::Register(const char *name, SM_Function_t function) {
     };
     functions.push_back(new_function);
     
-    SM_DEBUG.print("Registered Function to Process: ");
-    SM_DEBUG.println(name);
+    SM_DEBUG_PRINT("Registered Function to Process: ");
+    SM_DEBUG_PRINTLN(name);
 };
 
 void Process::Run() {

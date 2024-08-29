@@ -46,6 +46,10 @@ void run() {
     if (digitalRead(PC_13) == HIGH) {
         delay(1000);
     }
+
+#ifdef GIGA_R1_M7
+    while (SerialRPC.available()) Serial.write(SerialRPC.read());
+#endif
 }
 
 } // end namespace CORALS
