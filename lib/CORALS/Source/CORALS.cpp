@@ -27,22 +27,19 @@ namespace {
 } // end namespace
 
 void initialize() {
-#ifdef GIGA_R1_M7
-    DEBUG_OUT.begin(115200);
-    DEBUG_OUT.println("CORALS Initializing...");
-#endif // GIGA_R1_M7
+    DEBUG_PRINTLN("CORALS Initializing...");
 
-    Initialize_DataStore();
-
-    CORALS_OS.Register("DataStore", Run_DataStore, 500, ::StateManager::SM_Priority::PRIORITY_MEDIUM);
     CORALS_OS.Register("Blinky", Blinky, 1000, ::StateManager::SM_Priority::PRIORITY_HIGHEST);
+    
+    Initialize_DataStore();
+    CORALS_OS.Register("DataStore", Run_DataStore, 500, ::StateManager::SM_Priority::PRIORITY_MEDIUM);
 
-#ifdef GIGA_R1_M7
-    DEBUG_OUT.println("CORALS Initialized.");
-#endif // GIGA_R1_M7
+    DEBUG_PRINTLN("CORALS Initialized.");
 }
 
 void run() {
+    DEBUG_PRINTLN("CORALS Loop.");
+
     CORALS_OS.Run();
 }
 

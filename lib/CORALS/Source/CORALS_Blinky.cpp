@@ -20,19 +20,17 @@ void Blinky(void) {
 #ifdef GIGA_R1_M7
 
     // Blink LED
-    if (digitalRead(PC_13) == HIGH) {
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(100);
-        digitalWrite(LED_BUILTIN, HIGH);
-    }
+    digitalWrite(LEDG, LOW);
+    delay(100);
+    digitalWrite(LEDG, HIGH);
 
 #else // GIGA_R1_M4
 
     // Blink LED
     if (digitalRead(PC_13) == LOW) {
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LEDB, LOW);
         delay(100);
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LEDB, HIGH);
     }
 
 #endif // CPU_TYPE
