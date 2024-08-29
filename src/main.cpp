@@ -4,6 +4,7 @@
 #include <SerialRPC.h>
 
 #include "CORALS.hpp"
+#include "CORALS_Configuration"
 
 #if ((defined(GIGA_R1_M7) && defined(GIGA_R1_M4)) || \
      (!defined(GIGA_R1_M7) && !defined(GIGA_R1_M4)))
@@ -11,14 +12,6 @@
 #elif ((defined(GIGA_R1_M7) && defined(CORE_CM4)) || \
        (defined(GIGA_R1_M4) && defined(CORE_CM7)))
     #error "Environment variables mismatch Arduino core."
-#endif // CPU_TYPE
-
-#ifdef GIGA_R1_M7
-    #define CM_SERIAL Serial
-const String CORE_NAME = "CM7";
-#else
-    #define CM_SERIAL SerialRPC
-const String CORE_NAME = "CM4";
 #endif // CPU_TYPE
 
 void setup_error(String message = "");
@@ -32,14 +25,14 @@ void setup() {
         setup_error();
     }
 
-    CM_SERIAL.println("Serial initialized for " + CORE_NAME + ".");
+    DEBUG_OUT_PRINTLN("Serial initialized for " + CORE_NAME + ".");
 
     // RPC Initialization
     if (!SerialRPC.begin()) {
         setup_error("Failed to initialize RPC on " + CORE_NAME + ".");
     }
 
-    CM_SERIAL.println("RPC initialized on " + CORE_NAME + ".");
+    DEBUG_OUT_PRINTLN("RPC initialized on " + CORE_NAME + ".");
 
     // BEGIN CORALS CODE
 
@@ -57,7 +50,7 @@ void loop() {
 }
 
 void setup_error(String message) {
-    if (message.length() > 0) CM_SERIAL.println(message);
+    if (message.length() > 0) DEBUG_OUT_PRINTLN(message);
 
 #ifdef GIGA_R1_M7
     if (digitalRead(PC_13) == LOW) {
