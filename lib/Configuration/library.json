@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+    "name": "CORALS_Configuration",
+    "description": "Top Level Configuration for CORALS Software.",
+    "authors": {
+        "name": "Logan Ruddick",
+        "email": "Logan@Ruddicks.net"
+    },
+    "frameworks": "arduino",
+    "platforms": "ststm32",
+    "headers": [
+        "Configuration.hpp"
+    ]
+}

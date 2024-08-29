@@ -13,8 +13,6 @@
 #ifndef __CORALS_HPP__
 #define __CORALS_HPP__
 
-#include <StateManager.hpp>
-
 namespace CORALS {
 
 void initialize();

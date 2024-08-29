@@ -12,9 +12,14 @@
         "StateManager.hpp",
         "StateManager_Process.hpp"
     ],
-    "dependencies": {
-        "name": "CORALS_DataStructures"
-    },
+    "dependencies": [
+        {
+            "name": "CORALS_Configuration"
+        },
+        {
+            "name": "CORALS_DataStructures"
+        }
+    ],
     "build": {
         "includeDir": "Include",
         "srcDir": "Source"

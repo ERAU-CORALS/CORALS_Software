@@ -13,6 +13,9 @@
     ],
     "dependencies": [
         {
+            "name": "CORALS_Configuration"
+        },
+        {
             "name": "CORALS_DataStore"
         },
         {

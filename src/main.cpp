@@ -1,18 +1,21 @@
-#include <Arduino.h>
+/**
+ ********************************************************************************
+ * @file    main.cpp
+ * @author  Logan Ruddick (Logan@Ruddicks.net)
+ * @brief   CORALS Main
+ * @version 1.0
+ * @date    2024-03-24
+ ********************************************************************************
+ * @copyright Copyright (c) 2024
+ ********************************************************************************
+**/
 
-#include <RPC.h>
+#include <Arduino.h>
 #include <SerialRPC.h>
 
-#include "CORALS.hpp"
-#include "CORALS_Configuration"
+#include "Configuration.hpp"
 
-#if ((defined(GIGA_R1_M7) && defined(GIGA_R1_M4)) || \
-     (!defined(GIGA_R1_M7) && !defined(GIGA_R1_M4)))
-    #error "Environment variables incorrect."
-#elif ((defined(GIGA_R1_M7) && defined(CORE_CM4)) || \
-       (defined(GIGA_R1_M4) && defined(CORE_CM7)))
-    #error "Environment variables mismatch Arduino core."
-#endif // CPU_TYPE
+#include "CORALS.hpp"
 
 void setup_error(String message = "");
 
@@ -21,18 +24,18 @@ void setup() {
     Serial.begin(115200);
     const unsigned long serial_timer = millis();
     while (!Serial && (millis() - serial_timer < 10000)) continue;
-    if (!Serial) {
+    if (!Serial && DEBUG) {
         setup_error();
     }
 
-    DEBUG_OUT_PRINTLN("Serial initialized for " + CORE_NAME + ".");
+    SERIAL_OUT_PRINTLN("Serial initialized for " + CORE_NAME + ".");
 
     // RPC Initialization
     if (!SerialRPC.begin()) {
-        setup_error("Failed to initialize RPC on " + CORE_NAME + ".");
+        SERIAL_OUT_PRINTLN("Failed to initialize RPC on " + CORE_NAME + ".");
     }
 
-    DEBUG_OUT_PRINTLN("RPC initialized on " + CORE_NAME + ".");
+    SERIAL_OUT_PRINTLN("RPC initialized on " + CORE_NAME + ".");
 
     // BEGIN CORALS CODE
 
@@ -50,7 +53,8 @@ void loop() {
 }
 
 void setup_error(String message) {
-    if (message.length() > 0) DEBUG_OUT_PRINTLN(message);
+    if (message.length() > 0) SERIAL_OUT_PRINTLN("RPC initialized on " + CORE_NAME + ".");
+(message);
 
 #ifdef GIGA_R1_M7
     if (digitalRead(PC_13) == LOW) {

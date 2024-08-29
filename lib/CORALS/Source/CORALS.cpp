@@ -12,11 +12,11 @@
 
 #include "CORALS.hpp"
 
-#include <StateManager.hpp>
 
 #include "CORALS_Configuration.hpp"
 #include "CORALS_Blinky.hpp"
 #include "DataStore.hpp"
+#include "StateManager.hpp"
 
 namespace CORALS {
 
@@ -28,18 +28,18 @@ namespace {
 } // end namespace
 
 void initialize() {
-    DEBUG_PRINTLN("CORALS Initializing...");
+    CORALS_OUT_PRINTLN("CORALS Initializing...");
 
     CORALS_OS.Register("Blinky", Blinky, 1000, ::StateManager::SM_Priority::PRIORITY_HIGHEST);
     
     // Initialize_DataStore();
     // CORALS_OS.Register("DataStore", Run_DataStore, 500, ::StateManager::SM_Priority::PRIORITY_MEDIUM);
 
-    DEBUG_PRINTLN("CORALS Initialized.");
+    CORALS_OUT_PRINTLN("CORALS Initialized.");
 }
 
 void run() {
-    DEBUG_PRINTLN("CORALS Loop.");
+    CORALS_DEBUG_PRINTLN("CORALS Loop.");
 
     CORALS_OS.Run();
 

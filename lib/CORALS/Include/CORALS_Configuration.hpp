@@ -13,29 +13,15 @@
 #ifndef __CORALS_CONFIGURATION_HPP__
 #define __CORALS_CONFIGURATION_HPP__
 
-#include <Arduino.h>
-#include <SerialRPC.h>
+#include "Configuration.hpp"
 
-// Serial USART Allocation
-#ifdef GIGA_R1_M4
+#define CORALS_OUT SERIAL_OUT
+const String CORALS_NAME = CORE_NAME + " CORALS";
 
-#define DEBUG_OUT Serial
-const String CORE_NAME = "GIGA_R1_M4";
+#define CORALS_OUT_PRINT(x) CORALS_OUT.print(CORALS_NAME + ": " + x)
+#define CORALS_OUT_PRINTLN(x) CORALS_OUT_PRINT(x + "\n")
 
-#endif
-
-#ifdef GIGA_R1_M7
-
-#define DEBUG_OUT SerialRPC
-const String CORE_NAME = "GIGA_R1_M7";
-
-#endif
-
-#ifndef DEBUG
-    #define DEBUG false
-#endif
-
-#define DEBUG_PRINT(x) if(DEBUG) DEBUG_OUT.print(CORE_NAME + ": " + x)
-#define DEBUG_PRINTLN(x) DEBUG_PRINT(x + "\n")
+#define CORALS_DEBUG_PRINT(x) if(DEBUG) CORALS_OUT.print(CORALS_NAME + " DEBUG: " + x)
+#define CORALS_DEBUG_PRINTLN(x) CORALS_DEBUG_PRINT(x + "\n")
 
 #endif // __CORALS_CONFIGURATION_HPP__
