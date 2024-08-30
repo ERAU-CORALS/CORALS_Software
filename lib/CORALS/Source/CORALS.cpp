@@ -49,6 +49,7 @@ void run() {
 
 #ifdef GIGA_R1_M7
     while (SerialRPC.available()) Serial.write(SerialRPC.read());
+    Serial.flush();
 #endif
 }
 
