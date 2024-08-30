@@ -15,6 +15,8 @@
 #include <ArduinoBLE.h>
 #include <RPC.h>
 
+#include "Internal/CORALS_BLE.inc"
+
 namespace CORALS {
 
 namespace {
@@ -107,7 +109,20 @@ static bool DARTS_Connect() {
     return true;
 }
 
-#endif // GIGA_R1_M4
+#else // GIGA_R1_M7
+
+DataStore CORALS_DataStore;
+
+using DataStructures::Matrix::MatrixLength_t;
+
+void Set_Gain(const MatrixLength_t row, const MatrixLength_t column, const double gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(row, column, gain);
+    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+#endif // CORE_TYPE
 
 } // end namespace
 
@@ -255,8 +270,320 @@ void API_Init() {
 
 void API_Loop() {
 #ifdef GIGA_R1_M4
+    if (!DARTS_Connect() || !DARTS.connected()) return;
 
-#endif // GIGA_R1_M4
+    // Settings - TBD
+
+    // Gains
+    if (Gain11Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain11", Gain11Characteristic.value());
+    }
+    if (Gain12Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain12", Gain12Characteristic.value());
+    }
+    if (Gain13Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain13", Gain13Characteristic.value());
+    }
+    if (Gain21Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain21", Gain21Characteristic.value());
+    }
+    if (Gain22Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain22", Gain22Characteristic.value());
+    }
+    if (Gain23Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain23", Gain23Characteristic.value());
+    }
+    if (Gain31Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain31", Gain31Characteristic.value());
+    }
+    if (Gain32Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain32", Gain32Characteristic.value());
+    }
+    if (Gain33Characteristic.valueUpdated()) {
+        RPC.call("Set_Gain33", Gain33Characteristic.value());
+    }
+
+    // Targets
+    double double_buffer = 0.0;
+
+    switch (TargetActionCharacteristic.value()) {
+        case TARGET_QUEUE_NO_ACTION:
+            break;
+        
+        case TARGET_QUEUE_GET_FRONT:
+
+            RPC.call("Get_Indexed_Target_Q0", 0, &double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q1", 0, &double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q2", 0, &double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q3", 0, &double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
+            
+            break;
+
+        case TARGET_QUEUE_PREPEND:
+
+            RPC.call("Prepend_New_Target", TargetQ0Characteristic.value(), 
+                                           TargetQ1Characteristic.value(), 
+                                           TargetQ2Characteristic.value(), 
+                                           TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_REMOVE_FRONT:
+
+            RPC.call("Remove_First_Target");
+    
+            break;
+
+        case TARGET_QUEUE_REPLACE_FRONT:
+
+            RPC.call("Replace_Indexed_Target", 0, TargetQ0Characteristic.value(), 
+                                                  TargetQ1Characteristic.value(), 
+                                                  TargetQ2Characteristic.value(), 
+                                                  TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_GET_BACK:
+
+            RPC.call("Get_Indexed_Target_Q0", -1, &double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q1", -1, &double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q2", -1, &double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+            
+            RPC.call("Get_Indexed_Target_Q3", -1, &double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
+            
+            break;
+
+        case TARGET_QUEUE_APPEND:
+
+            RPC.call("Append_New_Target", TargetQ0Characteristic.value(), 
+                                          TargetQ1Characteristic.value(), 
+                                          TargetQ2Characteristic.value(), 
+                                          TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_REMOVE_BACK:
+
+            RPC.call("Remove_Last_Target");
+    
+            break;
+
+        case TARGET_QUEUE_REPLACE_BACK:
+
+            RPC.call("Replace_Indexed_Target", -1, TargetQ0Characteristic.value(), 
+                                                   TargetQ1Characteristic.value(), 
+                                                   TargetQ2Characteristic.value(), 
+                                                   TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_GET_INDEX:
+
+            RPC.call("Get_Indexed_Target_Q0", TargetQueueIndexCharacteristic.value(), &double_buffer);
+            TargetQ0Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q1", TargetQueueIndexCharacteristic.value(), &double_buffer);
+            TargetQ1Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q2", TargetQueueIndexCharacteristic.value(), &double_buffer);
+            TargetQ2Characteristic.writeValue(double_buffer);
+
+            RPC.call("Get_Indexed_Target_Q3", TargetQueueIndexCharacteristic.value(), &double_buffer);
+            TargetQ3Characteristic.writeValue(double_buffer);
+
+            break;
+
+        case TARGET_QUEUE_REPLACE_INDEX:
+
+            RPC.call("Replace_Indexed_Target", TargetQueueIndexCharacteristic.value(), 
+                                               TargetQ0Characteristic.value(), 
+                                               TargetQ1Characteristic.value(), 
+                                               TargetQ2Characteristic.value(), 
+                                               TargetQ3Characteristic.value());
+
+            break;
+
+        case TARGET_QUEUE_CLEAR:
+
+            RPC.call("Clear_Target_List");
+
+            break;
+
+        default:
+
+            CORALS_DEBUG_PRINTLN("Invalid Target Queue Action.");
+
+            break;
+    }
+
+    // Attitude
+    RPC.call("Get_Attitude_Q0", &double_buffer);
+    AttitudeQ0Characteristic.writeValue(double_buffer);
+
+    RPC.call("Get_Attitude_Q1", &double_buffer);
+    AttitudeQ1Characteristic.writeValue(double_buffer);
+
+    RPC.call("Get_Attitude_Q2", &double_buffer);
+    AttitudeQ2Characteristic.writeValue(double_buffer);
+
+    RPC.call("Get_Attitude_Q3", &double_buffer);
+    AttitudeQ3Characteristic.writeValue(double_buffer);
+
+    // Errors - TBD
+
+    // States
+    RPC.call("Get_Primary_Voltage", &double_buffer);
+    PrimaryVoltageCharacteristic.writeValue(double_buffer);
+
+    RPC.call("Get_Secondary_Voltage", &double_buffer);
+    SecondaryVoltageCharacteristic.writeValue(double_buffer);
+
+    RPC.call("Get_Singularity_Parameter", &double_buffer);
+    SingularityParameterCharacteristic.writeValue(double_buffer);
+
+    int int_buffer = 0;
+
+    RPC.call("Get_Target_List_Length", &int_buffer);
+    TargetListLengthCharacteristic.writeValue(int_buffer);
+
+#endif // CORE_TYPE
 }
+
+#ifdef GIGA_R1_M7
+
+// Settings - TBD
+
+// Gains
+void Get_Gain_Matrix(GainMatrix *const Gain_Matrix) {
+    CORALS_DataStore.Get(GAIN_MATRIX, Gain_Matrix);
+}
+
+// Targets
+void Get_Indexed_Target(const ListSize_t index, Quaternion *const Target) {
+    TargetList *Targets = nullptr;
+    CORALS_DataStore.Get(TARGET_LIST, Targets);
+    memcpy(Target, (*Targets)[index], sizeof(Quaternion));
+}
+
+// Attitude
+void Get_Attitude(Quaternion *const attitude) {
+    CORALS_DataStore.Get(ATTITUDE_QUATERNION, attitude);
+}
+
+void Set_Attitude(const Quaternion *const attitude) {
+    CORALS_DataStore.Set(ATTITUDE_QUATERNION, attitude);
+}
+
+// Errors - TBD
+
+// States
+void Set_Primary_Voltage(const double voltage) {
+    CORALS_DataStore.Set(PRIMARY_VOLTAGE, &voltage);
+}
+
+void Set_Secondary_Voltage(const double voltage) {
+    CORALS_DataStore.Set(SECONDARY_VOLTAGE, &voltage);
+}
+
+void Set_Singularity_Parameter(const double parameter) {
+    CORALS_DataStore.Set(SINGULARITY_PARAMETER, &parameter);
+}
+
+#endif // GIGA_R1_M7
+// ALL CORES BELOW:
+
+// Settings - TBD
+
+// Gains
+void Get_Gain11(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(0, 0);
+}
+
+void Get_Gain12(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(0, 1);
+}
+
+void Get_Gain13(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(0, 2);
+}
+
+void Get_Gain21(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(1, 0);
+}
+
+void Get_Gain22(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(1, 1);
+}
+
+void Get_Gain23(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(1, 2);
+}
+
+void Get_Gain31(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(2, 0);
+}
+
+void Get_Gain32(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(2, 1);
+}
+
+void Get_Gain33(double *const gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    *gain = Gain_Matrix.get(2, 2);
+}
+
+void Set_Gain11(const double gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(0, 0, gain);
+    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain12(const double gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(0, 1, gain);
+    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain13(const double gain) {
+    GainMatrix Gain_Matrix(3);
+    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(0, 2, gain);
+    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+
+
 
 } // end namespace CORALS

@@ -14,13 +14,17 @@
 #define __CORALS_DATASTORE_HPP__
 
 #include "DataStore.hpp"
+#include "List.tpp"
+#include "Matrix.tpp"
+#include "Vector.tpp"
+
 
 namespace CORALS {
 
 // TODO: REDEFINE THESE ELSEWHERE
 using GainMatrix = DataStructures::Matrix::Matrix<double>;
 using Quaternion = DataStructures::Vector::Vector<double>;
-using TargetList = DataStructures::List::List<Quaternion>;
+using TargetList = DataStructures::List::List<Quaternion*>;
 
 enum DataStore_Keys{
 // Settings - TBD

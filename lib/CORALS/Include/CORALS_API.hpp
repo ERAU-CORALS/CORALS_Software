@@ -18,6 +18,8 @@
 
 namespace CORALS {
 
+using DataStructures::List::ListSize_t;
+
 void API_Init();
 void API_Loop();
 
@@ -26,10 +28,10 @@ void API_Loop();
 // Settings - TBD
 
 // Gains
-void Get_Gain_Matrix(GainMatrix *const gain_matrix);
+void Get_Gain_Matrix(GainMatrix *const Gain_Matrix);
 
 // Targets
-void Get_Indexed_Target(const ListSize_t index, Quaternion *const target);
+void Get_Indexed_Target(const ListSize_t index, Quaternion *const Target);
 
 // Attitude
 void Get_Attitude(Quaternion *const attitude);
@@ -93,10 +95,10 @@ void Replace_Indexed_Target(const ListSize_t index, const double q0,
 void Clear_Target_List();
 
 // Attitude
-void Get_Attitude_Q0(double &value);
-void Get_Attitude_Q1(double &value);
-void Get_Attitude_Q2(double &value);
-void Get_Attitude_Q3(double &value);
+void Get_Attitude_Q0(double *const value);
+void Get_Attitude_Q1(double *const value);
+void Get_Attitude_Q2(double *const value);
+void Get_Attitude_Q3(double *const value);
 
 void Set_Attitude_Q0(const double value);
 void Set_Attitude_Q1(const double value);
@@ -106,10 +108,10 @@ void Set_Attitude_Q3(const double value);
 // Errors - TBD
 
 // States
-void Get_Primary_Voltage(double &value);
-void Get_Secondary_Voltage(double &value);
-void Get_Singularity_Parameter(double &value);
-void Get_Target_List_Length(int &value);
+void Get_Primary_Voltage(double *const value);
+void Get_Secondary_Voltage(double *const value);
+void Get_Singularity_Parameter(double *const value);
+void Get_Target_List_Length(int *const value);
 
 } // namespace CORALS
 

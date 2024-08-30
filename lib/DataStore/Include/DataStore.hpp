@@ -29,7 +29,7 @@ class DataStore {
         ~DataStore();
 
         template <typename T>
-        void Get(const KeyType key, T *const data);
+        void Get(const KeyType key, T **const data);
         template <typename T>
         void Set(const KeyType key, const T *const data);
 
@@ -43,7 +43,7 @@ class DataStore {
         template <typename T>
         class DataObject {
             public:
-                DataObject(KeyType key, T *data = nullptr);
+                DataObject(KeyType key, const T *const data = nullptr);
                 ~DataObject();
 
                 void get(T *const data);
@@ -56,7 +56,7 @@ class DataStore {
 
             private:
                 KeyType m_key;
-                T m_value;
+                T *m_data;
                 bool m_locked;
                 uint32_t m_checksum;
         };

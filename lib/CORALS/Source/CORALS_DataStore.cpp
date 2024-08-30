@@ -13,10 +13,6 @@
 #include "CORALS_DataStore.hpp"
 
 #include "CORALS_Configuration.hpp"
-#include "List.tpp"
-#include "Matrix.tpp"
-#include "Vector.tpp"
-
 namespace CORALS {
 
 DataStore::DataStore () : ::DataStore::DataStore<DataStore_Keys>() {
@@ -26,9 +22,12 @@ DataStore::DataStore () : ::DataStore::DataStore<DataStore_Keys>() {
     Add_NDO<GainMatrix>(GAIN_MATRIX);
     Add_NDO<TargetList>(TARGET_LIST);
     Add_NDO<Quaternion>(ATTITUDE_QUATERNION);
-    Add_NDO<double>(PRIMARY_VOLTAGE);
-    Add_NDO<double>(SECONDARY_VOLTAGE);
-    Add_NDO<double>(SINGULARITY_PARAMETER);
+
+    const double default_double = 0.0;
+    
+    Add_NDO<double>(PRIMARY_VOLTAGE, &default_double);
+    Add_NDO<double>(SECONDARY_VOLTAGE, &default_double);
+    Add_NDO<double>(SINGULARITY_PARAMETER, &default_double);
 
     CORALS_DEBUG_PRINTLN("CORALS DataStore Initialized.");
 }
