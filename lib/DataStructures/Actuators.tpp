@@ -19,19 +19,34 @@
 
 namespace Actuators {
 
+const int maxCount = 40; // Allows for 0.5 degree increments
+
 template<typename T>
 class Actuators {
 
     public:
 
-    T crankThresh() {
+    T countPhiError(const Matrix<T>& phiError, T counter) { // NOTE: Counter will have to be initialized to zero in main before calling this function (int counter = 0)
+        int k = phiError.length() - 1; // Can change this to use computeDifference from SLFun
 
-    }
+        if (counter >= maxCount) {
+            throw std::invalid_argument( "Cannot achieve desired attitude" ); // Would be great to give user the specific attitude that cannot be achieved
+        } else {
+            if (phiError(k) <= phiError(k + 1)) {
+                return counter + 1;
+            } else {
+                return 0;
+            }
+        }
 
-    int modGyros(const Matrix<T>& targetT, const Matrix<T>& wB_Actual) { // Multiplier to keep gyros from producing too much momentum
-        Matrix<T> H_B = targetT * wB_Actual;
-        Matrix<T> wB_Mag = 
-        if (targetT > 0.3 && wB_Mag > 0) {
+    int modGyros(const Matrix<T>& targetT, const Matrix<T>& wB_Actual, T counter) { // Multiplier to keep gyros from producing too much momentum
+        counter = countPhiError(phiError,counter);
+
+        T thresh = maxCount - counter * M_PI / 360; // Adjust threshold by 0.5 degrees per counter increment
+        Matrix<T> H_B = targetT.dot(wB_Actual);
+        Matrix<T> wB_Mag = sqrt(wB_Actual.dot(wB_Actual));
+
+        if (targetT > 0 && wB_Mag > thresh) {
             return 0;
         } else {
             return 1;
@@ -39,8 +54,8 @@ class Actuators {
     } 
 
     Matrix<T> compute_wG(const Matrix<T>& thetaG, const T& Hs, const Matrix<T>& DCM_BG, const Matrix<T>& targetT) {
-        Dynamics::CMG::CMGDynamics<T> cmgDynamics;
-        Matrix<T> C = cmgDynamics.computeC(thetaG, Hs, DCM_BG); // cmgDynamics will become a member of SLFun
+        SLFun::Simulink::createC<T> createC;
+        Matrix<T> C = createC.computeC(thetaG, Hs, DCM_BG); // cmgDynamics will become a member of SLFun
         Matrix<T> invC = C.transpose() * (C * C.transpose()).inverse();
         return invC * targetT;
     }
@@ -48,3 +63,5 @@ class Actuators {
 }
 
 }
+
+#endif // __ACTUATORS_TPP__

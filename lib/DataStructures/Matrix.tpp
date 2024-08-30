@@ -255,7 +255,7 @@ class Matrix {
             return newMatrix;
         }
 
-        int dot(const Matrix<T>& other) const {
+        T dot(const Matrix<T>& other) const {
             assert(this->rows() == 3 && this->columns() == 1 && other.rows() == 3 && other.columns() == 1);
             Matrix<T> result(3, 1);
             result.set(0, 0, this->get(0, 0) * other.get(2, 0));
