@@ -22,7 +22,7 @@ namespace DataStore {
 template <typename KeyType>
 class DataStore {
 
-    using NDO_List = DataStructures::List::List<void*>;
+    using SDO_List = DataStructures::List::List<void*>;
 
     public:
         DataStore();
@@ -34,34 +34,13 @@ class DataStore {
         void Set(const KeyType key, const T *const data);
 
         template <typename T>
-        void Add_NDO(const KeyType key);
+        void Add_SDO(const KeyType key);
         template <typename T>
-        void Add_NDO(const KeyType key, const T *const value);
+        void Add_SDO(const KeyType key, const T *const value);
 
     private:
 
-        template <typename T>
-        class DataObject {
-            public:
-                DataObject(KeyType key, const T *const data = nullptr);
-                ~DataObject();
-
-                void get(T *const data);
-                void set(const T *const value);
-
-                void lock(const char *const caller);
-                void unlock(const char *const caller);
-
-                void key();
-
-            private:
-                KeyType m_key;
-                T *m_data;
-                bool m_locked;
-                uint32_t m_checksum;
-        };
-
-        NDO_List m_DataStore;
+        SDO_List m_DataStore;
 };
 
 } // end namespace DataStore

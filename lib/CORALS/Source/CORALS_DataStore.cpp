@@ -11,30 +11,32 @@
 **/
 
 #include "CORALS_DataStore.hpp"
-
 #include "CORALS_Configuration.hpp"
+
+#include "DataStore.hpp"
 namespace CORALS {
 
-DataStore::DataStore () : ::DataStore::DataStore<DataStore_Keys>() {
+namespace {
+
+::DataStore::DataStore<DataStore_Keys> CORALS_DataStore;
+
+} // end namespace
+
+void initialize() {
     CORALS_DEBUG_PRINTLN("Initializing CORALS DataStore...");
 
     // Initialize DataStore
-    Add_NDO<GainMatrix>(GAIN_MATRIX);
-    Add_NDO<TargetList>(TARGET_LIST);
-    Add_NDO<Quaternion>(ATTITUDE_QUATERNION);
+    CORALS_DataStore.Add_SDO<GainMatrix>(GAIN_MATRIX);
+    CORALS_DataStore.Add_SDO<TargetList>(TARGET_LIST);
+    CORALS_DataStore.Add_SDO<Quaternion>(ATTITUDE_QUATERNION);
 
     const double default_double = 0.0;
     
-    Add_NDO<double>(PRIMARY_VOLTAGE, &default_double);
-    Add_NDO<double>(SECONDARY_VOLTAGE, &default_double);
-    Add_NDO<double>(SINGULARITY_PARAMETER, &default_double);
+    CORALS_DataStore.Add_SDO<double>(PRIMARY_VOLTAGE, &default_double);
+    CORALS_DataStore.Add_SDO<double>(SECONDARY_VOLTAGE, &default_double);
+    CORALS_DataStore.Add_SDO<double>(SINGULARITY_PARAMETER, &default_double);
 
     CORALS_DEBUG_PRINTLN("CORALS DataStore Initialized.");
-}
-
-DataStore::~DataStore () {
-    CORALS_DEBUG_PRINTLN("Deinitializing CORALS DataStore...");
-    CORALS_DEBUG_PRINTLN("CORALS DataStore Deinitialized.");
 }
 
 } // end namespace CORALS

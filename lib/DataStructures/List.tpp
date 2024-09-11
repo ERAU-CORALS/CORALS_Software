@@ -44,8 +44,7 @@ class List {
             list_size = 0;
         }
         ~List() {
-            T temp;
-            while (list_size > 0) pop_front(temp);
+            while (list_size > 0) pop_front();
         }
 
         void push_front(T data) {

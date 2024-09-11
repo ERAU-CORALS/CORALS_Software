@@ -13,7 +13,6 @@
 #ifndef __CORALS_DATASTORE_HPP__
 #define __CORALS_DATASTORE_HPP__
 
-#include "DataStore.hpp"
 #include "List.tpp"
 #include "Matrix.tpp"
 #include "Vector.tpp"
@@ -46,11 +45,7 @@ enum DataStore_Keys{
     SINGULARITY_PARAMETER,
 };
 
-class DataStore : public ::DataStore::DataStore<DataStore_Keys> {
-    public:
-        DataStore();
-        ~DataStore();
-};
+void initialize();
 
 } // end namespace CORALS
 
