@@ -24,11 +24,15 @@ class MessageBase {
         MessageBase(const char *UUID, uint16_t properties, T default_value = { 0 }) : mCharacteristic(UUID, properties, default_value, sizeof(T) + sizeof(uint32_t)), mPacketSize(sizeof(T) + sizeof(uint32_t)) {};
         virtual ~MessageBase();
 
+        void AddService(BLEService &service) {
+            service.addCharacteristic(mCharacteristic);
+        };
+
     protected:
         BLECharacteristic mCharacteristic;
         const size_t mPacketSize;
 
-        union MessagePacket {
+        using MessagePacket = union {
             struct {
                 T data;
                 uint32_t crc;

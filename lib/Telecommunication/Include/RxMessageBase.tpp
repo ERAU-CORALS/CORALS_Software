@@ -19,10 +19,10 @@
 
 namespace Telecommunication {
 
-template <typename S> // Struct Type
-class RxMessageBase : public MessageBase<S>, public MessageHandler {
+template <typename T> // Struct Type
+class RxMessageBase : public MessageBase<T>, public MessageHandler {
     public:
-        RxMessageBase(const char *UUID, T default_value = { 0 }) : MessageBase<S>(UUID, BLECharacteristic::PROPERTY_READ, default_value) {};
+        RxMessageBase(const char *UUID, T default_value = { 0 }) : MessageBase<T>(UUID, BLECharacteristic::PROPERTY_READ, default_value) {};
         virtual ~RxMessageBase() {};
 
         void get(T *const value) {

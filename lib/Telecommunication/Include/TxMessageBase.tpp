@@ -10,8 +10,8 @@
  ********************************************************************************
 **/
 
-#ifndef __RX_MESSAGE_BASE_TPP__
-#define __RX_MESSAGE_BASE_TPP__
+#ifndef __TX_MESSAGE_BASE_TPP__
+#define __TX_MESSAGE_BASE_TPP__
 
 #include <string.h>
 
@@ -25,8 +25,8 @@ enum class TxCondition {
     ON_CHANGE_OR_INTERVAL
 };
 
-template <typename S> // Struct Type
-class TxMessageBase : public MessageBase<S>, public MessageHandler {
+template <typename T> // Struct Type
+class TxMessageBase : public MessageBase<T>, public MessageHandler {
     public:
         TxMessageBase(const char *UUID, const TxCondition condition, const uint32_t interval_ms = 0, T default_value = { 0 }) : MessageBase<S>(UUID, BLECharacteristic::PROPERTY_WRITE, default_value), mCondition(condition), mInterval(interval_ms), mLastRun(0) {};
         virtual ~TxMessageBase() {};
@@ -76,4 +76,4 @@ class TxMessageBase : public MessageBase<S>, public MessageHandler {
 
 } // namespace Telecommunication
 
-#endif // __RX_MESSAGE_BASE_TPP__
+#endif // __TX_MESSAGE_BASE_TPP__
