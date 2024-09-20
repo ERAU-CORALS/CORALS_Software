@@ -16,6 +16,8 @@
 #include <ArduinoBLE.h>
 #include <stdint.h>
 
+#include "TC_Configuration.hpp"
+
 namespace Telecommunication {
 
 template <typename T> // Struct Type
@@ -36,7 +38,7 @@ class MessageBase {
             struct {
                 T data;
                 uint32_t crc;
-            } __attribute__((__packed__)) packet;
+            } packed packet;
             uint8_t raw[sizeof(T) + sizeof(uint32_t)];
         };
 

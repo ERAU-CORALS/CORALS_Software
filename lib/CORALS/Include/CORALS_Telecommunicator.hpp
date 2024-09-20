@@ -10,14 +10,14 @@
  ********************************************************************************
 **/
 
-#ifndef __CORALS_HPP__
-#define __CORALS_HPP__
+#ifndef __CORALS_TELECOMMUNICATOR_HPP__
+#define __CORALS_TELECOMMUNICATOR_HPP__
 
 namespace CORALS {
 
-void initialize();
-void run();
+void TC_Init();
+void TC_Run();
 
 } // end namespace CORALS
 
-#endif // __CORALS_HPP__
+#endif // __CORALS_TELECOMMUNICATOR_HPP__

@@ -11,123 +11,19 @@
 **/
 
 #include "CORALS_API.hpp"
+#include "CORALS_Configuration.hpp"
 
 #include <ArduinoBLE.h>
 #include <RPC.h>
+
+#include "CORALS_DataStore.hpp"
 
 #include "Internal/CORALS_BLE.inc"
 
 namespace CORALS {
 
-namespace {
-
-#ifdef GIGA_R1_M4
-
-// BLE Services
-BLEService SettingsService(BLE_UUID_CORALS_SETTINGS_SERVICE);
-BLEService GainsService(BLE_UUID_CORALS_GAINS_SERVICE);
-BLEService TargetsService(BLE_UUID_CORALS_TARGETS_SERVICE);
-BLEService AttitudeService(BLE_UUID_CORALS_ATTITUDE_SERVICE);
-BLEService ErrorsService(BLE_UUID_CORALS_ERRORS_SERVICE);
-BLEService StatesService(BLE_UUID_CORALS_STATES_SERVICE);
-
-// BLE Settings Characteristics - TBD
-
-// BLE Gains Characteristics
-BLEDoubleCharacteristic Gain11Characteristic(BLE_UUID_CORALS_GAINS_GAIN11_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain12Characteristic(BLE_UUID_CORALS_GAINS_GAIN12_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain13Characteristic(BLE_UUID_CORALS_GAINS_GAIN13_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain21Characteristic(BLE_UUID_CORALS_GAINS_GAIN21_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain22Characteristic(BLE_UUID_CORALS_GAINS_GAIN22_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain23Characteristic(BLE_UUID_CORALS_GAINS_GAIN23_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain31Characteristic(BLE_UUID_CORALS_GAINS_GAIN31_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain32Characteristic(BLE_UUID_CORALS_GAINS_GAIN32_CHARACTERISTIC, BLEWrite);
-BLEDoubleCharacteristic Gain33Characteristic(BLE_UUID_CORALS_GAINS_GAIN33_CHARACTERISTIC, BLEWrite);
-
-// BLE Targets Characteristics
-typedef enum __Target_Queue_Action : uint8_t {
-    TARGET_QUEUE_NO_ACTION = 0x00,
-    
-    TARGET_QUEUE_GET_FRONT = 0x11,
-    TARGET_QUEUE_PREPEND = 0x12,
-    TARGET_QUEUE_REMOVE_FRONT = 0x14,
-    TARGET_QUEUE_REPLACE_FRONT = 0x18,
-    
-    TARGET_QUEUE_GET_BACK = 0x21,
-    TARGET_QUEUE_APPEND = 0x22,
-    TARGET_QUEUE_REMOVE_BACK = 0x24,
-    TARGET_QUEUE_REPLACE_BACK = 0x28,
-
-    TARGET_QUEUE_GET_INDEX = 0x41,
-    TARGET_QUEUE_REPLACE_INDEX = 0x48,
-
-    TARGET_QUEUE_CLEAR = 0xF4,
-} Target_Queue_Action_t;
-class BLETargetQueueActionCharacteristic : public BLETypedCharacteristic<Target_Queue_Action_t> {
-    public:
-        BLETargetQueueActionCharacteristic(const char* uuid, unsigned int permissions) : BLETypedCharacteristic<Target_Queue_Action_t>(uuid, permissions) {}
-};
-
-BLEIntCharacteristic TargetQueueIndexCharacteristic(BLE_UUID_CORALS_TARGETS_QUEUE_INDEX_CHARACTERISTIC, BLEWrite);
-BLETargetQueueActionCharacteristic TargetActionCharacteristic(BLE_UUID_CORALS_TARGETS_ACTION_CHARACTERISTIC, BLERead | BLEWrite);
-BLEDoubleCharacteristic TargetQ0Characteristic(BLE_UUID_CORALS_TARGETS_Q0_CHARACTERISTIC, BLERead | BLEWrite);
-BLEDoubleCharacteristic TargetQ1Characteristic(BLE_UUID_CORALS_TARGETS_Q1_CHARACTERISTIC, BLERead | BLEWrite);
-BLEDoubleCharacteristic TargetQ2Characteristic(BLE_UUID_CORALS_TARGETS_Q2_CHARACTERISTIC, BLERead | BLEWrite);
-BLEDoubleCharacteristic TargetQ3Characteristic(BLE_UUID_CORALS_TARGETS_Q3_CHARACTERISTIC, BLERead | BLEWrite);
-
-// BLE Attitude Characteristics
-BLEDoubleCharacteristic AttitudeQ0Characteristic(BLE_UUID_CORALS_ATTITUDE_Q0_CHARACTERISTIC, BLERead);
-BLEDoubleCharacteristic AttitudeQ1Characteristic(BLE_UUID_CORALS_ATTITUDE_Q1_CHARACTERISTIC, BLERead);
-BLEDoubleCharacteristic AttitudeQ2Characteristic(BLE_UUID_CORALS_ATTITUDE_Q2_CHARACTERISTIC, BLERead);
-BLEDoubleCharacteristic AttitudeQ3Characteristic(BLE_UUID_CORALS_ATTITUDE_Q3_CHARACTERISTIC, BLERead);
-
-// BLE Errors Characteristics - TBD
-
-// BLE States Characteristics
-BLEDoubleCharacteristic PrimaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_PRIMARY_VOLTAGE_CHARACTERISTIC, BLERead);
-BLEDoubleCharacteristic SecondaryVoltageCharacteristic(BLE_UUID_CORALS_STATES_SECONDARY_VOLTAGE_CHARACTERISTIC, BLERead);
-BLEDoubleCharacteristic SingularityParameterCharacteristic(BLE_UUID_CORALS_STATES_SINGULARITY_PARAMETER_CHARACTERISTIC, BLERead);
-BLEIntCharacteristic TargetListLengthCharacteristic(BLE_UUID_CORALS_STATES_TARGET_LIST_LENGTH_CHARACTERISTIC, BLERead);
-
-// BLE Devices
-BLEDevice DARTS;
-
-// BLE Initialization
-bool BLE_Initialized = false;
-
-static bool DARTS_Connect() {
-    if (!BLE_Initialized) {
-        CORALS_DEBUG_PRINTLN("BLE not initialized.");
-        return false;
-    }
-
-    if (!DARTS.connected()) {
-        CORALS_DEBUG_PRINTLN("DARTS not connected.");
-        return false;
-    }
-
-    return true;
-}
-
-#else // GIGA_R1_M7
-
-DataStore CORALS_DataStore;
-
-using DataStructures::Matrix::MatrixLength_t;
-
-void Set_Gain(const MatrixLength_t row, const MatrixLength_t column, const double gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
-    Gain_Matrix.set(row, column, gain);
-    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
-}
-
-#endif // CORE_TYPE
-
-} // end namespace
-
 void API_Init() {
-    CORALS_SERIAL_PRINTLN("Initializing CORALS API...");
+    CORALS_OUT_PRINTLN("Initializing CORALS API...");
 
 #ifdef GIGA_R1_M7
     
@@ -201,71 +97,14 @@ void API_Init() {
     Set_Primary_Voltage(0.0);
     Set_Secondary_Voltage(0.0);
     Set_Singularity_Parameter(0.0);
-    Set_Target_List_Length(0);
 
 #else // GIGA_R1_M4
 
-    // BLE Initialization
-    unsigned long BLE_Init_Start = millis();
-    while (!BLE.begin() && millis() - BLE_Init_Start < 10000) continue;
-    if (!BLE.begin()) {
-        CORALS_SERIAL_PRINTLN("BLE Initialization failed.");
-        return;
-    }
-
-    // Settings Characteristics - TBD
-
-    // Gains Characteristics
-    GainsService.addCharacteristic(Gain11Characteristic);
-    GainsService.addCharacteristic(Gain12Characteristic);
-    GainsService.addCharacteristic(Gain13Characteristic);
-    GainsService.addCharacteristic(Gain21Characteristic);
-    GainsService.addCharacteristic(Gain22Characteristic);
-    GainsService.addCharacteristic(Gain23Characteristic);
-    GainsService.addCharacteristic(Gain31Characteristic);
-    GainsService.addCharacteristic(Gain32Characteristic);
-    GainsService.addCharacteristic(Gain33Characteristic);
-
-    // Targets Characteristics
-    TargetsService.addCharacteristic(TargetQueueIndexCharacteristic);
-    TargetsService.addCharacteristic(TargetActionCharacteristic);
-    TargetsService.addCharacteristic(TargetQ0Characteristic);
-    TargetsService.addCharacteristic(TargetQ1Characteristic);
-    TargetsService.addCharacteristic(TargetQ2Characteristic);
-    TargetsService.addCharacteristic(TargetQ3Characteristic);
-
-    // Attitude Characteristics
-    AttitudeService.addCharacteristic(AttitudeQ0Characteristic);
-    AttitudeService.addCharacteristic(AttitudeQ1Characteristic);
-    AttitudeService.addCharacteristic(AttitudeQ2Characteristic);
-    AttitudeService.addCharacteristic(AttitudeQ3Characteristic);
-
-    // Errors Characteristics - TBD
-
-    // States Characteristics
-    StatesService.addCharacteristic(PrimaryVoltageCharacteristic);
-    StatesService.addCharacteristic(SecondaryVoltageCharacteristic);
-    StatesService.addCharacteristic(SingularityParameterCharacteristic);
-    StatesService.addCharacteristic(TargetListLengthCharacteristic);
-
-    // Add Services to BLE
-    BLE.addService(SettingsService);
-    BLE.addService(GainsService);
-    BLE.addService(TargetsService);
-    BLE.addService(AttitudeService);
-    BLE.addService(ErrorsService);
-    BLE.addService(StatesService);
-
-    // Advertise Services
-    BLE.setAdvertisedServiceUuid(BLE_UUID_CORALS_ADVERTISEMENT);
-
-    // Start BLE
-    BLE.advertise();
-    __BLE_Initialized = true;
+    // DO NOTHING ON M4
 
 #endif // CORE_TYPE
 
-    CORALS_SERIAL_PRINTLN("CORALS API Initialized.");
+    CORALS_OUT_PRINTLN("CORALS API Initialized.");
 }
 
 void API_Loop() {
@@ -468,38 +307,38 @@ void API_Loop() {
 
 // Gains
 void Get_Gain_Matrix(GainMatrix *const Gain_Matrix) {
-    CORALS_DataStore.Get(GAIN_MATRIX, Gain_Matrix);
+    DataStore.Get(GAIN_MATRIX, Gain_Matrix);
 }
 
 // Targets
 void Get_Indexed_Target(const ListSize_t index, Quaternion *const Target) {
-    TargetList *Targets = nullptr;
-    CORALS_DataStore.Get(TARGET_LIST, Targets);
-    memcpy(Target, (*Targets)[index], sizeof(Quaternion));
+    TargetList Targets;
+    DataStore.Get(TARGET_LIST, &Targets);
+    memcpy(Target, Targets[index], sizeof(Quaternion));
 }
 
 // Attitude
 void Get_Attitude(Quaternion *const attitude) {
-    CORALS_DataStore.Get(ATTITUDE_QUATERNION, attitude);
+    DataStore.Get(ATTITUDE_QUATERNION, attitude);
 }
 
 void Set_Attitude(const Quaternion *const attitude) {
-    CORALS_DataStore.Set(ATTITUDE_QUATERNION, attitude);
+    DataStore.Set(ATTITUDE_QUATERNION, attitude);
 }
 
 // Errors - TBD
 
 // States
 void Set_Primary_Voltage(const double voltage) {
-    CORALS_DataStore.Set(PRIMARY_VOLTAGE, &voltage);
+    DataStore.Set(PRIMARY_VOLTAGE, &voltage);
 }
 
 void Set_Secondary_Voltage(const double voltage) {
-    CORALS_DataStore.Set(SECONDARY_VOLTAGE, &voltage);
+    DataStore.Set(SECONDARY_VOLTAGE, &voltage);
 }
 
 void Set_Singularity_Parameter(const double parameter) {
-    CORALS_DataStore.Set(SINGULARITY_PARAMETER, &parameter);
+    DataStore.Set(SINGULARITY_PARAMETER, &parameter);
 }
 
 #endif // GIGA_R1_M7
@@ -509,80 +348,161 @@ void Set_Singularity_Parameter(const double parameter) {
 
 // Gains
 void Get_Gain11(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(0, 0);
 }
 
 void Get_Gain12(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(0, 1);
 }
 
 void Get_Gain13(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(0, 2);
 }
 
 void Get_Gain21(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(1, 0);
 }
 
 void Get_Gain22(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(1, 1);
 }
 
 void Get_Gain23(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(1, 2);
 }
 
 void Get_Gain31(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(2, 0);
 }
 
 void Get_Gain32(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(2, 1);
 }
 
 void Get_Gain33(double *const gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     *gain = Gain_Matrix.get(2, 2);
 }
 
 void Set_Gain11(const double gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     Gain_Matrix.set(0, 0, gain);
-    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
 }
 
 void Set_Gain12(const double gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     Gain_Matrix.set(0, 1, gain);
-    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
 }
 
 void Set_Gain13(const double gain) {
-    GainMatrix Gain_Matrix(3);
-    CORALS_DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
     Gain_Matrix.set(0, 2, gain);
-    CORALS_DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
 }
 
+void Set_Gain21(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(1, 0, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain22(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(1, 1, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain23(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(1, 2, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain31(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(2, 0, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain32(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(2, 1, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+void Set_Gain33(const double gain) {
+    GainMatrix Gain_Matrix;
+    DataStore.Get(GAIN_MATRIX, &Gain_Matrix);
+    Gain_Matrix.set(2, 2, gain);
+    DataStore.Set(GAIN_MATRIX, &Gain_Matrix);
+}
+
+// Targets
+
+void Get_Indexed_Target_Q0(const ListSize_t index, double *const value) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    *value = (*Targets)[index]->get(0);
+}
+
+void Get_Indexed_Target_Q1(const ListSize_t index, double *const value) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    *value = (*Targets)[index]->get(1);
+}
+
+void Get_Indexed_Target_Q2(const ListSize_t index, double *const value) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    *value = (*Targets)[index]->get(2);
+}
+
+void Get_Indexed_Target_Q3(const ListSize_t index, double *const value) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    *value = (*Targets)[index]->get(3);
+}
+
+void Prepend_New_Target(const double q0, 
+                        const double q1, 
+                        const double q2, 
+                        const double q3) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    Quaternion *Target = new Quaternion;
+    Target->set(0, q0);
+    Target->set(1, q1);
+    Target->set(2, q2);
+    Target->set(3, q3);
+    Targets->push_front(Target);
+}
 
 
 

@@ -21,24 +21,32 @@ namespace Telecommunication {
 
 template <typename T> // Struct Type
 class RxMessageBase : public MessageBase<T>, public MessageHandler {
+    
+    using Base = MessageBase<T>;
+    using MessagePacket = typename Base::MessagePacket;
+
     public:
-        RxMessageBase(const char *UUID, T default_value = { 0 }) : MessageBase<T>(UUID, BLECharacteristic::PROPERTY_READ, default_value) {};
+        RxMessageBase(const char *UUID, T default_value = { 0 }) : MessageBase<T>(UUID, BLERead, default_value) {};
         virtual ~RxMessageBase() {};
 
         void get(T *const value) {
-            memcpy(value, &mValue, sizeof(T));
+            memcpy(value, &Base::mValue, sizeof(T));
+        };
+
+        inline bool updated() {
+            return Base::mCharacteristic.valueUpdated();
         };
 
         void run() {
-            if (mCharacteristic.written()) {
+            if (Base::mCharacteristic.written()) {
                 MessagePacket packet;
 
-                mCharacteristic.readValue(packet.raw, buffer_size);
+                Base::mCharacteristic.readValue(packet.raw, Base::mPacketSize);
                 
-                uint32_t calculated_crc = crc32(0, packet.packet.data, sizeof(T));
+                uint32_t calculated_crc = Base::crc32(0, packet.packet.data, sizeof(T));
 
                 if (packet.packet.crc == calculated_crc) {
-                    memcpy(&mValue, &packet.packet.data, sizeof(T));
+                    memcpy(&Base::mValue, &packet.packet.data, sizeof(T));
                 }
             }
         };

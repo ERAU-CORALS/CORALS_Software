@@ -29,7 +29,7 @@ class DataStore {
         ~DataStore();
 
         template <typename T>
-        void Get(const KeyType key, T **const data);
+        void Get(const KeyType key, T *const data);
         template <typename T>
         void Set(const KeyType key, const T *const data);
 

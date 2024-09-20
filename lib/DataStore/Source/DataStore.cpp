@@ -33,7 +33,7 @@ DataStore<KeyType>::~DataStore() {
 
 template <typename KeyType>
 template <typename T>
-void DataStore<KeyType>::Get(const KeyType key, T **const data) {
+void DataStore<KeyType>::Get(const KeyType key, T *const data) {
     SoftwareDataObject<T, KeyType> *SDO = nullptr;
     ListSize_t i = 0;
     

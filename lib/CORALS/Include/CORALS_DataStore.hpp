@@ -17,13 +17,19 @@
 #include "Matrix.tpp"
 #include "Vector.tpp"
 
+#include "DataStore.hpp"
 
 namespace CORALS {
 
 // TODO: REDEFINE THESE ELSEWHERE
-using GainMatrix = DataStructures::Matrix::Matrix<double>;
-using Quaternion = DataStructures::Vector::Vector<double>;
-using TargetList = DataStructures::List::List<Quaternion*>;
+class GainMatrix : public ::DataStructures::Matrix::Matrix<double> { 
+    public: GainMatrix() : Matrix(3, 3) {}
+};
+class Quaternion : public ::DataStructures::Vector::Vector<double> { 
+    public: Quaternion() : Vector(4) {} 
+};
+
+using TargetList = ::DataStructures::List::List<Quaternion*>;
 
 enum DataStore_Keys{
 // Settings - TBD
@@ -45,7 +51,10 @@ enum DataStore_Keys{
     SINGULARITY_PARAMETER,
 };
 
-void initialize();
+using CORALS_DataStore = ::DataStore::DataStore<DataStore_Keys>;
+extern CORALS_DataStore DataStore;
+
+void DS_Init();
 
 } // end namespace CORALS
 

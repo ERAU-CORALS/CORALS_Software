@@ -23,6 +23,10 @@
     #define DEBUG 0
 #endif
 
+#ifndef packed 
+    #define packed __attribute__((__packed__))
+#endif
+
 #if defined(CORE_CM4) && !defined(GIGA_R1_M4)
     #warning "GIGA_R1_M4 not defined in environment. Defining GIGA_R1_M4..."
     #define GIGA_R1_M4

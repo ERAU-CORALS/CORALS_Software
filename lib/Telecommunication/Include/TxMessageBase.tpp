@@ -27,12 +27,16 @@ enum class TxCondition {
 
 template <typename T> // Struct Type
 class TxMessageBase : public MessageBase<T>, public MessageHandler {
+    
+    using Base = MessageBase<T>;
+    using MessagePacket = typename Base::MessagePacket;
+
     public:
-        TxMessageBase(const char *UUID, const TxCondition condition, const uint32_t interval_ms = 0, T default_value = { 0 }) : MessageBase<S>(UUID, BLECharacteristic::PROPERTY_WRITE, default_value), mCondition(condition), mInterval(interval_ms), mLastRun(0) {};
+        TxMessageBase(const char *UUID, const TxCondition condition, const uint32_t interval_ms = 0, T default_value = { 0 }) : MessageBase<T>(UUID, BLEWrite, default_value), mCondition(condition), mInterval(interval_ms), mLastRun(0) {};
         virtual ~TxMessageBase() {};
 
         void set(const T *const value) {
-            memcpy(&mValue, value, sizeof(T));
+            memcpy(&Base::mValue, value, sizeof(T));
             mUpdated = true;
         };
 
@@ -40,10 +44,10 @@ class TxMessageBase : public MessageBase<T>, public MessageHandler {
             if (should_run()) {
                 MessagePacket packet;
 
-                memcpy(&packet.packet.data, &mValue, sizeof(T));
-                packet.packet.crc = crc32(0, packet.raw, sizeof(T));
+                memcpy(&packet.packet.data, &Base::mValue, sizeof(T));
+                packet.packet.crc = Base::crc32(0, packet.raw, sizeof(T));
 
-                mCharacteristic.writeValue(packet.raw, mPacketSize);
+                Base::mCharacteristic.writeValue(packet.raw, Base::mPacketSize);
 
                 mUpdated = false;
             }
