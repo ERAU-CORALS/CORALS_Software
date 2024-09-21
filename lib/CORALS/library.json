@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-    "name": "CORALS_Core",
+    "name": "CORALS_Common",
     "description": "Core Software for CORALS Operation.",
     "authors": {
         "name": "Logan Ruddick",
@@ -13,6 +13,12 @@
     ],
     "dependencies": [
         {
+            "name": "CORALS_Configuration"
+        },
+        {
+            "name": "CORALS_DataStore"
+        },
+        {
             "name": "CORALS_StateManager"
         },
         {
@@ -20,14 +26,7 @@
         }
     ],
     "build": {
-        "includeDir": ".",
-        "flags": [
-            "-I Common/include",
-            "-I Telecommunication/Common/include",
-            "-I Telecommunication/Telecommands/include",
-            "-I Telecommunication/Telemetry_Requests/include",
-            "-I Telecommunication/Telemetry_Responses/include"
-        ],
-        "srcDir": "."
+        "includeDir": "Include",
+        "srcDir": "Source"
     }
 }
