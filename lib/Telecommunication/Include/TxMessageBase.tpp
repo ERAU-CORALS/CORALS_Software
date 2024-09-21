@@ -15,7 +15,8 @@
 
 #include <string.h>
 
-#include "MessageBase.tpp"
+#include "RxMessageBase.tpp"
+#include "TxMessageBase.tpp"
 
 namespace Telecommunication {
 
@@ -32,8 +33,8 @@ class TxMessageBase : public MessageBase<T>, public MessageHandler {
     using MessagePacket = typename Base::MessagePacket;
 
     public:
-        TxMessageBase(const char *UUID, const TxCondition condition, const uint32_t interval_ms = 0, T default_value = { 0 }) : MessageBase<T>(UUID, BLEWrite, default_value), mCondition(condition), mInterval(interval_ms), mLastRun(0) {};
-        virtual ~TxMessageBase() {};
+        TxMessageBase(const char *UUID, const TxCondition condition, const uint32_t interval_ms = 0) : MessageBase<T>(UUID, BLEWrite), mCondition(condition), mInterval(interval_ms), mLastRun(0) {};
+        ~TxMessageBase() {};
 
         void set(const T *const value) {
             memcpy(&Base::mValue, value, sizeof(T));
@@ -44,10 +45,10 @@ class TxMessageBase : public MessageBase<T>, public MessageHandler {
             if (should_run()) {
                 MessagePacket packet;
 
-                memcpy(&packet.packet.data, &Base::mValue, sizeof(T));
-                packet.packet.crc = Base::crc32(0, packet.raw, sizeof(T));
+                memcpy(&packet.packet.data, &(Base::mValue), sizeof(T));
+                packet.packet.crc = Base::crc32(packet.raw, sizeof(T));
 
-                Base::mCharacteristic.writeValue(packet.raw, Base::mPacketSize);
+                Base::mCharacteristic.writeValue(packet.raw, sizeof(T) + sizeof(uint32_t));
 
                 mUpdated = false;
             }

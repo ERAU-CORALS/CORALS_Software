@@ -9,7 +9,7 @@
     "frameworks": "arduino",
     "platforms": "*",
     "headers": [
-        "DataStore.hpp"
+        "DataStore.tpp"
     ],
     "dependencies": [
         {
@@ -20,7 +20,6 @@
         }
     ],
     "build": {
-        "includeDir": "Include",
-        "srcDir": "Source"
+        "includeDir": "."
     }
 }

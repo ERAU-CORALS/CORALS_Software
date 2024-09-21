@@ -26,8 +26,8 @@ class RxMessageBase : public MessageBase<T>, public MessageHandler {
     using MessagePacket = typename Base::MessagePacket;
 
     public:
-        RxMessageBase(const char *UUID, T default_value = { 0 }) : MessageBase<T>(UUID, BLERead, default_value) {};
-        virtual ~RxMessageBase() {};
+        RxMessageBase(const char *UUID) : MessageBase<T>(UUID, BLERead) {};
+        ~RxMessageBase() {};
 
         void get(T *const value) {
             memcpy(value, &Base::mValue, sizeof(T));
@@ -41,12 +41,12 @@ class RxMessageBase : public MessageBase<T>, public MessageHandler {
             if (Base::mCharacteristic.written()) {
                 MessagePacket packet;
 
-                Base::mCharacteristic.readValue(packet.raw, Base::mPacketSize);
+                Base::mCharacteristic.readValue(packet.raw, sizeof(T) + sizeof(uint32_t));
                 
-                uint32_t calculated_crc = Base::crc32(0, packet.packet.data, sizeof(T));
+                uint32_t calculated_crc = Base::crc32(packet.raw, sizeof(T));
 
                 if (packet.packet.crc == calculated_crc) {
-                    memcpy(&Base::mValue, &packet.packet.data, sizeof(T));
+                    memcpy(&(Base::mValue), &packet.packet.data, sizeof(T));
                 }
             }
         };

@@ -13,7 +13,7 @@
 #include "CORALS_DataStore.hpp"
 #include "CORALS_Configuration.hpp"
 
-#include "DataStore.hpp"
+#include "DataStore.tpp"
 namespace CORALS {
 
 CORALS_DataStore DataStore;

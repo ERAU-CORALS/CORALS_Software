@@ -17,7 +17,7 @@
 #include "Matrix.tpp"
 #include "Vector.tpp"
 
-#include "DataStore.hpp"
+#include "DataStore.tpp"
 
 namespace CORALS {
 

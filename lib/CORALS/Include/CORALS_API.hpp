@@ -50,15 +50,15 @@ void Set_Singularity_Parameter(const double parameter);
 // Settings - TBD
 
 // Gains
-void Get_Gain11(double *const gain);
-void Get_Gain12(double *const gain);
-void Get_Gain13(double *const gain);
-void Get_Gain21(double *const gain);
-void Get_Gain22(double *const gain);
-void Get_Gain23(double *const gain);
-void Get_Gain31(double *const gain);
-void Get_Gain32(double *const gain);
-void Get_Gain33(double *const gain);
+void Get_Gain11(double &gain);
+void Get_Gain12(double &gain);
+void Get_Gain13(double &gain);
+void Get_Gain21(double &gain);
+void Get_Gain22(double &gain);
+void Get_Gain23(double &gain);
+void Get_Gain31(double &gain);
+void Get_Gain32(double &gain);
+void Get_Gain33(double &gain);
 
 void Set_Gain11(const double gain);
 void Set_Gain12(const double gain);
@@ -71,10 +71,10 @@ void Set_Gain32(const double gain);
 void Set_Gain33(const double gain);
 
 // Targets
-void Get_Indexed_Target_Q0(const ListSize_t index, double *const value);
-void Get_Indexed_Target_Q1(const ListSize_t index, double *const value);
-void Get_Indexed_Target_Q2(const ListSize_t index, double *const value);
-void Get_Indexed_Target_Q3(const ListSize_t index, double *const value);
+void Get_Indexed_Target_Q0(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q1(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q2(const ListSize_t index, double &value);
+void Get_Indexed_Target_Q3(const ListSize_t index, double &value);
 
 void Prepend_New_Target(const double q0, 
                         const double q1, 
@@ -95,10 +95,10 @@ void Replace_Indexed_Target(const ListSize_t index, const double q0,
 void Clear_Target_List();
 
 // Attitude
-void Get_Attitude_Q0(double *const value);
-void Get_Attitude_Q1(double *const value);
-void Get_Attitude_Q2(double *const value);
-void Get_Attitude_Q3(double *const value);
+void Get_Attitude_Q0(double &value);
+void Get_Attitude_Q1(double &value);
+void Get_Attitude_Q2(double &value);
+void Get_Attitude_Q3(double &value);
 
 void Set_Attitude_Q0(const double value);
 void Set_Attitude_Q1(const double value);
@@ -108,10 +108,10 @@ void Set_Attitude_Q3(const double value);
 // Errors - TBD
 
 // States
-void Get_Primary_Voltage(double *const value);
-void Get_Secondary_Voltage(double *const value);
-void Get_Singularity_Parameter(double *const value);
-void Get_Target_List_Length(int *const value);
+void Get_Primary_Voltage(double &value);
+void Get_Secondary_Voltage(double &value);
+void Get_Singularity_Parameter(double &value);
+void Get_Target_List_Length(int &value);
 
 } // namespace CORALS
 
