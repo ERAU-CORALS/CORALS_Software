@@ -310,6 +310,127 @@ void Prepend_New_Target(const double q0,
     Targets->push_front(Target);
 }
 
+void Append_New_Target(const double q0, 
+                       const double q1, 
+                       const double q2, 
+                       const double q3) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    Quaternion *Target = new Quaternion;
+    Target->set(0, q0);
+    Target->set(1, q1);
+    Target->set(2, q2);
+    Target->set(3, q3);
+    Targets->push_back(Target);
+}
 
+void Remove_First_Target() {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    Targets->pop_front();
+}
+
+void Remove_Last_Target() {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    Targets->pop_back();
+}
+
+void Replace_Indexed_Target(const ListSize_t index, const double q0, 
+                                                    const double q1, 
+                                                    const double q2, 
+                                                    const double q3) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    Quaternion *Target = new Quaternion;
+    Target->set(0, q0);
+    Target->set(1, q1);
+    Target->set(2, q2);
+    Target->set(3, q3);
+    (*Targets)[index] = Target;
+}
+
+void Clear_Target_List() {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    delete Targets;
+    Targets = new TargetList;
+}
+
+// Attitude
+
+void Get_Attitude_Q0(double &value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    value = Attitude.get(0);
+}
+
+void Get_Attitude_Q1(double &value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    value = Attitude.get(1);
+}
+
+void Get_Attitude_Q2(double &value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    value = Attitude.get(2);
+}
+
+void Get_Attitude_Q3(double &value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    value = Attitude.get(3);
+}
+
+void Set_Attitude_Q0(const double value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    Attitude.set(0, value);
+    DataStore.Set(ATTITUDE_QUATERNION, &Attitude);
+}
+
+void Set_Attitude_Q1(const double value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    Attitude.set(1, value);
+    DataStore.Set(ATTITUDE_QUATERNION, &Attitude);
+}
+
+void Set_Attitude_Q2(const double value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    Attitude.set(2, value);
+    DataStore.Set(ATTITUDE_QUATERNION, &Attitude);
+}
+
+void Set_Attitude_Q3(const double value) {
+    Quaternion Attitude;
+    DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
+    Attitude.set(3, value);
+    DataStore.Set(ATTITUDE_QUATERNION, &Attitude);
+}
+
+// Errors - TBD
+
+// States
+
+void Get_Primary_Voltage(double &voltage) {
+    DataStore.Get(PRIMARY_VOLTAGE, &voltage);
+}
+
+void Get_Secondary_Voltage(double &voltage) {
+    DataStore.Get(SECONDARY_VOLTAGE, &voltage);
+}
+
+void Get_Singularity_Parameter(double &parameter) {
+    DataStore.Get(SINGULARITY_PARAMETER, &parameter);
+}
+
+void Get_Target_List_Length(ListSize_t &length) {
+    TargetList *Targets = nullptr;
+    DataStore.Get(TARGET_LIST, &Targets);
+    length = Targets->size();
+}
 
 } // end namespace CORALS

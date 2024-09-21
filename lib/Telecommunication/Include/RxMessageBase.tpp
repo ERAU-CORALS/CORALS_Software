@@ -30,7 +30,7 @@ class RxMessageBase : public MessageBase<T>, public MessageHandler {
         ~RxMessageBase() {};
 
         void get(T *const value) {
-            memcpy(value, &Base::mValue, sizeof(T));
+            memcpy(value, &(Base::mValue), sizeof(T));
         };
 
         inline bool updated() {

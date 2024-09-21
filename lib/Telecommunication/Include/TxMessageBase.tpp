@@ -37,7 +37,7 @@ class TxMessageBase : public MessageBase<T>, public MessageHandler {
         ~TxMessageBase() {};
 
         void set(const T *const value) {
-            memcpy(&Base::mValue, value, sizeof(T));
+            memcpy(&(Base::mValue), value, sizeof(T));
             mUpdated = true;
         };
 
