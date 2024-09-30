@@ -1,18 +1,28 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "CORALS_Telecommunication",
-    "description": "Target Implementation of the CORALS Telecommunication Standard",
+    "description": "A communication framework supporting Rx and Tx message handlers.",
     "authors": {
         "name": "Logan Ruddick",
         "email": "Logan@Ruddicks.net"
     },
     "frameworks": "arduino",
     "platforms": "*",
-    "dependencies": {
-        "name": "CORALS_DataStructures"
-    },
+    "headers": [
+        "Telecommunicator.hpp",
+        "RxMessageBase.tpp",
+        "TxMessageBase.tpp"
+    ],
+    "dependencies": [
+        {
+            "name": "CORALS_Configuration"
+        },
+        {
+            "name": "CORALS_DataStructures"
+        }
+    ],
     "build": {
-        "includeDir": "include",
-        "srcDir": "src"
+        "includeDir": "Include",
+        "srcDir": "Source"
     }
 }

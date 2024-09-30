@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
-    "name": "CORALS_DataStructures",
-    "description": "Data Structures for the CORALS Software.",
+    "name": "CORALS_DataStore",
+    "description": "Software for CORALS DataStore.",
     "authors": {
         "name": "Logan Ruddick",
         "email": "Logan@Ruddicks.net"
@@ -9,10 +9,15 @@
     "frameworks": "arduino",
     "platforms": "*",
     "headers": [
-        "List.tpp",
-        "Queue.tpp",
-        "Vector.tpp",
-        "Matrix.tpp"
+        "DataStore.tpp"
+    ],
+    "dependencies": [
+        {
+            "name": "CORALS_DataStructures"
+        },
+        {
+            "name": "ArduinoBLE"
+        }
     ],
     "build": {
         "includeDir": "."
