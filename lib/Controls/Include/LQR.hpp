@@ -14,6 +14,7 @@
 #define __LQR_HPP__
 
 #include <math.h>
+#include "Matrix.tpp"
 
 namespace Control {
 
@@ -21,8 +22,8 @@ namespace __LQR {
 
     public:
 
-    Matrix<T> det_xVector(const Quaternion<T>& qError, const Matrix<T>& target_wB, const Matrix<T>& actual_wB)
-    Matrix<T> detTargetT(const Matrix<T>& xVector, const Matrix<T>& K)
+    Matrix<double> det_xVector(const Quaternion<double>& qError, const Matrix<double>& target_wB, const Matrix<double>& actual_wB)
+    Matrix<double> detTargetT(const Matrix<double>& xVector, const Matrix<double>& K)
 
 } // end namespace __LQR
 

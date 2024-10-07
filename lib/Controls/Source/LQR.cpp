@@ -11,17 +11,19 @@
 **/
 
 #include <math.h>
+#include "LQR.hpp"
+#include "Matrix.tpp"
 
 namespace Control {
 
 namespace __LQR {
 
-    Matrix<T> det_xVector(const Quaternion<T>& qError, const Matrix<T>& target_wB, const Matrix<T>& actual_wB) {
+    Matrix<double> det_xVector(const Quaternion<double>& qError, const Matrix<double>& target_wB, const Matrix<double>& actual_wB) {
         Matrix<> wB_Error = target_wB - actual_wB;
-        return Matrix<T>(qError.x, qError.y, qError.z, wB_Error(0,0), wB_Error(1,0), wB_Error(2,0));
+        return Matrix<double>(qError.x, qError.y, qError.z, wB_Error(0,0), wB_Error(1,0), wB_Error(2,0));
     }
 
-    Matrix<T> LQR_detTargetT(const Matrix<T>& xVector, const Matrix<T>& K) { // Could include ricatti silver w/ mit license
+    Matrix<double> LQR_detTargetT(const Matrix<double>& xVector, const Matrix<double>& K) { // Could include ricatti silver w/ mit license
         return -K * xVector;
     }
 

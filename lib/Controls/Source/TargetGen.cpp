@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    TargetGen.tpp
+ * @file    TargetGen.cpp
  * @author  Vincent Lam (g.vincentlam@gmail.com)
  * @brief   Target Generator Implementation
  * @version 1.0
@@ -10,12 +10,15 @@
  ********************************************************************************
 **/
 
-#ifndef __TARGETGEN_TPP__
-#define __TARGETGEN_TPP__
+#ifndef __TARGETGEN_CPP__
+#define __TARGETGEN_CPP__
 
 #include <math.h>
+#include "TargetGen.hpp"
 #include "Matrix.tpp"
 #include "Quaternion.tpp"
+
+namespace Control {
 
 namespace TargetGen {
 
@@ -53,3 +56,6 @@ class TargetGen {
 }
 
 } // End TargetGen
+} // End Control
+
+#endif // __TARGETGEN_CPP__

@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    Actuators.hpp
+ * @file    Actuators.cpp
  * @author  Vincent Lam (g.vincentlam@gmail.com)
  * @brief   Actuator Source
  * @version 1.0
@@ -10,10 +10,15 @@
  ********************************************************************************
 **/
 
+#ifndef __ACTUATORS_CPP__
+#define __ACTUATORS_CPP__
+
 #include <math.h>
 #include "Actuators.hpp"
 #include "Vector.tpp"
 #include "Matrix.tpp"
+
+namespace Control {
 
 namespace Actuators {
 
@@ -57,4 +62,7 @@ class Actuators {
 
 }
 
-}
+} // End Actuators
+} // End Control
+
+#endif // __ACTUATORS_CPP__
