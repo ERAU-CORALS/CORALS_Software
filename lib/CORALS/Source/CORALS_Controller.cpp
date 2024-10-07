@@ -141,10 +141,6 @@ Matrix<double> getDCM_BG(int N) {
     return DCM
 }
 
-Matrix<double> eulerIntegrate(const Matrix<double>& x_k, const Matrix<double>& dx, double dt) {
-    return x_k + dt*dx
-}
-
 void CTRL_Init() { // Assume targets generated
 
     Quaternion<double> qError;
@@ -179,7 +175,7 @@ void CTRL_Run() {
     Matrix<double> targetT_LQR = Control::__LQR::LQR_detTargetT(xVector, K); // Implement switch case for PID v LQR?
 
     // Theta G
-    thetaG_k1 = eulerIntegrate(thetaG_k,gyroModifier,dt);
+    thetaG_k1 = Integrators::eulerIntegrate(thetaG_k,gyroModifier,dt);
 
     // Actuator
     errorCount = Control::Actuators::countPhiError(phiError,errorCount);
@@ -192,3 +188,5 @@ void CTRL_Run() {
 }
 
 } // End CORALS
+
+#endif // __CORALS_CONTROLLER_CPP__

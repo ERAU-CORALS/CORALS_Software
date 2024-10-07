@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    LQR.tpp
+ * @file    LQR.hpp
  * @author  Vincent Lam (g.vincentlam@gmail.com)
  * @brief   Linear Quadratic Regulator Controller Headers
  * @version 1.0
@@ -27,4 +27,6 @@ namespace __LQR {
 
 } // end namespace __LQR
 
-} // end namespace ControlSystems
+} // end namespace Control
+
+#endif // __LQR_HPP__

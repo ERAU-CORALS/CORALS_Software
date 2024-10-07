@@ -10,6 +10,9 @@
  ********************************************************************************
 **/
 
+#ifndef __LQR_HPP__
+#define __LQR_HPP__
+
 #include <math.h>
 #include "LQR.hpp"
 #include "Matrix.tpp"
@@ -30,3 +33,5 @@ namespace __LQR {
 } // end namespace __LQR
 
 } // end namespace ControlSystems
+
+#endif

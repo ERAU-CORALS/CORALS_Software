@@ -32,7 +32,7 @@ class TargetGen {
         
     public:
 
-        int successCounter(const T& phiError) { // Use radians for inputs
+        int successCounter(const double& phiError) { // Use radians for inputs
             if (phiError < pointTol) {
                 ticker++;
             } else {
@@ -41,7 +41,7 @@ class TargetGen {
             return ticker;
         }
 
-        int detIndex(const T& ticker, const T& dt, const T& pointingTime) { 
+        int detIndex(const int& ticker, const double& dt, const double& pointingTime) { 
             if (ticker > pointingtime / dt) { // dt constant, pointing time = time spent <= pointTol (set in init)
                 ticker = 0;
                 index++;
@@ -49,7 +49,7 @@ class TargetGen {
             return index;
         }
 
-        Quaternion<T> decideTarget(const Matrix<T>& qTargets, const int& index) {
+        Quaternion<T> decideTarget(const Matrix<double>& qTargets, const int& index) {
             return qTargets.subMatrix(0, 4, index, index + 1);
         }
 
