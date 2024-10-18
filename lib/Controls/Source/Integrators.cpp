@@ -11,13 +11,13 @@
 **/
 
 #include <math.h>
-#include "Matrix.tpp"
+#include "Vector.tpp"
 
 namespace Integrators {
 
 class Integrators {
 
-    Matrix<double> eulerIntegrate(const Matrix<double>& x_k, const Matrix<double>& dx, double dt) {
+    Vector<double> eulerIntegrate(const Matrix<Vector>& x_k, const Vector<double>& dx, double dt) {
         return x_k + dt*dx
     }
 

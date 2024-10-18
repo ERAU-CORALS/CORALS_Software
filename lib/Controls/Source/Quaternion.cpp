@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include "Matrix.tpp"
+#include "Vector.tpp"
 
 namespace Maths { // Begin DataStructures
 
@@ -21,14 +22,14 @@ class Quaternion {
 
 public:
 
-    T x,y,z,r; // Quaternion components
+    double x,y,z,r; // Quaternion components
 
-    Quaternion(T x, T y, T z, T r) : x(x), y(y), z(z), r(r) {} // Constructor w/ params
+    Quaternion(double x, double y, double z, double r) : x(x), y(y), z(z), r(r) {} // Constructor w/ params
 
     ~Quaternion() {} // Destructor
 
-    Quaternion<T> operator*(const Quaternion<T>& other) { // O times
-        return Quaternion<T>( 
+    Quaternion<double> oTimes(const Quaternion<T>& other) { // O times
+        return Quaternion<double>( 
             -r * other.x - z * other.y + y * other.z + x * other.r,
             z * other.x - r * other.y - x * other.z + y * other.r,
             -y * other.x + x * other.y - r * other.z + z * other.r,
@@ -36,7 +37,7 @@ public:
             );
     }
 
-    Matrix<T> q2YPR() {
+    Vector<double> q2YPR() {
         Matrix<T> YPR(3,1);
         YPR(0,0) = atan2(2 * (x * y + z * r), x * x - y * y - z * z + r * r); // Yaw
         YPR(1,0) = asin(-2 * (x * z - y * r)); // Pitch
@@ -44,16 +45,6 @@ public:
         return YPR;
     }
 
-    Quaternion<T> qPropogation(const Quaternion<T>& Beta) {
-        T BetaMag = Beta.magnitude();
-        Quaternion<T> normBeta = Beta.normalize();
-        Quaternion<T> qDot(qDot(0,0) = sin(0.5 * BetaMag) * normBeta.x,
-        qDot(1,0) = sin(0.5 * BetaMag) * normBeta.y,
-        qDot(2,0) = sin(0.5 * BetaMag) * normBeta.z,
-        qDot(3,0) = cos(0.5 * BetaMag));
-        
-        return qDot * *this
-    }
 }
 
 } // End Quaternion
