@@ -28,6 +28,9 @@ class GainMatrix : public ::DataStructures::Matrix::Matrix<double> {
 class Quaternion : public ::DataStructures::Vector::Vector<double> { 
     public: Quaternion() : Vector(4) {} 
 };
+class GimbleRates : oublic ::DataStructures::Vector::Vector<double> {
+    public: GimbleRates(int N) : Vector(N) {}
+};
 
 using TargetList = ::DataStructures::List::List<Quaternion*>;
 
@@ -49,6 +52,9 @@ enum DataStore_Keys{
     PRIMARY_VOLTAGE,
     SECONDARY_VOLTAGE,
     SINGULARITY_PARAMETER,
+
+// Commands
+    GIMBAL_RATES,
 };
 
 using CORALS_DataStore = ::DataStore::DataStore<DataStore_Keys>;

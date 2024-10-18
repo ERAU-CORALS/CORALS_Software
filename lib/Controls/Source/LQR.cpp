@@ -27,11 +27,10 @@ namespace __LQR {
     }
 
     Matrix<double> LQR_detTargetT(const Matrix<double>& xVector, const Matrix<double>& K) { // Could include ricatti silver w/ mit license
-        return -K * xVector;
+        return -K * xVector; // Ensure K is correct size
     }
 
 } // end namespace __LQR
 
-} // end namespace ControlSystems
-
+} // end namespace Control
 #endif

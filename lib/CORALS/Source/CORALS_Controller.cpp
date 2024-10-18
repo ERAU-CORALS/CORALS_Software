@@ -15,11 +15,17 @@
 
 #include <math.h>
 
+#include "CORALS_API.hpp"
+#include "CORALS_DataStore.hpp"
 #include "CORALS_Controller.hpp"
+
+#include "List.tpp"
 #include "Matrix.tpp"
 #include "TargetGen.hpp"
 
 namespace CORALS { // Begin CORALS
+
+//#ifdef GIGA_R1_M7
 
 Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int startCol, int endCol) {
 
@@ -34,7 +40,47 @@ Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int st
     return newMatrix
 }
 
-Matrix<double> get_thetaGICs(int N) {
+/* Matrix<double> detDCM(List(double) thetas, List(int) rotAxes) {   WIP: Dynamically create DCM & ICs based on N & CMG active positions
+
+    Matrix<double> tempDCM(3,3);
+    Matrix<double> DCM(3,3*thetas.size());
+
+    for (int i = 0; i < thetas.size(); i++) {
+        switch(rotAxes[i]) {
+            case 1:
+                tempDCM = {
+                    {1, 0, 0},
+                    {0, cos(thetas[i]), -sin(thetas[i])},
+                    {0, sin(thetas[i]), cos(thetas[i])}
+                };
+                break;
+            case 2:
+                tempDCM = {
+                    {cos(thetas[i]), 0, sin(thetas[i])},
+                    {0, 1, 0},
+                    {-sin(thetas[i]), 0, cos(thetas[i])}
+                };
+                break;
+            case 3:
+                tempDCM = {
+                    {cos(thetas[i]), -sin(thetas[i]), 0},
+                    {sin(thetas[i]), cos(thetas[i]), 0},
+                    {0, 0, 1}
+                };
+                break;
+        }
+    }
+
+    return DCM;
+} */
+
+/* Matrix<double> bestThetaGICs(int N, List(int) gimbalsActive) { WIP: Same as above
+
+    Matrix<double> thetaGICs(N,1);
+
+    switch(N) { */
+
+Matrix<double> get_thetaGICs(int N, List(int) gimbalsActive) {
 
     Matrix<double> thetaGICs(N,1);
 
@@ -145,17 +191,16 @@ void CTRL_Init() { // Assume targets generated
 
     Quaternion<double> qError;
     double phiError;
-    Quaternion<T> currentTarget; // Get from DataStore/API
+    Quaternion<T> currentTarget; 
     double errorCount = 0;
     double gyroModifier = 1;
     Matrix<double> thetaG_k = get_thetaGICs(N);
     Matrix<double> commanded_wG;
 
     // Retrieve from API
-    GainMatrix gain_LQR; // Init Gains
+    GainMatrix gain_LQR; // Get Gains
     TargetList *targetList = nullptr; // Init Targets
-    Get_Gain_Matrx(&gain_LQR); // Set Gains
-    DataStore.Get(TARGET_LIST, &targetList); // Set Targets
+    Get_Gain_Matrix(&gain_LQR); // Set Gains
 
 }
 
@@ -168,8 +213,8 @@ void CTRL_Run() {
     // Target Generator
     int successTick = Control::TargetGen::successCounter(qError(4));
     int targetIndex = Control::TargetGen::detIndex(successTick,dt,pointTime); // Count col index, sensor data needed for dt & pointTime
-    Quaternion<T> currentTarget = Control::TargetGen::decideTarget(qTargets,targetIndex);
- 
+    Get_Indexed_Targets(targetIndex,&currentTarget);
+
     // Torque
     Matrix<double> xVector = Control::__LQR::det_xVector(qError, target_wB, actual_wB);
     Matrix<double> targetT_LQR = Control::__LQR::LQR_detTargetT(xVector, K); // Implement switch case for PID v LQR?
@@ -182,10 +227,15 @@ void CTRL_Run() {
     gyroModifier = Control::Actuators::modGyros(currentTarget,actual_wB,errorCount);
     commanded_wG = Control::Actuators::compute_wG(thetaG,Hs,DCM_BG,LQR_detTargetT);
 
-    // Send wG to DataStore
+    // Send wG to DataStore via API
     //DataStore.Set(COMMANDED_WG, &commanded_wG);
 
 }
+
+#else //GIGA_R1_M4
+//do nothing
+
+#endif //GIGA_R1_M7
 
 } // End CORALS
 

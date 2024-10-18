@@ -36,6 +36,10 @@ void DS_Init() {
     DataStore.Add_SDO<double>(SECONDARY_VOLTAGE, &default_double);
     DataStore.Add_SDO<double>(SINGULARITY_PARAMETER, &default_double);
 
+    //int N;
+    //GimbalRates* gimbleRates = new AngularValues(N);
+    DataStore.Add_SDO<GimbleRates*>(GIMBAL_RATES, gimbleRates);
+
     CORALS_DEBUG_PRINTLN("CORALS DataStore Initialized.");
 }
 

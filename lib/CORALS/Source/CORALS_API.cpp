@@ -86,6 +86,12 @@ void API_Init() {
     Set_Attitude_Q2(0.0);
     Set_Attitude_Q3(0.0);
 
+    // Gimbal Rates
+    RPC.bind("Get_Gimbal_Rates", Get_Gimbal_Rates);
+    RPC.bind("Set_Gimbal_Rates", Set_Gimbal_Rates);
+    for (int i = 0; i < N; ++i) {
+        Set_Gimbal_Rates(i, 0.0);
+    }
     // Errors - TBD
 
     // States
@@ -409,6 +415,20 @@ void Set_Attitude_Q3(const double value) {
     DataStore.Get(ATTITUDE_QUATERNION, &Attitude);
     Attitude.set(3, value);
     DataStore.Set(ATTITUDE_QUATERNION, &Attitude);
+}
+
+// Gimbal Rates
+void Get_Gimbal_Rates(const int index, double &value) {
+    GimbalRates* gimbalRates;
+    DataStore.Get(GIMBAL_RATES, &gimbalRates);
+    value = gimbalRates->get(index);
+}
+
+void Set_Gimbal_Rates(const int index, const double value) {
+    GimbalRates* gimbalRates;
+    DataStore.Get(GIMBAL_RATES, &gimbalRates);
+    gimbalRates->set(index,value);
+    DataStore.Set(GIMBAL_RATES, gimbalRates);
 }
 
 // Errors - TBD

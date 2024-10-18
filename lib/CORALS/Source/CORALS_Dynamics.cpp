@@ -17,6 +17,14 @@
 
 namespace CORALS {
 
+    Matrix<double> computeT_Actual(const Matrix<double>& thetaG, const T& Hs, const Matrix<double>& DCM_BG, const Matrix<double>& omegaG) {// [T] for all CMGs
+    
+        SIMULINK::SIMULINK<T> detC;
+
+        Matrix<T> C_Prime = detC.computeC(thetaG, Hs, DCM_BG);
+        return C_Prime * omegaG;
+    }
+
     Matrix<double> wEOM(const Matrix<double>& MoI, const Matrix<double>& torqueBody, const Matrix<double>& wVector) {
         return MoI.inverse()*torqueBody-wVector.cross(MoI*wVector);
     }

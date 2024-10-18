@@ -10,10 +10,17 @@
  ********************************************************************************
 **/
 
+#include "Matrix.tpp"
+
 #ifndef __CORALS_DYNAMICS_HPP__
 #define __CORALS_DYNAMICS_HPP__
 
 namespace CORALS {
 
-    
+    Matrix<double> computeT_Actual(const Matrix<double>& thetaG, const T& Hs, const Matrix<double>& DCM_BG, const Matrix<double>& omegaG);
+    Matrix<double> wEOM(const Matrix<double>& MoI, const Matrix<double>& torqueBody, const Matrix<double>& wVector);
+    Matrix<double> bodyDynamics(const Matrix<double>& torqueBody, const Matrix<double>& wk1);
+
 }
+
+#endif
