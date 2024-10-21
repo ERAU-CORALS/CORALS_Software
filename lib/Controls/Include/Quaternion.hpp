@@ -24,19 +24,15 @@ class Quaternion {
 
 public:
 
-    T x,y,z,r; // Quaternion components
+    double x,y,z,r; // Quaternion components
 
-    Quaternion(T x, T y, T z, T r) : x(x), y(y), z(z), r(r) {} // Constructor w/ params
+    Quaternion(double x, double y, double z, double r) : x(x), y(y), z(z), r(r) {} // Constructor w/ params
 
     ~Quaternion() {} // Destructor
 
-    Quaternion<T> operator+(const Quaternion<T>& other)
-    Quaternion<T> operator-(const Quaternion<T>& other)
-    Quaternion<T> operator*(const Quaternion<T>& other)
-    Matrix<T> q2YPR()
-    Quaternion<T> qPropogation(const Quaternion<T>& Beta)
-    T magnitude()
-    Quaternion<T> normalize()
+    Quaternion<double> oTimes(const Quaternion<double>& other);
+    //Matrix<T> q2YPR()
+    //Quaternion<T> qPropogation(const Quaternion<T>& Beta)
 
 }
 

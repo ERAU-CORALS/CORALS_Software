@@ -19,8 +19,6 @@
 
 namespace SIMULINK {
 
-class SIMULINK {
-
     private:
         Vector<double> previous;
 
@@ -29,15 +27,15 @@ class SIMULINK {
     SIMULINK(): previous(Vector<double>::zeros(3,1)) {} // Initialize previous value for difference
 
 //Difference Function
-    Vector<double> computeDifference(const Vector<double>& current) {
-        Matrix<T> diff = current - previous;
+    Vector<double> computeDifference(const Vector<double>& current) { // Define vector or matrix? matrix might be more inclusive
+        Vector<double> diff = current - previous;
         previous = current;
         return diff;
     }
 
 // Limit Function
     Vector<double> limitOutput(const double& upper, const double& lower, const Vector<double>& output) {
-        Matrix<double> limitedOutput(output.rows(), output.cols());
+        Vector<double> limitedOutput(output.rows(), output.cols());
         for (int i = 0; i < output.rows(); i++) {
             for (int j = 0; j < output.cols(); j++) {
                 if (output(i,j) > upper) {
@@ -53,11 +51,11 @@ class SIMULINK {
     }
 
 // [C] Computation
-        Matrix<double> computeCn(const Vector<double>& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn) {// [C_n] for each CMG
-            Matrix<double> DCM_GGp(3,1); // DCM G to G'
-            DCM_GGp(0,0) = 0;
-            DCM_GGp(1,0) = Hs * cos(thetaGn);
-            DCM_GGp(2,0) = Hs * sin(thetaGn);
+    Matrix<double> computeCn(const Vector<double>& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn) {// [C_n] for each CMG
+        Matrix<double> DCM_GGp(3,1); // DCM G to G'
+        DCM_GGp(0,0) = 0;
+        DCM_GGp(1,0) = Hs * cos(thetaGn);
+        DCM_GGp(2,0) = Hs * sin(thetaGn);
         return DCM_BGn * DCM_GGp;
     }
 
@@ -74,8 +72,6 @@ class SIMULINK {
         return C;
     }
 
-}
-
-}
+} // End SIMULINK
 
 #endif // __SLFUN_TPP__

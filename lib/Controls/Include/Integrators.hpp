@@ -22,12 +22,10 @@ class Integrators {
 
     public:
 
-    Integrators(double initialValue, double stepSize) : value(initialValue), dt(stepSize) {} // Constructor
-
-    ~Integrators() {} // Deconstructor
-
-    Vector<double> Vector(const Vector<double>& derivative) 
+    Vector<double> eulerIntegrate(const Vector<double>& x_k, const Vector<double>& dx, double dt) 
 
 }
 
 } // End Integrators
+
+#endif // __INTEGRATORS_HPP__

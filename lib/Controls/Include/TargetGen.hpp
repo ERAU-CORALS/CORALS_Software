@@ -19,19 +19,18 @@
 
 namespace TargetGen {
 
-const int pointTol = 5 * M_PI / 180;
-
 class TargetGen {
 
     private:
         int ticker = 0; // Track phi error matches per dt
         int index = 0;
+        int pointTol = 5 * M_PI / 180;
         
     public:
 
-        int successCounter(const T& phiError) 
+        int successCounter(const double& phiError) 
         int detIndex(const int& ticker, const double& dt, const double& pointingTime)
-        Quaternion<double> decision(const Matrix<double>& qTargets, const int& index)
+        //Quaternion<double> decision(const Matrix<double>& qTargets, const int& index)
         
 }
 

@@ -14,6 +14,7 @@
 #define __SLFUN_HPP__
 
 #include <math.h>
+#include "Vector.tpp"
 #include "Matrix.tpp"
 
 namespace SIMULINK {
@@ -21,16 +22,18 @@ namespace SIMULINK {
 class SIMULINK {
 
     private:
-        Matrix<double> previous;
+        Vector<double> previous;
 
     public:
 
     SIMULINK(): previous(Vector<double>::zeros(3,1)) {} // Initialize previous value for difference
 
-    Matrix<double> computeDifference(const Matrix<double>& current)
-    Matrix<double> limitOutput(const double& upper, const double& lower, const Matrix<double>& output)
+    Vector<double> computeDifference(const Matrix<double>& current)
+    Vector<double> limitOutput(const double& upper, const double& lower, const Matrix<double>& output)
     Matrix<double> computeCn(const double& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn)
     Matrix<double> computeC(const Vector<double>& thetaG, const double& Hs, const Matrix<double>& DCM_BG) 
 }
 
 }
+
+#endif // __SLFUN_HPP__

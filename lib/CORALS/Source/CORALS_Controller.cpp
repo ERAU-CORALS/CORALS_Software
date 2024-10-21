@@ -19,6 +19,7 @@
 #include "CORALS_DataStore.hpp"
 #include "CORALS_Controller.hpp"
 
+#include "Quaternion.hpp"
 #include "List.tpp"
 #include "Matrix.tpp"
 #include "TargetGen.hpp"
@@ -80,9 +81,9 @@ Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int st
 
     switch(N) { */
 
-Matrix<double> get_thetaGICs(int N, List(int) gimbalsActive) {
+Vector<double> get_thetaGICs(int N, List<int> gimbalsActive) {
 
-    Matrix<double> thetaGICs(N,1);
+    Vector<double> thetaGICs(N,1);
 
     switch(N) {
 /*         case 3:
@@ -189,13 +190,13 @@ Matrix<double> getDCM_BG(int N) {
 
 void CTRL_Init() { // Assume targets generated
 
-    Quaternion<double> qError;
+    Quaternion qError;
+    Quaternion currentTarget; 
     double phiError;
-    Quaternion<T> currentTarget; 
     double errorCount = 0;
     double gyroModifier = 1;
-    Matrix<double> thetaG_k = get_thetaGICs(N);
-    Matrix<double> commanded_wG;
+    Vector<double> thetaG_k = get_thetaGICs(N);
+    Vector<double> commanded_wG;
 
     // Retrieve from API
     GainMatrix gain_LQR; // Get Gains
@@ -216,16 +217,16 @@ void CTRL_Run() {
     Get_Indexed_Targets(targetIndex,&currentTarget);
 
     // Torque
-    Matrix<double> xVector = Control::__LQR::det_xVector(qError, target_wB, actual_wB);
-    Matrix<double> targetT_LQR = Control::__LQR::LQR_detTargetT(xVector, K); // Implement switch case for PID v LQR?
-
-    // Theta G
-    thetaG_k1 = Integrators::eulerIntegrate(thetaG_k,gyroModifier,dt);
+    Vector<double> xVector = Control::__LQR::det_xVector(qError, target_wB, actual_wB);
+    Vector<double> targetT_LQR = Control::__LQR::LQR_detTargetT(xVector, K); 
 
     // Actuator
-    errorCount = Control::Actuators::countPhiError(phiError,errorCount);
-    gyroModifier = Control::Actuators::modGyros(currentTarget,actual_wB,errorCount);
+    errorCount = Control::Actuators::countPhiError(phiError,errorCount); // For use in gyroModifier
+    gyroModifier = Control::Actuators::modGyros(currentTarget,actual_wB,errorCount); // Mult commanded rate by this
     commanded_wG = Control::Actuators::compute_wG(thetaG,Hs,DCM_BG,LQR_detTargetT);
+
+    // Theta G
+    thetaG_k1 = Integrators::eulerIntegrate(thetaG_k,commanded_wG,dt); 
 
     // Send wG to DataStore via API
     //DataStore.Set(COMMANDED_WG, &commanded_wG);

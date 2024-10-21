@@ -20,13 +20,9 @@ namespace Maths{
 
 namespace Integrators {
 
-class Integrators {
-
     Vector<double> eulerIntegrate(const Vector<double>& x_k, const Vector<double>& dx, double dt) {
         return x_k + dt*dx
     }
-
-}
 
 } // End Integrators
 } // End Maths

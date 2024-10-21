@@ -10,11 +10,10 @@
  ********************************************************************************
 **/
 
-#ifndef __QUATERNION_TPP__
-#define __QUATERNION_TPP__
+#ifndef __QUATERNION_CPP__
+#define __QUATERNION_CPP__
 
 #include <math.h>
-#include "Matrix.tpp"
 #include "Vector.tpp"
 
 namespace Maths { // Begin DataStructures
@@ -31,22 +30,22 @@ public:
 
     ~Quaternion() {} // Destructor
 
-    Quaternion<double> oTimes(const Quaternion<T>& other) { // O times
+    Quaternion<double> oTimes(const Quaternion<double>& other) { // O times
         return Quaternion<double>( 
             -r * other.x - z * other.y + y * other.z + x * other.r,
             z * other.x - r * other.y - x * other.z + y * other.r,
             -y * other.x + x * other.y - r * other.z + z * other.r,
             -x * other.x - y * other.y - z * other.z + r * other.r
             );
-    }
+    } // Can relocate this?
 
-    Quaternion<double> q2YPR() {
+/*     Vector<double> q2YPR() {
         Matrix<T> YPR(3,1);
         YPR(0,0) = atan2(2 * (x * y + z * r), x * x - y * y - z * z + r * r); // Yaw
         YPR(1,0) = asin(-2 * (x * z - y * r)); // Pitch
         YPR(2,0) = atan2(2 * (y * z + x * r), -x * x - y * y + z * z + r * r); // Roll
         return YPR;
-    }
+    } */ // Covered by DARTS
 
 }
 
