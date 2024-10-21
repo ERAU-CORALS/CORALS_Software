@@ -14,20 +14,19 @@
 #define __INTEGRATORS_HPP__
 
 #include <math.h>
-#include "Matrix.tpp"
+#include "Vector.tpp"
 
 namespace Integrators {
 
-template<typename T>
 class Integrators {
 
     public:
 
-    Integrators(T initialValue, T stepSize) : value(initialValue), dt(stepSize) {} // Constructor
+    Integrators(double initialValue, double stepSize) : value(initialValue), dt(stepSize) {} // Constructor
 
     ~Integrators() {} // Deconstructor
 
-    Matrix<T> Euler(const Matrix<T>& derivative) 
+    Vector<double> Vector(const Vector<double>& derivative) 
 
 }
 

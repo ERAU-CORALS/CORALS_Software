@@ -49,9 +49,9 @@ class TargetGen {
             return index;
         }
 
-        Quaternion<T> decideTarget(const Matrix<double>& qTargets, const int& index) {
+/*         Quaternion<T> decideTarget(const Matrix<double>& qTargets, const int& index) {
             return qTargets.subMatrix(0, 4, index, index + 1);
-        }
+        } */ // covered by api command now
 
 }
 

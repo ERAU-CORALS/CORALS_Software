@@ -10,6 +10,9 @@
  ********************************************************************************
 **/
 
+#ifndef __QUATERNION_TPP__
+#define __QUATERNION_TPP__
+
 #include <math.h>
 #include "Matrix.tpp"
 #include "Vector.tpp"
@@ -37,7 +40,7 @@ public:
             );
     }
 
-    Vector<double> q2YPR() {
+    Quaternion<double> q2YPR() {
         Matrix<T> YPR(3,1);
         YPR(0,0) = atan2(2 * (x * y + z * r), x * x - y * y - z * z + r * r); // Yaw
         YPR(1,0) = asin(-2 * (x * z - y * r)); // Pitch

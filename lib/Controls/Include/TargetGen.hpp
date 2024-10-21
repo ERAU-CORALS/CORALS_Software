@@ -30,9 +30,11 @@ class TargetGen {
     public:
 
         int successCounter(const T& phiError) 
-        int detIndex(const T& ticker, const T& dt, const T& pointingTime)
-        Quaternion<T> decision(const Matrix<T>& qTargets, const int& index)
+        int detIndex(const int& ticker, const double& dt, const double& pointingTime)
+        Quaternion<double> decision(const Matrix<double>& qTargets, const int& index)
         
 }
 
 } // End TargetGen
+
+#endif // __TARGETGEN_HPP__

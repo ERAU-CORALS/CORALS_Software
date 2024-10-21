@@ -10,17 +10,25 @@
  ********************************************************************************
 **/
 
+#ifndef __INTEGRATORS_CPP__
+#define __INTEGRATORS_CPP__
+
 #include <math.h>
 #include "Vector.tpp"
+
+namespace Maths{
 
 namespace Integrators {
 
 class Integrators {
 
-    Vector<double> eulerIntegrate(const Matrix<Vector>& x_k, const Vector<double>& dx, double dt) {
+    Vector<double> eulerIntegrate(const Vector<double>& x_k, const Vector<double>& dx, double dt) {
         return x_k + dt*dx
     }
 
 }
 
 } // End Integrators
+} // End Maths
+
+#endif // __INTEGRATORS_CPP__

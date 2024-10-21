@@ -18,21 +18,19 @@
 
 namespace SIMULINK {
 
-const int N = 6; // Number of CMGs, maybe needs to be defined within main program
-
 class SIMULINK {
 
     private:
-        Matrix<T> previous;
+        Matrix<double> previous;
 
     public:
 
-    SIMULINK(): previous(Matrix<T>::zeros(3,1)) {} // Initialize previous value for difference
+    SIMULINK(): previous(Vector<double>::zeros(3,1)) {} // Initialize previous value for difference
 
-    Matrix<T> computeDifference(const Matrix<T>& current)
-    Matrix<T> limitOutput(const T& upper, const T& lower, const Matrix<T>& output)
-    Matrix<T> computeCn(const T& thetaGn, const T& Hs, const Matrix<T>& DCM_BGn)
-    Matrix<T> computeC(const Matrix<T>& thetaG, const T& Hs, const Matrix<T>& DCM_BG) 
+    Matrix<double> computeDifference(const Matrix<double>& current)
+    Matrix<double> limitOutput(const double& upper, const double& lower, const Matrix<double>& output)
+    Matrix<double> computeCn(const double& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn)
+    Matrix<double> computeC(const Vector<double>& thetaG, const double& Hs, const Matrix<double>& DCM_BG) 
 }
 
 }
