@@ -57,6 +57,8 @@ template<typename T> Matrix<T> inverse(const Matrix<T> &matrix);
 template<typename T> Matrix<T> minor(const Matrix<T> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
 template<typename T> T trace(const Matrix<T> &matrix);
 template<typename T> Matrix<T> transpose(const Matrix<T> &matrix);
+template<typename T> Matrix<T> submatrix(const Matrix<T> &matrix, MatrixLength_t start_row, MatrixLength_t end_row, MatrixLength_t start_column, MatrixLength_t end_column);
+template<typename T> Matrix<T> submatrix(const Matrix<T> &matrix, MatrixSize_t start_coordinate, MatrixSize_t end_coordinate);
 
 } // end namespace Matrix_Operations
 
@@ -1268,6 +1270,49 @@ Matrix<T> transpose(const Matrix<T> &matrix) {
         }
     }
     return transposed;
+}
+
+/**
+ ********************************************************************************
+ * @brief   Get a submatrix of a matrix
+ ********************************************************************************
+ * @tparam      T
+ * @param[in]   matrix          TYPE: const Matrix<T>&
+ * @param[in]   start_row       TYPE: MatrixLength_t
+ * @param[in]   end_row         TYPE: MatrixLength_t
+ * @param[in]   start_column    TYPE: MatrixLength_t
+ * @param[in]   end_column      TYPE: MatrixLength_t
+ * @return      Matrix<T>
+ ********************************************************************************
+**/
+template<typename T> Matrix<T> submatrix(const Matrix<T> &matrix, const MatrixLength_t start_row, const MatrixLength_t end_row, const MatrixLength_t start_column, const MatrixLength_t end_column) {
+    assert(start_row >= 0 && start_row < matrix.rows() && "Invalid Starting Row...");
+    assert(end_row >= 0 && end_row < matrix.rows() && "Invalid Ending Row...");
+    assert(start_column >= 0 && start_column < matrix.columns() && "Invalid Starting Column...");
+    assert(end_column >= 0 && end_column < matrix.columns() && "Invalid Ending Column...");
+
+    if (start_row > end_row) {
+        const MatrixLength_t temp = start_row;
+        start_row = end_row;
+        end_row = temp;
+    }
+
+    if (start_column > end_column) {
+        const MatrixLength_t temp = start_column;
+        start_column = end_column;
+        end_column = temp;
+    }
+
+    Matrix<T> retmatrix(end_row - start_row + 1, end_column - start_column + 1);
+
+    for (MatrixLength_t i = start_row; i <= end_row; i++) {
+        for (MatrixLength_t j = start_column; j <= end_column; j++) {
+            retmatrix.set(i - start_row, j - start_column, matrix.get(i, j));
+        }
+    }
+}
+template<typename T> Matrix<T> submatrix(const Matrix<T> &matrix, const MatrixSize_t start_coordinate, const MatrixSize_t end_coordinate) {
+    return submatrix(matrix, start_coordinate.rows, end_coordinate.rows, start_coordinate.columns, end_coordinate.columns);
 }
 
 } // end namespace Matrix_Operations

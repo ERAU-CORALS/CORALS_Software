@@ -36,7 +36,6 @@ void initialize() {
 
     CORALS_OS.Register("Blinky", Blinky, 1000, ::StateManager::SM_Priority::PRIORITY_HIGHEST);
     
-    // Initialize_DataStore();
     CORALS_OS.Register("Telecommunicator", TC_Run, 100, ::StateManager::SM_Priority::PRIORITY_MEDIUM);
 
     CORALS_OUT_PRINTLN("CORALS Initialized.");

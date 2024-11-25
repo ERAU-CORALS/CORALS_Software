@@ -22,26 +22,6 @@
 
 namespace CORALS {
 
-#define CS1 10
-#define CS2 11
-#define CS3 12
-#define CS4 13
-#define CS5 14
-#define CS6 15
-#define SPIN_PIN 28
-#define Speed 255
-
-#define STEPS_PER_REV 200
-#define MICROSTEPS 256
-#define GEAR_RATIO 1
-
-TMC5160_SPI driver1(CS1);
-TMC5160_SPI driver2(CS2);
-TMC5160_SPI driver3(CS3);
-TMC5160_SPI driver4(CS4);
-TMC5160_SPI driver5(CS5);
-TMC5160_SPI driver6(CS6);
-
 void initSpinners();
 float angleToSteps(float angle);
 int32_t velocityToSteps(float omegaG);
@@ -50,6 +30,13 @@ void cmdGimbalRate(TMC5160 &driver, float velocity);
 void initSteppers(::DataStructures::Vector::Vector<TMC5160*> &drivers, const TMC5160::PowerStageParameters &powerParams, const TMC5160::MotorParameters &motorParams, TMC5160::MotorDirection direction = TMC5160::NORMAL_MOTOR_DIRECTION);
 void initSG2(::DataStructures::Vector::Vector<TMC5160*> &drivers, uint8_t sgtValue = 5);
 void findHome(::DataStructures::Vector::Vector<TMC5160*> &drivers);
+
+extern TMC5160_SPI driver1(CS1);
+extern TMC5160_SPI driver2(CS2);
+extern TMC5160_SPI driver3(CS3);
+extern TMC5160_SPI driver4(CS4);
+extern TMC5160_SPI driver5(CS5);
+extern TMC5160_SPI driver6(CS6);
 
 } // namespace CORALS
 

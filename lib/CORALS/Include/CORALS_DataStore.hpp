@@ -13,26 +13,11 @@
 #ifndef __CORALS_DATASTORE_HPP__
 #define __CORALS_DATASTORE_HPP__
 
-#include "List.tpp"
-#include "Matrix.tpp"
-#include "Vector.tpp"
-
 #include "DataStore.tpp"
 
+#include "CORALS_DataStructures.hpp"
+
 namespace CORALS {
-
-// TODO: REDEFINE THESE ELSEWHERE
-class GainMatrix : public ::DataStructures::Matrix::Matrix<double> { 
-    public: GainMatrix() : Matrix(3, 3) {}
-};
-class Quaternion : public ::DataStructures::Vector::Vector<double> { 
-    public: Quaternion() : Vector(4) {} 
-};
-class GimbleRates : public ::DataStructures::Vector::Vector<double> {
-    public: GimbleRates(int N) : Vector(N) {}
-};
-
-using TargetList = ::DataStructures::List::List<Quaternion*>;
 
 enum DataStore_Keys{
 // Settings - TBD

@@ -29,16 +29,13 @@ void DS_Init() {
     DataStore.Add_SDO<GainMatrix*>(GAIN_MATRIX);
     DataStore.Add_SDO<TargetList*>(TARGET_LIST);
     DataStore.Add_SDO<Quaternion*>(ATTITUDE_QUATERNION);
+    DataStore.Add_SDO<GimbleRates*>(GIMBAL_RATES);
 
     const double default_double = 0.0;
     
     DataStore.Add_SDO<double>(PRIMARY_VOLTAGE, &default_double);
     DataStore.Add_SDO<double>(SECONDARY_VOLTAGE, &default_double);
     DataStore.Add_SDO<double>(SINGULARITY_PARAMETER, &default_double);
-
-    //int N;
-    //GimbalRates* gimbleRates = new AngularValues(N);
-    DataStore.Add_SDO<GimbleRates*>(GIMBAL_RATES, gimbleRates);
 
     CORALS_DEBUG_PRINTLN("CORALS DataStore Initialized.");
 }

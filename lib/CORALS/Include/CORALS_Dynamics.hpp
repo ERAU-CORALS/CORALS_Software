@@ -16,10 +16,9 @@
 #include "Matrix.tpp"
 #include "Vector.tpp"
 
-namespace CORALS {
+#include "CORALS_DataStructures.hpp"
 
-    using DMatrix = ::DataStructures::Matrix::Matrix<double>;
-    using DVector = ::DataStructures::Vector::Vector<double>;
+namespace CORALS {
 
     DMatrix computeT_Actual(const DMatrix& thetaG, const double& Hs, const DMatrix& DCM_BG, const DMatrix& omegaG);
     DMatrix wEOM(const DMatrix& MoI, const DMatrix& torqueBody, const DMatrix& wVector);

@@ -25,71 +25,11 @@ namespace CORALS { // Begin CORALS
 
 #ifdef GIGA_R1_M7
 
-Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int startCol, int endCol) {
-
-    Matrix<double> newMatrix(endRow-startRow+1,endCol-startCol+1);
-
-    for(int i = startRow; i <= endRow; i++) {
-        for(int j = startCol; j <= endCol; j++) {
-            newMatrix.set(i-startRow,j-startCol,matrix.get(i,j));
-        }
-    }
-
-    return newMatrix;
-}
-
-/* Matrix<double> detDCM(List(double) thetas, List(int) rotAxes) {   WIP: Dynamically create DCM & ICs based on N & CMG active positions
-
-    Matrix<double> tempDCM(3,3);
-    Matrix<double> DCM(3,3*thetas.size());
-
-    for (int i = 0; i < thetas.size(); i++) {
-        switch(rotAxes[i]) {
-            case 1:
-                tempDCM = {
-                    {1, 0, 0},
-                    {0, cos(thetas[i]), -sin(thetas[i])},
-                    {0, sin(thetas[i]), cos(thetas[i])}
-                };
-                break;
-            case 2:
-                tempDCM = {
-                    {cos(thetas[i]), 0, sin(thetas[i])},
-                    {0, 1, 0},
-                    {-sin(thetas[i]), 0, cos(thetas[i])}
-                };
-                break;
-            case 3:
-                tempDCM = {
-                    {cos(thetas[i]), -sin(thetas[i]), 0},
-                    {sin(thetas[i]), cos(thetas[i]), 0},
-                    {0, 0, 1}
-                };
-                break;
-        }
-    }
-
-    return DCM;
-} */
-
-/* Matrix<double> bestThetaGICs(int N, List(int) gimbalsActive) { WIP: Same as above
-
-    Matrix<double> thetaGICs(N,1);
-
-    switch(N) { */
-
 Vector<double> get_thetaGICs(int N) {
 
     Vector<double> thetaGICs(N,1);
 
     switch(N) {
-/*         case 3:
-            thetaGICs = {
-                {0},
-                {0},
-                {0}
-            };
-            break; */
         case 4:
             thetaGICs = {
                 {-130*M_PI/180},
@@ -98,15 +38,6 @@ Vector<double> get_thetaGICs(int N) {
                 {60*M_PI/180}
             };
             break;
-/*         case 5:
-            thetaGICs = {
-                {0},
-                {0},
-                {0},
-                {0},
-                {0}
-            };
-            break; */
         case 6:
             thetaGICs = {
                 {-M_PI},
@@ -117,28 +48,6 @@ Vector<double> get_thetaGICs(int N) {
                 {-M_PI_2}
             };
             break;
-/*         case 7:
-            thetaGICs = {
-                {0},
-                {0},
-                {0},
-                {0},
-                {0},
-                {0},
-                {0}
-            }; */
-/*         case 8:
-            thetaGICs = {
-                {0},
-                {0},
-                {0},
-                {0},
-                {0},
-                {0},
-                {0},
-                {0}
-            };
-            break; */
     }
 
     return thetaGICs;
