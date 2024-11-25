@@ -16,6 +16,9 @@
 #include "Configuration.hpp"
 
 #include "CORALS.hpp"
+#include "CORALS_Hardware.hpp"
+#include "CORALS_Dynamics.hpp"
+#include "CORALS_Controller.hpp"
 
 DataStructures::Vector::Vector<double> thetaG_k;  // Declare global
 Quaternion qError;
