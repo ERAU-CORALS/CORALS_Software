@@ -15,16 +15,14 @@
 
 #include <math.h>
 #include "Matrix.tpp"
+#include "CORALS_Dynamics.hpp"
 
 namespace CORALS {
 
-    Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int startCol, int endCol);
-    Matrix<double> get_thetaGICs(int N);
-    Matrix<double> getDCM_BG(int N);
-    Matrix<double> eulerIntegrate(const Matrix<double>& x_k, const Matrix<double>& dx, double dt);
-    
-    void CTRL_Init();
-    void CTRL_Run();
+    DMatrix subMatrix(DMatrix matrix, int startRow, int endRow, int startCol, int endCol);
+    DMatrix get_thetaGICs(int N);
+    DMatrix getDCM_BG(int N);
+    DMatrix eulerIntegrate(const DMatrix& x_k, const DMatrix& dx, double dt);
 
 }
 

@@ -28,7 +28,7 @@ class GainMatrix : public ::DataStructures::Matrix::Matrix<double> {
 class Quaternion : public ::DataStructures::Vector::Vector<double> { 
     public: Quaternion() : Vector(4) {} 
 };
-class GimbleRates : oublic ::DataStructures::Vector::Vector<double> {
+class GimbleRates : public ::DataStructures::Vector::Vector<double> {
     public: GimbleRates(int N) : Vector(N) {}
 };
 

@@ -16,22 +16,6 @@
 #include "TMC5160_registers.h"
 #include "TMC5160.h"
 
-#define CS1 10
-#define CS2 11
-#define CS3 12
-#define CS4 13
-#define CS5 14
-#define CS6 15
-#define SPIN_PIN 28
-#define Speed 255
-
-TMC5160_SPI driver1(CS1);
-TMC5160_SPI driver1(CS2);
-TMC5160_SPI driver1(CS3);
-TMC5160_SPI driver1(CS4);
-TMC5160_SPI driver1(CS5);
-TMC5160_SPI driver1(CS6);
-
 namespace CORALS {
 
 #ifdef GIGA_R1_M7

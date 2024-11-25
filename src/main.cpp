@@ -18,18 +18,23 @@
 #include "CORALS.hpp"
 #include "CORALS_Hardware.hpp"
 #include "CORALS_Dynamics.hpp"
+#include "CORALS_DataStore.hpp"
 #include "CORALS_Controller.hpp"
+#include "CORALS_Telecommunicator.hpp"
+#include "CORALS_API.hpp"
 
-DataStructures::Vector::Vector<double> thetaG_k;  // Declare global
-Quaternion qError;
-Quaternion currentTarget;
+#define GLOBAL_N 4
+
+DataStructures::Vector::Vector<double> thetaG_k(GLOBAL_N);  // Declare global
+CORALS::Quaternion qError;
+CORALS::Quaternion currentTarget;
 double phiError;
 double errorCount;
 double gyroModifier;
-DataStructures::Vector::Vector<double> commanded_wG;
-Matrix::Matrix<double> DCM_BG;
-Vector<double> targetT_LQR;
-Vector<double> xVector;
+DataStructures::Vector::Vector<double> commanded_wG(GLOBAL_N);
+DataStructures::Matrix::Matrix<double> DCM_BG(3,3*GLOBAL_N);
+DataStructures::Vector::Vector<double> targetT_LQR(3);
+DataStructures::Vector::Vector<double> xVector(6);
 
 void setup_error(String message = "");
 
@@ -53,15 +58,15 @@ void setup() {
 
     // BEGIN CORALS CODE
 
-    TC_Init();
+    CORALS::TC_Init();
 
     DataStructures::Vector::Vector<TMC5160*> drivers(6);
-    drivers.set(0, &driver1);
-    drivers.set(1, &driver2);
-    drivers.set(2, &driver3);
-    drivers.set(3, &driver4);
-    drivers.set(4, &driver5);
-    drivers.set(5, &driver6);
+    drivers.set(0, &CORALS::driver1);
+    drivers.set(1, &CORALS::driver2);
+    drivers.set(2, &CORALS::driver3);
+    drivers.set(3, &CORALS::driver4);
+    drivers.set(4, &CORALS::driver5);
+    drivers.set(5, &CORALS::driver6);
 
     // Define power stage parameters
     TMC5160::PowerStageParameters powerParams;
@@ -70,7 +75,7 @@ void setup() {
     powerParams.bbmClks = 4;
 
     // Define motor parameters
-    const int N = 4;  // Number of states/dimensions
+    const int N = GLOBAL_N;  // Number of states/dimensions
     TMC5160::MotorParameters motorParams;
     motorParams.globalScaler = 32;
     motorParams.irun = 16;
@@ -81,12 +86,12 @@ void setup() {
 
     CORALS::initialize();
     CORALS::initSpinners();
-    CORALS::initializeSteppers(drivers, powerParams, motorParams);
+    CORALS::initSteppers(drivers, powerParams, motorParams);
     CORALS::initSG2(drivers, 5); 
-    Matrix::Matrix<double> thetaGICs = CORALS::get_thetaGICs(4); // Initial Conditions
+    DataStructures::Matrix::Matrix<double> thetaG_ICs = CORALS::get_thetaGICs(4); // Initial Conditions
     DCM_BG = CORALS::getDCM_BG(4); // DCM Body to Gimbal
 
-    thetaG_ICs = get_thetaGICs(N);
+    thetaG_ICs = CORALS::get_thetaGICs(N);
     errorCount = 0;
     gyroModifier = 1;
     commanded_wG = DataStructures::Vector::Vector<double>(3);
@@ -94,18 +99,18 @@ void setup() {
     CORALS::setICs(thetaG_ICs,80,200); // Command gimbals to ICs
 
     // Retrieve from API
-    GainMatrix gain_LQR; // Get Gains
-    TargetList *targetList = nullptr; // Init Targets
-    DataStore.get(TARGET_LIST, &targetList);
-    Get_Gain_Matrix(&gain_LQR); // Set Gains
+    CORALS::GainMatrix gain_LQR; // Get Gains
+    CORALS::TargetList *targetList = nullptr; // Init Targets
+    CORALS::DataStore.get(TARGET_LIST, &targetList);
+    CORALS::Get_Gain_Matrix(&gain_LQR); // Set Gains
     // END CORALS CODE
 }
 
 void loop() {
     // BEGIN CORALS CODE
 
-    TC_Run();
-    CORALS::run();
+    CORALS::TC_Run();
+    // CORALS::run();
     // Dynamics
     Vector<double> torqueBody_Real(3) = CORALS::computeT_Actual(thetaG, Hs, DCM_BG, omegaG);
     Vector<double> wk1 = CORALS::bodyDynamics(torqueBody_Real);
