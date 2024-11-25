@@ -19,8 +19,9 @@ namespace CORALS {
 
     Matrix<double> computeT_Actual(const Matrix<double>& thetaG, const T& Hs, const Matrix<double>& DCM_BG, const Matrix<double>& omegaG);
     Matrix<double> wEOM(const Matrix<double>& MoI, const Matrix<double>& torqueBody, const Matrix<double>& wVector);
+    Vector<double> qPropogation(Vector<double> q_k, Vector<double> betaVector);
     Matrix<double> bodyDynamics(const Matrix<double>& torqueBody, const Matrix<double>& wk1);
-
+    
 }
 
 #endif
