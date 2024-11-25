@@ -28,10 +28,10 @@ class SIMULINK {
 
     SIMULINK(): previous(Vector<double>::zeros(3,1)) {} // Initialize previous value for difference
 
-    Vector<double> computeDifference(const Matrix<double>& current)
-    Vector<double> limitOutput(const double& upper, const double& lower, const Matrix<double>& output)
-    Matrix<double> computeCn(const double& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn)
-    Matrix<double> computeC(const Vector<double>& thetaG, const double& Hs, const Matrix<double>& DCM_BG) 
+    Vector<double> computeDifference(const Matrix<double>& current);
+    Vector<double> limitOutput(const double& upper, const double& lower, const Matrix<double>& output);
+    Matrix<double> computeCn(const double& thetaGn, const double& Hs, const Matrix<double>& DCM_BGn);
+    Matrix<double> computeC(const Vector<double>& thetaG, const double& Hs, const Matrix<double>& DCM_BG);
 }
 
 }

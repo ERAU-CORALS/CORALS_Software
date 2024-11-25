@@ -10,9 +10,6 @@
  ********************************************************************************
 **/
 
-#ifndef __ACTUATORS_CPP__
-#define __ACTUATORS_CPP__
-
 #include <math.h>
 #include "Actuators.hpp"
 #include "Vector.tpp"
@@ -35,7 +32,7 @@ namespace Actuators {
             }
         }
 
-    int modGyros(const Vector<double>& targetT, const Vector<double>& wB_Actual, int counter) { // Multiplier to keep gyros from producing too much momentum
+    int modGyros(const Vector<double>& targetT, const Vector<double>& wB_Actual, int counter, int enabled) { // Multiplier to keep gyros from producing too much momentum
         counter = countPhiError(phiError,counter);
 
         T thresh = maxCount - counter * M_PI / 360; // Adjust threshold by 0.5 degrees per counter increment
@@ -58,5 +55,3 @@ namespace Actuators {
 
 } // End Actuators
 } // End Control
-
-#endif // __ACTUATORS_CPP__

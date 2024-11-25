@@ -10,10 +10,10 @@
  ********************************************************************************
 **/
 
-#include "Matrix.tpp"
-
 #ifndef __CORALS_DYNAMICS_HPP__
 #define __CORALS_DYNAMICS_HPP__
+
+#include "Matrix.tpp"
 
 namespace CORALS {
 

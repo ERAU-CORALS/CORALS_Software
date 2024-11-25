@@ -1,6 +1,6 @@
 /**
  ********************************************************************************
- * @file    Quaternion.tpp
+ * @file    Quaternion.hpp
  * @author  Vincent Lam (g.vincentlam@gmail.com)
  * @brief   Integrators Headers
  * @version 1.0
@@ -22,7 +22,7 @@ class Integrators {
 
     public:
 
-    Vector<double> eulerIntegrate(const Vector<double>& x_k, const Vector<double>& dx, double dt) 
+    Vector<double> eulerIntegrate(const Vector<double>& x_k, const Vector<double>& dx, double dt); 
 
 }
 

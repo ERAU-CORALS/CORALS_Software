@@ -10,8 +10,8 @@
  ********************************************************************************
 **/
 
-#ifndef __SLFUN_TPP__
-#define __SLFUN_TPP__
+#ifndef __SLFUN_CPP__
+#define __SLFUN_CPP__
 
 #include <math.h>
 #include "Vector.tpp"

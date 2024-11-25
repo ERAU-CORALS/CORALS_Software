@@ -10,9 +10,6 @@
  ********************************************************************************
 **/
 
-#ifndef __CORALS_CONTROLLER_CPP__
-#define __CORALS_CONTROLLER_CPP__
-
 #include <math.h>
 
 #include "CORALS_API.hpp"
@@ -26,7 +23,7 @@
 
 namespace CORALS { // Begin CORALS
 
-//#ifdef GIGA_R1_M7
+#ifdef GIGA_R1_M7
 
 Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int startCol, int endCol) {
 
@@ -38,7 +35,7 @@ Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int st
         }
     }
 
-    return newMatrix
+    return newMatrix;
 }
 
 /* Matrix<double> detDCM(List(double) thetas, List(int) rotAxes) {   WIP: Dynamically create DCM & ICs based on N & CMG active positions
@@ -81,7 +78,7 @@ Matrix<double> subMatrix(Matrix<double> matrix, int startRow, int endRow, int st
 
     switch(N) { */
 
-Vector<double> get_thetaGICs(int N, List<int> gimbalsActive) {
+Vector<double> get_thetaGICs(int N) {
 
     Vector<double> thetaGICs(N,1);
 
@@ -144,7 +141,7 @@ Vector<double> get_thetaGICs(int N, List<int> gimbalsActive) {
             break; */
     }
 
-    return thetaGICs
+    return thetaGICs;
 }
 
 Matrix<double> getDCM_BG(int N) {
@@ -185,59 +182,9 @@ Matrix<double> getDCM_BG(int N) {
         m += 3;
     }
 
-    return DCM
+    return DCM;
 }
 
-void CTRL_Init() { // Assume targets generated
-
-    Quaternion qError;
-    Quaternion currentTarget; 
-    double phiError;
-    double errorCount = 0;
-    double gyroModifier = 1;
-    Vector<double> thetaG_k = get_thetaGICs(N);
-    Vector<double> commanded_wG;
-
-    // Retrieve from API
-    GainMatrix gain_LQR; // Get Gains
-    TargetList *targetList = nullptr; // Init Targets
-    Get_Gain_Matrix(&gain_LQR); // Set Gains
-
-}
-
-void CTRL_Run() {
-
-    // Targetting Data
-    qError = qTarget * qActual;
-    phiError =  = 0.5 * acos(qError(4));
-
-    // Target Generator
-    int successTick = Control::TargetGen::successCounter(qError(4));
-    int targetIndex = Control::TargetGen::detIndex(successTick,dt,pointTime); // Count col index, sensor data needed for dt & pointTime
-    Get_Indexed_Targets(targetIndex,&currentTarget);
-
-    // Torque
-    Vector<double> xVector = Control::__LQR::det_xVector(qError, target_wB, actual_wB);
-    Vector<double> targetT_LQR = Control::__LQR::LQR_detTargetT(xVector, K); 
-
-    // Actuator
-    errorCount = Control::Actuators::countPhiError(phiError,errorCount); // For use in gyroModifier
-    gyroModifier = Control::Actuators::modGyros(currentTarget,actual_wB,errorCount); // Mult commanded rate by this
-    commanded_wG = Control::Actuators::compute_wG(thetaG,Hs,DCM_BG,LQR_detTargetT);
-
-    // Theta G
-    thetaG_k1 = Integrators::eulerIntegrate(thetaG_k,commanded_wG,dt); 
-
-    // Send wG to DataStore via API
-    //DataStore.Set(COMMANDED_WG, &commanded_wG);
-
-}
-
-#else //GIGA_R1_M4
-//do nothing
-
-#endif //GIGA_R1_M7
+#endif
 
 } // End CORALS
-
-#endif // __CORALS_CONTROLLER_CPP__

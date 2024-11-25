@@ -28,8 +28,8 @@ class TargetGen {
         
     public:
 
-        int successCounter(const double& phiError) 
-        int detIndex(const int& ticker, const double& dt, const double& pointingTime)
+        int successCounter(const double& phiError);
+        int detIndex(const int& ticker, const double& dt, const double& pointingTime);
         //Quaternion<double> decision(const Matrix<double>& qTargets, const int& index)
         
 }

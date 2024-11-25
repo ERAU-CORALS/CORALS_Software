@@ -18,16 +18,16 @@
 #include "Vector.tpp"
 #include "Quaternion.hpp"
 #include "CORALS_Dynamics.hpp"
+#include "Integrators.hpp"
 
 namespace CORALS {
 
-//#ifdef GIGA_R1_M7
+    #ifdef GIGA_R1_M7
 
-    Vector<double> computeT_Actual(const Matrix<double>& thetaG, const T& Hs, const Matrix<double>& DCM_BG, const Matrix<double>& omegaG) {// [T] for all CMGs
+    Vector<double> computeT_Actual(const Matrix<double>& thetaG,const float& Hs, const Matrix& DCM_BG, const Matrix& omegaG) {// [T] for all CMGs
     
         SIMULINK::SIMULINK<double> detC;
-
-        Matrix<T> C_Prime = detC.computeC(thetaG, Hs, DCM_BG);
+        Matrix<double> C_Prime = detC.computeC(thetaG, Hs, DCM_BG);
         return C_Prime * omegaG;
     }
 
@@ -56,19 +56,6 @@ namespace CORALS {
 
         return Integrator::eulerIntegrate(wB_Vector, wDotVector, dt);
     }
-
-    void DYN_Init() {
-        
-    }
-
-    void DYN_Run() {
-        Vector<double> torqueBody_Real(3) = computeT_Actual(thetaG, Hs, DCM_BG, omegaG);
-        Vector<double> wk1 = bodyDynamics(torqueBody_Real);
-        Vector<double> q_k1 = qPropogation(q_k, betaVector);
-    }
-
-    #else //GIGA_R1_M4
-    //do nothing
 
     #endif // GIGA_R1_M7
 

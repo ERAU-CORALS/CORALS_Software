@@ -14,7 +14,6 @@
 #define __QUATERNION_HPP__
 
 #include <math.h>
-#include "Matrix.tpp"
 
 namespace DataStructures { // Begin DataStructures
 
