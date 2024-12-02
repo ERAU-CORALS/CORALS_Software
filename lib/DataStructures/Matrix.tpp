@@ -572,6 +572,34 @@ class Matrix {
             return Matrix_Operations::transpose<T>(*this);
         }
 
+        /**
+         ********************************************************************************
+         * @brief   Get a submatrix of the matrix
+         ********************************************************************************
+         * @param[in]   start_row       TYPE: MatrixLength_t
+         * @param[in]   end_row         TYPE: MatrixLength_t
+         * @param[in]   start_column    TYPE: MatrixLength_t
+         * @param[in]   end_column      TYPE: MatrixLength_t
+         * @return      Matrix<T>
+         ********************************************************************************
+        **/
+        inline Matrix<T> submatrix(MatrixLength_t start_row, MatrixLength_t end_row, MatrixLength_t start_column, MatrixLength_t end_column) const {
+            return Matrix_Operations::submatrix<T>(*this, start_row, end_row, start_column, end_column);
+        }
+
+        /**
+         ********************************************************************************
+         * @brief   Get a submatrix of the matrix
+         ********************************************************************************
+         * @param[in]   start_coordinate    TYPE: MatrixSize_t
+         * @param[in]   end_coordinate      TYPE: MatrixSize_t
+         * @return      Matrix<T>
+         ********************************************************************************
+        **/
+        inline Matrix<T> submatrix(MatrixSize_t start_coordinate, MatrixSize_t end_coordinate) const {
+            return Matrix_Operations::submatrix<T>(*this, start_coordinate, end_coordinate);
+        }
+
     // Matrix Properties
         /**
          ********************************************************************************
@@ -743,6 +771,8 @@ class Matrix {
         template<typename U> friend Matrix<U> Matrix_Operations::minor(const Matrix<U> &matrix, const MatrixLength_t remove_row, const MatrixLength_t remove_column);
         template<typename U> friend U Matrix_Operations::trace(const Matrix<U> &matrix);
         template<typename U> friend Matrix<U> Matrix_Operations::transpose(const Matrix<U> &matrix);
+        template<typename U> friend Matrix<U> Matrix_Operations::submatrix(const Matrix<U> &matrix, MatrixLength_t start_row, MatrixLength_t end_row, MatrixLength_t start_column, MatrixLength_t end_column);
+        template<typename U> friend Matrix<U> Matrix_Operations::submatrix(const Matrix<U> &matrix, MatrixSize_t start_coordinate, MatrixSize_t end_coordinate);
 
         template<typename U> friend bool Matrix_Property::isDiagonal(const Matrix<U> &matrix);
         template<typename U> friend bool Matrix_Property::isIdentity(const Matrix<U> &matrix);

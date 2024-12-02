@@ -60,35 +60,6 @@ void setup() {
 
     // CORALS::TC_Init();
 
-    // DataStructures::Vector::Vector<TMC5160*> drivers(6);
-    // drivers.set(0, &CORALS::driver1);
-    // drivers.set(1, &CORALS::driver2);
-    // drivers.set(2, &CORALS::driver3);
-    // drivers.set(3, &CORALS::driver4);
-    // drivers.set(4, &CORALS::driver5);
-    // drivers.set(5, &CORALS::driver6);
-
-    // // Define power stage parameters
-    // TMC5160::PowerStageParameters powerParams;
-    // powerParams.drvStrength = 2;
-    // powerParams.bbmTime = 0;
-    // powerParams.bbmClks = 4;
-
-    // // Define motor parameters
-    // const int N = GLOBAL_N;  // Number of states/dimensions
-    // TMC5160::MotorParameters motorParams;
-    // motorParams.globalScaler = 32;
-    // motorParams.irun = 16;
-    // motorParams.ihold = 0;
-    // motorParams.freewheeling = TMC5160_Reg::FREEWHEEL_NORMAL;
-    // motorParams.pwmOfsInitial = 30;
-    // motorParams.pwmGradInitial = 0;
-
-    // CORALS::initialize();
-    // CORALS::initSpinners();
-    // CORALS::initSteppers(drivers, powerParams, motorParams);
-    // CORALS::initSG2(drivers, 5); 
-    // DataStructures::Matrix::Matrix<double> thetaG_ICs = CORALS::get_thetaGICs(4); // Initial Conditions
     // DCM_BG = CORALS::getDCM_BG(4); // DCM Body to Gimbal
 
     // thetaG_ICs = CORALS::get_thetaGICs(N);

@@ -22,6 +22,53 @@
 
 namespace CORALS {
 
+namespace Hardware {
+
+class GimbalMotor : TMC5160_SPI {
+    public:
+        GimbalMotor(uint8_t chipSelect);
+        ~GimbalMotor();
+        
+        void enable_stallguard(uint8_t threshold = 5);
+        void find_home();
+
+        void Set_OmegaG(float omegaG);
+        bool Set_ICs(float thetaG, float maxSpeed = 80, float acceleration = 200);
+
+    private:
+        float degrees_to_steps(const float degrees);
+};
+
+class SpinMotor {
+    public:
+        SpinMotor(uint8_t pwmPin, uint8_t dirPin, uint8_t intPin);
+        ~SpinMotor() {};
+
+        struct SpinSpeed {
+            float speed;
+            bool success;
+        };
+
+        void setSpeed(const float velocity);
+        SpinSpeed getSpeed();
+
+        void enableInterrupt();
+        void disableInterrupt();
+
+    private:
+        struct PWM_Data_t {
+            double RPM_History[AVERAGE_LENGTH];
+            unsigned long last_call_us;
+        } m_PWM_Data;
+        void Encoder_ISR();
+
+        uint8_t m_pwmPin;
+        uint8_t m_dirPin;
+        uint8_t m_intPin;
+};
+
+} // namespace Hardware
+
 void initSpinners();
 float angleToSteps(float angle);
 int32_t velocityToSteps(float omegaG);
@@ -30,13 +77,6 @@ void cmdGimbalRate(TMC5160 &driver, float velocity);
 void initSteppers(::DataStructures::Vector::Vector<TMC5160*> &drivers, const TMC5160::PowerStageParameters &powerParams, const TMC5160::MotorParameters &motorParams, TMC5160::MotorDirection direction = TMC5160::NORMAL_MOTOR_DIRECTION);
 void initSG2(::DataStructures::Vector::Vector<TMC5160*> &drivers, uint8_t sgtValue = 5);
 void findHome(::DataStructures::Vector::Vector<TMC5160*> &drivers);
-
-extern TMC5160_SPI driver1(CS1);
-extern TMC5160_SPI driver2(CS2);
-extern TMC5160_SPI driver3(CS3);
-extern TMC5160_SPI driver4(CS4);
-extern TMC5160_SPI driver5(CS5);
-extern TMC5160_SPI driver6(CS6);
 
 } // namespace CORALS
 
