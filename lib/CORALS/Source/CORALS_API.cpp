@@ -87,11 +87,9 @@ void API_Init() {
     Set_Attitude_Q3(0.0);
 
     // Gimbal Rates
-    RPC.bind("Get_Gimbal_Rates", Get_Gimbal_Rates);
-    RPC.bind("Set_Gimbal_Rates", Set_Gimbal_Rates);
-    for (int i = 0; i < N; ++i) {
-        Set_Gimbal_Rates(i, 0.0);
-    }
+    DVector ZeroVector(3);
+    Set_Gimbal_Rates(&ZeroVector);
+
     // Errors - TBD
 
     // States
@@ -119,23 +117,31 @@ void API_Init() {
 
 // Gains
 void Get_Gain_Matrix(GainMatrix *const Gain_Matrix) {
-    DataStore.Get(GAIN_MATRIX, Gain_Matrix);
+    GainMatrix *GainMatrixLocal = nullptr;
+    DataStore.Get(GAIN_MATRIX, &GainMatrixLocal);
+    memcpy(Gain_Matrix, GainMatrixLocal, sizeof(GainMatrix));
 }
 
 // Targets
 void Get_Indexed_Target(const ListSize_t index, Quaternion *const Target) {
-    TargetList Targets;
-    DataStore.Get(TARGET_LIST, &Targets);
-    memcpy(Target, Targets[index], sizeof(Quaternion));
+    TargetList *TargetsLocal = nullptr;
+    DataStore.Get(TARGET_LIST, &TargetsLocal);
+    memcpy(Target, (*TargetsLocal)[index], sizeof(Quaternion));
 }
 
 // Attitude
 void Get_Attitude(Quaternion *const attitude) {
-    DataStore.Get(ATTITUDE_QUATERNION, attitude);
+    Quaternion *AttitudeLocal = nullptr;
+    DataStore.Get(ATTITUDE_QUATERNION, &AttitudeLocal);
+    memcpy(attitude, AttitudeLocal, sizeof(Quaternion));
 }
 
 void Set_Attitude(const Quaternion *const attitude) {
-    DataStore.Set(ATTITUDE_QUATERNION, attitude);
+    Quaternion *AttitudeLocal = nullptr;
+    DataStore.Get(ATTITUDE_QUATERNION, &AttitudeLocal);
+    delete AttitudeLocal;
+    AttitudeLocal = new Quaternion(*attitude);
+    DataStore.Set(ATTITUDE_QUATERNION, AttitudeLocal);
 }
 
 // Errors - TBD
@@ -418,17 +424,18 @@ void Set_Attitude_Q3(const double value) {
 }
 
 // Gimbal Rates
-void Get_Gimbal_Rates(const int index, double &value) {
-    GimbalRates* gimbalRates;
+void Get_Gimbal_Rates(DVector *const data) {
+    DVector* gimbalRates;
     DataStore.Get(GIMBAL_RATES, &gimbalRates);
-    value = gimbalRates->get(index);
+    memcpy(data, gimbalRates, sizeof(DVector));
 }
 
-void Set_Gimbal_Rates(const int index, const double value) {
-    GimbalRates* gimbalRates;
-    DataStore.Get(GIMBAL_RATES, &gimbalRates);
-    gimbalRates->set(index,value);
-    DataStore.Set(GIMBAL_RATES, gimbalRates);
+void Set_Gimbal_Rates(const DVector *const data) {
+    DVector* GimbalRatesLocal = nullptr;
+    DataStore.Get(GIMBAL_RATES, &GimbalRatesLocal);
+    delete GimbalRatesLocal;
+    GimbalRatesLocal = new DVector(*data);
+    DataStore.Set(GIMBAL_RATES, GimbalRatesLocal);
 }
 
 // Errors - TBD

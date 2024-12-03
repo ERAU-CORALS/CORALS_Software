@@ -32,14 +32,17 @@ class Controller {
         Controller(const uint8_t cmgCount);
         ~Controller();
 
+        void run();
+
     private:
         GimbalSet m_Gimbals{Max_CMGs};
         SpinSet m_Spins{Max_CMGs};
 
-        DMatrix *m_DCM_BG;
+        DMatrix m_DCM_BR{3,3};
+        uint8_t m_cmgCount;
 };
 
-    DMatrix eulerIntegrate(const DMatrix& x_k, const DMatrix& dx, double dt);
+    DVector Get_ThetaG_ICs(const uint8_t cmgCount);
 
 }
 

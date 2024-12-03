@@ -29,9 +29,19 @@ class GainMatrix : public ::DataStructures::Matrix::Matrix<double> {
 };
 class Quaternion : public ::DataStructures::Vector::Vector<double> { 
     public: Quaternion() : Vector(4) {} 
-};
-class GimbalRates : public ::DataStructures::Vector::Vector<double> {
-    public: GimbalRates() : Vector(CORALS_CMG_COUNT) {}
+    Quaternion otimes(const Quaternion &q) const {
+        Quaternion result;
+
+        result.set(0, get(0)*q.get(0) - get(1)*q.get(1) - get(2)*q.get(2) - get(3)*q.get(3));
+        result.set(1, get(0)*q.get(1) + get(1)*q.get(0) + get(2)*q.get(3) - get(3)*q.get(2));
+        result.set(2, get(0)*q.get(2) - get(1)*q.get(3) + get(2)*q.get(0) + get(3)*q.get(1));
+        result.set(3, get(0)*q.get(3) + get(1)*q.get(2) - get(2)*q.get(1) + get(3)*q.get(0));
+
+        return result;
+    }
+    Quaternion otimes2(const Quaternion &q) const {
+        return q.otimes(*this);
+    }
 };
 
 using TargetList = ::DataStructures::List::List<Quaternion*>;

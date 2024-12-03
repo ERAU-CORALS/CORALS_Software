@@ -29,7 +29,7 @@ void DS_Init() {
     DataStore.Add_SDO<GainMatrix*>(GAIN_MATRIX);
     DataStore.Add_SDO<TargetList*>(TARGET_LIST);
     DataStore.Add_SDO<Quaternion*>(ATTITUDE_QUATERNION);
-    DataStore.Add_SDO<GimbleRates*>(GIMBAL_RATES);
+    DataStore.Add_SDO<DVector*>(GIMBAL_RATES);
 
     const double default_double = 0.0;
     

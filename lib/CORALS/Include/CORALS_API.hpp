@@ -105,8 +105,8 @@ void Set_Attitude_Q1(const double value);
 void Set_Attitude_Q2(const double value);
 void Set_Attitude_Q3(const double value);
 
-void Get_Gimbal_Rates(const int index, double &value);
-void Set_Gimbal_Rates(const int index, const double value);
+void Get_Gimbal_Rates(DVector *const data);
+void Set_Gimbal_Rates(const DVector *const data);
 
 // Errors - TBD
 

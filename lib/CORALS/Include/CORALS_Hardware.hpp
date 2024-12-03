@@ -24,47 +24,62 @@ namespace CORALS {
 
 namespace Hardware {
 
-class GimbalMotor : TMC5160_SPI {
+class GimbalMotor : public TMC5160_SPI {
     public:
         GimbalMotor(uint8_t chipSelect);
         ~GimbalMotor();
         
-        void enable_stallguard(uint8_t threshold = 5);
+        void init();
+        
+        void configure_coolstep();
+        void enable_stallguard(int8_t threshold = -5);
+        void disable_stallguard();
+
         void find_home();
 
-        void Set_OmegaG(float omegaG);
-        bool Set_ICs(float thetaG, float maxSpeed = 80, float acceleration = 200);
+        float Get_OmegaG();
+        void Set_OmegaG(float omegaG, float acceleration = 10000);
+        bool Set_ICs(float thetaG, float maxSpeed = 500, float acceleration = 1000);
 
     private:
-        float degrees_to_steps(const float degrees);
+        inline float degrees_to_steps(const float degrees);
+        inline float steps_to_degrees(const float steps);
 };
 
 class SpinMotor {
     public:
         SpinMotor(uint8_t pwmPin, uint8_t dirPin, uint8_t intPin);
-        ~SpinMotor() {};
+        ~SpinMotor();
 
         struct SpinSpeed {
-            float speed;
+            double speed;
             bool success;
         };
 
-        void setSpeed(const float velocity);
-        SpinSpeed getSpeed();
+        SpinSpeed Get_Speed();
+        void Set_Speed(const long velocity);
+
+        long Get_MaxSpeed();
+        void Set_MaxSpeed(const long max_speed);
 
         void enableInterrupt();
         void disableInterrupt();
 
-    private:
         struct PWM_Data_t {
-            double RPM_History[AVERAGE_LENGTH];
+            double RPM_History[CORALS_SPIN_ENCODER_AVERAGE_LENGTH];
+            uint8_t RPM_Index;
             unsigned long last_call_us;
-        } m_PWM_Data;
-        void Encoder_ISR();
+        };
 
+    private:
         uint8_t m_pwmPin;
         uint8_t m_dirPin;
         uint8_t m_intPin;
+
+        bool m_encoder_state;
+        long m_max_speed;
+
+        PWM_Data_t m_PWM_Data;
 };
 
 } // namespace Hardware
