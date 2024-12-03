@@ -13,6 +13,7 @@
 #include "CORALS_Configuration.hpp"
 
 #include <Arduino.h>
+#include <string.h>
 
 #include "List.tpp"
 #include "TMC5160.h"
@@ -25,8 +26,8 @@ namespace CORALS {
 
 namespace Hardware {
 
-GimbalMotor::GimbalMotor(uint8_t chipSelect) : TMC5160_SPI(chipSelect, DEFAULT_F_CLK, SPISettings(4000000, MSBFIRST, SPI_MODE3), SPI1) {
-    SPI1.begin();
+GimbalMotor::GimbalMotor(uint8_t chipSelect) : TMC5160_SPI(chipSelect, DEFAULT_F_CLK, SPISettings(4000000, MSBFIRST, SPI_MODE3), CORALS_SPI) {
+    CORALS_SPI.begin();
     init();
 }
 
@@ -39,9 +40,7 @@ void GimbalMotor::init() {
     TMC5160::PowerStageParameters powerParams;
     TMC5160::MotorParameters motorParams;
 
-    SERIAL_OUT_PRINTLN("Calling GimbalMotor.begin()...");
     begin(powerParams, motorParams, TMC5160::NORMAL_MOTOR_DIRECTION);
-    SERIAL_OUT_PRINTLN("GimbalMotor.begin() completed.");
 }
 
 void GimbalMotor::configure_coolstep() {
@@ -71,58 +70,46 @@ void GimbalMotor::disable_stallguard() {
 }
 
 void GimbalMotor::find_home() {
-    SERIAL_OUT_PRINTLN("Entering GimbalMotor::find_home()...");
-
-    SERIAL_OUT_PRINTLN("Enabling Stallguard.");
     enable_stallguard();
 
     // Gaslight
-    SERIAL_OUT_PRINTLN("Find Home: Gaslighting...");
-    SERIAL_OUT_PRINTLN("Setting current position to 360.");
     setCurrentPosition(CORALS_GIMBAL_MAX_POSITION, true);
-    SERIAL_OUT_PRINTLN("Setting target position to 0.");
     setTargetPosition(0);
 
     // Gatekeep
-    SERIAL_OUT_PRINTLN("Find Home: Gatekeeping...");
-    SERIAL_OUT_PRINTLN("Setting OmegaG to -50.");
-    Set_OmegaG(50, 25);
+    Set_OmegaG(5, 50);
     unsigned long start = millis(); 
     while (getDriverStatus() == TMC5160::OK && millis() - start < 10000) continue;
 
     // Girlboss
-    SERIAL_OUT_PRINTLN("Find Home: Girlbossing...");
-    SERIAL_OUT_PRINTLN("Commanding HOLD POSITION.");
     setRampMode(TMC5160::HOLD_MODE);
-    SERIAL_OUT_PRINTLN("Setting current position to 0.");
-    setCurrentPosition(0, true);
-    SERIAL_OUT_PRINTLN("Setting target position to 0.");
-    setTargetPosition(0);
-    SERIAL_OUT_PRINTLN("Commanding Stopping Rotation.");
+    setCurrentPosition(M_PI/15, true);
+    setTargetPosition(M_PI/15);
     Set_OmegaG(0);
     
-    SERIAL_OUT_PRINTLN("Disabling Stallguard.");
     disable_stallguard();
+}
 
-    SERIAL_OUT_PRINTLN("Exiting GimbalMotor::find_home().");
+float GimbalMotor::Get_ThetaG() {
+    return steps_to_radians(getCurrentPosition());
 }
 
 float GimbalMotor::Get_OmegaG() {
-    return steps_to_degrees(getCurrentSpeed()) * DEG_TO_RAD;
+    return sps_to_rpm(getCurrentSpeed());
 }
 
 void GimbalMotor::Set_OmegaG(float omegaG, float acceleration) {
-    setAcceleration(acceleration);
-    setMaxSpeed(degrees_to_steps(omegaG));
+    setAcceleration(rpm_to_sps(acceleration));
+    setMaxSpeed(rpm_to_sps(omegaG));
 }
 
 bool GimbalMotor::Set_ICs(float thetaG, float maxSpeed, float acceleration) {
     setRampMode(TMC5160::POSITIONING_MODE);
-    setMaxSpeed(maxSpeed);
-    setAcceleration(acceleration);
+    setMaxSpeed(rpm_to_sps(maxSpeed));
+    setAcceleration(rpm_to_sps(acceleration));
     // setRampSpeeds(0.0, 0.0, 0.0);
 
-    setTargetPosition(degrees_to_steps(thetaG));
+    setTargetPosition(radians_to_steps(thetaG));
 
     while (!isTargetPositionReached()) {
         if (getDriverStatus() != TMC5160::OK) {
@@ -133,15 +120,24 @@ bool GimbalMotor::Set_ICs(float thetaG, float maxSpeed, float acceleration) {
     return true;
 }
 
-inline float GimbalMotor::degrees_to_steps(const float degrees) {
-    return degrees * CORALS_GIMBAL_STEPS_PER_REVOLUTION / 360.0 \
+inline float GimbalMotor::radians_to_steps(const float radians) {
+    return radians * CORALS_GIMBAL_STEPS_PER_REVOLUTION / 2/M_PI \
                    * CORALS_GIMBAL_GEAR_RATIO;
-                //    * CORALS_GIMBAL_MICROSTEPS 
 }
 
-inline float GimbalMotor::steps_to_degrees(const float steps) {
-    return steps / CORALS_GIMBAL_STEPS_PER_REVOLUTION * 360.0 \
+inline float GimbalMotor::steps_to_radians(const float steps) {
+    return steps / CORALS_GIMBAL_STEPS_PER_REVOLUTION * 2*M_PI \
                  / CORALS_GIMBAL_GEAR_RATIO;
+}
+
+inline float GimbalMotor::rpm_to_sps(const float rpm) {
+    return rpm * CORALS_GIMBAL_STEPS_PER_REVOLUTION / 60 \
+               / CORALS_GIMBAL_GEAR_RATIO;
+}
+
+inline float GimbalMotor::sps_to_rpm(const float sps) {
+    return sps * CORALS_GIMBAL_GEAR_RATIO * 60 \
+               / CORALS_GIMBAL_STEPS_PER_REVOLUTION;
 }
 
 void Encoder_ISR(SpinMotor::PWM_Data_t *const data) {
@@ -163,7 +159,7 @@ SpinMotor::SpinMotor(uint8_t pwmPin, uint8_t dirPin, uint8_t intPin) {
     m_dirPin = dirPin;
     m_intPin = intPin;
 
-    m_max_speed = 10000;
+    m_omegaS_max = 10000;
 
     pinMode(m_pwmPin, OUTPUT);
     pinMode(m_dirPin, OUTPUT);
@@ -175,23 +171,21 @@ SpinMotor::~SpinMotor() {
     disableInterrupt();
 }
 
-void SpinMotor::Set_Speed(const long velocity) {
-    const long speed = abs(velocity);
+void SpinMotor::Set_Speed(const long omegaS) {
+    const long speed = abs(omegaS);
 
-    digitalWrite(m_dirPin, velocity >= 0 ? HIGH : LOW);
+    digitalWrite(m_dirPin, omegaS >= 0 ? HIGH : LOW);
 
     SERIAL_OUT_PRINT("Setting Speed to ");
     SERIAL_OUT.println(speed);
-    analogWrite(m_pwmPin, map(speed, 0, m_max_speed, 0, 255));
+    analogWrite(m_pwmPin, map(speed, 0, m_omegaS_max, 0, 255));
 }
 
 SpinMotor::SpinSpeed SpinMotor::Get_Speed() {
     SpinSpeed retval = {
         .speed = 0.0,
-        .success = false
+        .success = m_encoder_state
     };
-    
-    if (!m_encoder_state) return retval;
 
     // SERIAL_OUT_PRINT("Most Recent Data: ");
     // SERIAL_OUT.println(m_PWM_Data.RPM_History[m_PWM_Data.RPM_Index]);
@@ -200,19 +194,17 @@ SpinMotor::SpinSpeed SpinMotor::Get_Speed() {
         retval.speed += m_PWM_Data.RPM_History[i] / CORALS_SPIN_ENCODER_AVERAGE_LENGTH;
     }
 
-    retval.success = true;
-
     return retval;
 }
 
 long SpinMotor::Get_MaxSpeed() {
-    return m_max_speed;
+    return m_omegaS_max;
 }
 
-void SpinMotor::Set_MaxSpeed(const long max_speed) {
+void SpinMotor::Set_MaxSpeed(const long max) {
     SERIAL_OUT_PRINT("Setting Max Speed to ");
-    SERIAL_OUT.println(max_speed);
-    m_max_speed = max_speed;
+    SERIAL_OUT.println(max);
+    m_omegaS_max = max;
 }
 
 void SpinMotor::enableInterrupt() {
@@ -229,6 +221,138 @@ void SpinMotor::disableInterrupt() {
     m_PWM_Data.last_call_us = 0;
 }
 
+IMU::IMU() : USBHostSerialDevice(true) {
+  pinMode(USB_HOST_ENABLE, OUTPUT);
+  digitalWrite(USB_HOST_ENABLE, HIGH);
+
+  connect();
+}
+
+void IMU::connect() {
+    while (!USBHostSerialDevice::connect()) {
+        SERIAL_OUT_PRINTLN("No USB host Serial device connected");
+        delay(5000);
+    }
+
+    begin(115200);
+}
+
+void IMU::run() {
+    m_Data.index = 0;
+
+    for (uint8_t i = 0; i < CORALS_IMU_AVERAGE_LENGTH; i++) {
+        collect_data();
+        parse_data();
+    }
+}
+
+double IMU::Get_Roll() {
+    return Get_Data(m_Data.roll);
+}
+
+double IMU::Get_Pitch() {
+    return Get_Data(m_Data.pitch);
+}
+
+double IMU::Get_Yaw() {
+    return Get_Data(m_Data.yaw);
+}
+
+double IMU::Get_Roll_Rate() {
+    return Get_Data(m_Data.roll_rate);
+}
+
+double IMU::Get_Pitch_Rate() {
+    return Get_Data(m_Data.pitch_rate);
+}
+
+double IMU::Get_Yaw_Rate() {
+    return Get_Data(m_Data.yaw_rate);
+}
+
+void IMU::collect_data() {
+    if (available()) {
+        size_t bytes = 0;
+        do {
+            find("\n");
+            bytes = readBytesUntil('\n', m_buffer, sizeof(m_buffer));
+            strtok(m_buffer, "$VNYBA");
+        } while (strtok(NULL, "$VNYBA") != NULL);
+        
+        m_buffer[bytes] = '\0';
+
+        SERIAL_OUT_PRINT("Data: ");
+        SERIAL_OUT.println(m_buffer);
+    }
+    else {
+        SERIAL_OUT_PRINTLN("No data available.");
+    }
+}
+
+void IMU::parse_data() {
+    // Search for Preamble
+    if (strtok(m_buffer, ",") == NULL) {
+        m_Data.index++;
+        return;
+    }
+
+    char *ptr;
+    // Parse Yaw
+    SERIAL_OUT_PRINT("Parsed Data: ");
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.yaw[m_Data.index] = atof(ptr) * DEG_TO_RAD;
+        SERIAL_OUT.print(m_Data.yaw[m_Data.index]);
+        SERIAL_OUT.print(",");
+    }
+
+    // Parse Pitch
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.pitch[m_Data.index] = atof(ptr) * DEG_TO_RAD;
+        SERIAL_OUT.print(m_Data.pitch[m_Data.index]);
+        SERIAL_OUT.print(",");
+    }
+
+    // Parse Roll
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.roll[m_Data.index] = atof(ptr) * DEG_TO_RAD;
+        SERIAL_OUT.print(m_Data.roll[m_Data.index]);
+        SERIAL_OUT.print(",");
+    }
+
+    // Parse Yaw Rate
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.yaw_rate[m_Data.index] = atof(ptr) / 60;
+        SERIAL_OUT.print(m_Data.yaw_rate[m_Data.index]);
+        SERIAL_OUT.print(",");
+    }
+
+    // Parse Pitch Rate
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.pitch_rate[m_Data.index] = atof(ptr) / 60;
+        SERIAL_OUT.print(m_Data.pitch_rate[m_Data.index]);
+        SERIAL_OUT.print(",");
+    }
+
+    // Parse Roll Rate
+    if ((ptr = strtok(NULL, ",")) != NULL) {
+        m_Data.roll_rate[m_Data.index] = atof(ptr) / 60;
+        SERIAL_OUT.println(m_Data.roll_rate[m_Data.index]);
+    }
+
+    m_Data.index++;
+    m_buffer[0] = '\0';
+}
+
+double IMU::Get_Data(double *data) {
+    double retval = 0.0;
+
+    for (uint8_t i = 0; i < CORALS_IMU_AVERAGE_LENGTH; i++) {
+        retval += data[i] / CORALS_IMU_AVERAGE_LENGTH;
+    }
+
+    return retval;
+}
+
 } // namespace Hardware
 
-}
+} // namespace CORALS

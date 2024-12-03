@@ -13,12 +13,12 @@
 #ifndef __CORALS_HARDWARE_HPP__
 #define __CORALS_HARDWARE_HPP__
 
-#include "Vector.tpp"
 #include <Arduino.h>
-#include "TMC5160_registers.h"
-#include "TMC5160.h"
+#include <TMC5160_registers.h>
+#include <TMC5160.h>
+#include <USBHostSerialDevice.h>
 
-#ifdef GIGA_R1_M7
+#include "Vector.tpp"
 
 namespace CORALS {
 
@@ -37,13 +37,16 @@ class GimbalMotor : public TMC5160_SPI {
 
         void find_home();
 
+        float Get_ThetaG();
         float Get_OmegaG();
-        void Set_OmegaG(float omegaG, float acceleration = 10000);
-        bool Set_ICs(float thetaG, float maxSpeed = 500, float acceleration = 1000);
+        void Set_OmegaG(float omegaG, float acceleration = 500);
+        bool Set_ICs(float thetaG, float maxSpeed = 30, float acceleration = 500);
 
     private:
-        inline float degrees_to_steps(const float degrees);
-        inline float steps_to_degrees(const float steps);
+        inline float radians_to_steps(const float radians);
+        inline float steps_to_radians(const float steps);
+        inline float rpm_to_sps(const float rpm);
+        inline float sps_to_rpm(const float sps);
 };
 
 class SpinMotor {
@@ -57,10 +60,10 @@ class SpinMotor {
         };
 
         SpinSpeed Get_Speed();
-        void Set_Speed(const long velocity);
+        void Set_Speed(const long omegaS);
 
         long Get_MaxSpeed();
-        void Set_MaxSpeed(const long max_speed);
+        void Set_MaxSpeed(const long max);
 
         void enableInterrupt();
         void disableInterrupt();
@@ -77,24 +80,51 @@ class SpinMotor {
         uint8_t m_intPin;
 
         bool m_encoder_state;
-        long m_max_speed;
+        long m_omegaS_max;
 
         PWM_Data_t m_PWM_Data;
 };
 
+class IMU : public USBHostSerialDevice {
+    public:
+        IMU();
+        ~IMU() {};
+
+        void connect();
+
+        void run();
+
+        double Get_Roll();
+        double Get_Pitch();
+        double Get_Yaw();
+
+        double Get_Roll_Rate();
+        double Get_Pitch_Rate();
+        double Get_Yaw_Rate();
+
+    private:
+        struct IMU_Data {
+            double yaw[CORALS_IMU_AVERAGE_LENGTH];
+            double pitch[CORALS_IMU_AVERAGE_LENGTH];
+            double roll[CORALS_IMU_AVERAGE_LENGTH];
+
+            double yaw_rate[CORALS_IMU_AVERAGE_LENGTH];
+            double pitch_rate[CORALS_IMU_AVERAGE_LENGTH];
+            double roll_rate[CORALS_IMU_AVERAGE_LENGTH];
+
+            uint8_t index;
+        } m_Data;
+
+        char m_buffer[128];
+
+        void collect_data();
+        void parse_data();
+
+        double Get_Data(double *data);
+};
+
 } // namespace Hardware
 
-void initSpinners();
-float angleToSteps(float angle);
-int32_t velocityToSteps(float omegaG);
-bool setICs(float targetAngle, float maxSpeed = 80, float acceleration = 200);
-void cmdGimbalRate(TMC5160 &driver, float velocity);
-void initSteppers(::DataStructures::Vector::Vector<TMC5160*> &drivers, const TMC5160::PowerStageParameters &powerParams, const TMC5160::MotorParameters &motorParams, TMC5160::MotorDirection direction = TMC5160::NORMAL_MOTOR_DIRECTION);
-void initSG2(::DataStructures::Vector::Vector<TMC5160*> &drivers, uint8_t sgtValue = 5);
-void findHome(::DataStructures::Vector::Vector<TMC5160*> &drivers);
-
 } // namespace CORALS
-
-#endif // GIGA_R1_M7
 
 #endif // __CORALS_HARDWARE_HPP__

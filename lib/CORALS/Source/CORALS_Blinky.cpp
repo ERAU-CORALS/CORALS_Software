@@ -11,6 +11,7 @@
 **/
 
 #include "CORALS_Blinky.hpp"
+#include "CORALS_Configuration.hpp"
 
 #include <Arduino.h>
 
@@ -27,11 +28,9 @@ void Blinky(void) {
 #else // GIGA_R1_M4
 
     // Blink LED
-    if (digitalRead(PC_13) == LOW) {
-        digitalWrite(LEDB, LOW);
-        delay(100);
-        digitalWrite(LEDB, HIGH);
-    }
+    digitalWrite(LEDB, LOW);
+    delay(100);
+    digitalWrite(LEDB, HIGH);
 
 #endif // CPU_TYPE
 }

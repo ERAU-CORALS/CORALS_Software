@@ -24,7 +24,7 @@
 #endif
 
 #ifndef packed 
-    #define packed __attribute__((__packed__))
+    #define packed // __attribute__((__packed__))
 #endif
 
 #if defined(CORE_CM4) && !defined(GIGA_R1_M4)
@@ -74,6 +74,9 @@
 
 #define DEBUG_OUT_PRINT(x) if(DEBUG) SERIAL_OUT_PRINT(CORE_NAME + " DEBUG: " + x)
 #define DEBUG_OUT_PRINTLN(x) DEBUG_PRINT(x + "\n")
+
+#define BOOT0_SWITCH    PC_13
+#define USB_HOST_ENABLE PA_15
 
 // BEGIN CUSTOM CONFIGURATION DEFINITIONS
 

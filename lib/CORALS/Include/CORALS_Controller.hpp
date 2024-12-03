@@ -20,18 +20,21 @@
 #include "CORALS_DataStructures.hpp"
 #include "CORALS_Hardware.hpp"
 
+#ifdef GIGA_R1_M7
+
 namespace CORALS {
 
 const uint8_t Max_CMGs = 6;
 
-class Controller {
+class CORALS_Controller {
     using GimbalSet = DataStructures::Vector::Vector<Hardware::GimbalMotor*>;
     using SpinSet = DataStructures::Vector::Vector<Hardware::SpinMotor*>;
 
     public:
-        Controller(const uint8_t cmgCount);
-        ~Controller();
+        CORALS_Controller(const uint8_t cmgCount);
+        ~CORALS_Controller();
 
+        void init();
         void run();
 
     private:
@@ -42,8 +45,15 @@ class Controller {
         uint8_t m_cmgCount;
 };
 
-    DVector Get_ThetaG_ICs(const uint8_t cmgCount);
+DVector Get_ThetaG_ICs(const uint8_t cmgCount);
+DMatrix Get_DCM_RG(const uint8_t cmgCount, const uint8_t cmgIndex);
 
-}
+void Controller_Run();
 
-#endif
+extern CORALS_Controller Controller;
+
+} // namespace CORALS
+
+#endif // GIGA_R1_M7
+
+#endif // __CORALS_CONTROLLER_HPP__
